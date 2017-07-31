@@ -113,7 +113,19 @@ class SheetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // @todo: handle AJAX update requests
+        $sheet = Sheet::find($id);
+        $values = $request->all();
+        if(isset($values['_token']))
+            unset($values['_token']);
+        foreach ($values as $key => $val) {
+            $sheet->{$key} = $val;
+        }
+        if($sheet->save()){
+            return json_encode(['success' => 'true']);
+        }
+
+        //return $sheet->filename;
     }
 
     /**

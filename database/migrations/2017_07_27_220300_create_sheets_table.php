@@ -31,6 +31,7 @@ class CreateSheetsTable extends Migration
             $table->date('date_signed')->nullable();
             $table->integer('signature_count')->nullable();
             $table->boolean('self_signed')->default(false);
+            $table->text('comments')->nullable();
             $table->timestamps();
         });
     }

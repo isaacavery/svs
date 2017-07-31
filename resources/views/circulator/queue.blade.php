@@ -25,8 +25,8 @@
                 <div class="col-xs-6">
                     <h4>Problem with this sheet?</h4>
                     <div class="form-group">
-                        {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3]) }}
-                        <a href="#" class="btn btn-default pull-right">Add Note</a>
+                        {{ Form::textarea('comment',$sheet->comments,['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
+                        <a href="#" class="btn btn-default pull-right updateBtn" data-field="comment">Add Note</a>
                     </div>
                 </div>
             </div>
@@ -182,6 +182,36 @@
                     // Unknown error
                     alert('Unknown ' + xhr.status + ' error: ' + xhr.responseText);
                 }
+            });
+        });
+        $('.updateBtn').click(function(e){
+            var field = $(e.currentTarget).data('field');
+            var data = {'_token': $('input[name="_token"').val()};
+            switch(field){
+                case 'comment' :
+                    data.comments = $('#comment').val()};
+                    break;
+                case 'signature_count' :
+                    data.signature_count = 1;
+                    break;
+                case 'self_signed' :
+                    data.self_signed = 1;
+                    break;
+                default:
+                    alert('no match');
+
+            }
+
+            $.ajax('/sheets/{{ $sheet->id }}', {
+                'data': data,
+                'success': function(res, status, jqXHR){
+                 // Deal with response
+                    alert(res);
+                },
+                'error': function(xhr){
+                    alert(errors);
+                },
+                'method': 'PUT'
             });
         });
     });

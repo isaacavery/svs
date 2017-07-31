@@ -11,7 +11,7 @@ use App\Circulator;
 class CirculatorController extends Controller
 {
     public function queue() {
-    	$data['sheet'] = Sheet::first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
     	if(!$data['sheet'])
     		dd("Sorry, there are no sheets to review.");
     	return view('circulator.queue',$data);
