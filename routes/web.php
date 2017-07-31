@@ -17,4 +17,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
+Route::resource('sheets','SheetController');
+Route::get('circulators/queue', 'CirculatorController@queue')->middleware('auth');
+Route::post('circulators/search', 'CirculatorController@queue');
+Route::post('circulators/add', 'CirculatorController@add');
