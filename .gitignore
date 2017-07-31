@@ -1,7 +1,9 @@
 /node_modules
 /public/hot
+/public/uplaods
 /public/storage
 /storage/*.key
+/storage/voter_data
 /vendor
 /.idea
 /.vagrant
