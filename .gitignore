@@ -4,6 +4,7 @@
 /public/storage
 /storage/*.key
 /storage/voter_data
+composer.lock
 /vendor
 /.idea
 /.vagrant
