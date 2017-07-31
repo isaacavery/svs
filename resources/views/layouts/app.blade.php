@@ -12,6 +12,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap-theme.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+
 </head>
 <body>
     <div id="app">
@@ -36,7 +42,28 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                        &nbsp;
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sheets <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">View Queue</a></li>
+                            <li><a href="/sheets/create">Add</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Upload</a></li>
+                        </ul>
+                        </li>
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circulators <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">View</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Add</a></li>
+                        </ul>
+                        </li>
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Signers <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">View</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Add</a></li>
+                        </ul>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
