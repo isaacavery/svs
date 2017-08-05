@@ -44,11 +44,13 @@
                         Single signer
                     </label>
                 </div>
-                <h3>Number of Signatures</h3>
-                <div class="btn-group selected" id="signature-count-group" role="group">
-                @for($i=1; $i<11;$i++)
-                    <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
-                @endfor
+                <div class="numOfSignatures">                  
+                    <h3>Number of Signatures</h3>
+                    <div class="btn-group selected" id="signature-count-group" role="group">
+                    @for($i=1; $i<11;$i++)
+                        <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
+                    @endfor
+                    </div>
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
@@ -102,7 +104,7 @@
     <div class="col-xs-12">
         <a href="#" class="btn btn-primary">Exit</a>
         <a href="#" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
-        <a href="#" class="btn btn-primary pull-right">Flag Sheet &amp; Skip</a>
+        <a class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
@@ -190,6 +192,13 @@
         $('input[name="type"]').change(function(e){
             console.log('Updated Type:');
             var self_signed = $(e.currentTarget).val();
+            // If only one signer disallow hide multiple signature option
+            if (self_signed ==1) {
+                $('.numOfSignatures').hide();
+                ajaxUpdate('signature_count',1);
+            } else {
+                $('.numOfSignatures').show();
+            }
             // Submit self_signed (bool) to AJAX function
             ajaxUpdate('self_signed',self_signed);
         });
@@ -206,7 +215,17 @@
                 // Submit val to the AJAX function
                 ajaxUpdate('signature_count',val);
             }
-        })
+        });
+        $('#flagBtn').click(function(e){
+            if(!$('#comment_update_btn').val()) {
+                alert("Please put a reason for flagging in the comments")
+            }
+            else {
+             ajaxUpdate('flagged_by',{{data.user.id}});
+             location.reload();
+            }
+        });
+
 
         // Submit AJAX update request
         function ajaxUpdate(type,val){
