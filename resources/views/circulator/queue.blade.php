@@ -45,17 +45,17 @@
                     </label>
                 </div>
                 <h3>Number of Signatures</h3>
-                <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default">1</button>
-                    <button type="button" class="btn btn-default">2</button>
-                    <button type="button" class="btn btn-default">3</button>
-                    <button type="button" class="btn btn-default">4</button>
-                    <button type="button" class="btn btn-default">5</button>
-                    <button type="button" class="btn btn-default">6</button>
-                    <button type="button" class="btn btn-default">7</button>
-                    <button type="button" class="btn btn-default">8</button>
-                    <button type="button" class="btn btn-default">9</button>
-                    <button type="button" class="btn btn-default">10</button>
+                <div class="btn-group updateBtn" id="group" role="group" aria-label="..."  data-field="signature_count">
+                    <button type="button" class="btn btn-default" id = '1'>1</button>
+                    <button type="button" class="btn btn-default" id = '2'>2</button>
+                    <button type="button" class="btn btn-default" id = '3'>3</button>
+                    <button type="button" class="btn btn-default" id = '4'>4</button>
+                    <button type="button" class="btn btn-default" id = '5'>5</button>
+                    <button type="button" class="btn btn-default" id = '6'>6</button>
+                    <button type="button" class="btn btn-default" id = '7'>7</button>
+                    <button type="button" class="btn btn-default" id = '8'>8</button>
+                    <button type="button" class="btn btn-default" id = '9'>9</button>
+                    <button type="button" class="btn btn-default" id  = '10'>10</button>
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
@@ -189,17 +189,24 @@
             var data = {'_token': $('input[name="_token"').val()};
             switch(field){
                 case 'comment' :
-                    data.comments = $('#comment').val()};
-                    break;
+                    data.comments = $('#comment').val();
+                    alert(data.comments);
+                break;
                 case 'signature_count' :
-                    data.signature_count = 1;
-                    break;
+                    $('button').click(function(){
+                        data.signature_count = this.id; 
+                        alert(data.signature_count);
+                    });
+                break;
+                
+                
+                    
+                    
                 case 'self_signed' :
                     data.self_signed = 1;
                     break;
                 default:
                     alert('no match');
-
             }
 
             $.ajax('/sheets/{{ $sheet->id }}', {
