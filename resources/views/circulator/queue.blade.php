@@ -26,26 +26,26 @@
                     <h4>Problem with this sheet?</h4>
                     <div class="form-group">
                         {{ Form::textarea('comment',$sheet->comments,['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                        <a href="#" class="btn btn-default pull-right updateBtn" data-field="comment">Add Note</a>
+                        <a href="#" class="btn btn-default pull-right updateBtn selected" data-field="comment">Add Note</a>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
-                <div class="radio">
+                <div class="radio selected" data-field="self_signed">
                     <label>
                         <input type="radio" name="type" id="type" value="multiline" checked>
                         Multi-line (5 or 10 lines)
                     </label>
                 </div>
-                <div class="radio">
+                <div class="radio selected">
                     <label>
                         <input type="radio" name="type" id="type" value="single">
                         Single signer
                     </label>
                 </div>
                 <h3>Number of Signatures</h3>
-                <div class="btn-group updateBtn" id="group" role="group" aria-label="..."  data-field="signature_count">
+                <div class="btn-group selected" id="group" role="group" aria-label="..."  data-field="signature_count">
                     <button type="button" class="btn btn-default" id = '1'>1</button>
                     <button type="button" class="btn btn-default" id = '2'>2</button>
                     <button type="button" class="btn btn-default" id = '3'>3</button>
@@ -184,7 +184,7 @@
                 }
             });
         });
-        $('.updateBtn').click(function(e){
+        $('.selected').click(function(e){
             var field = $(e.currentTarget).data('field');
             var data = {'_token': $('input[name="_token"').val()};
             switch(field){
@@ -203,10 +203,12 @@
                     
                     
                 case 'self_signed' :
-                    data.self_signed = 1;
+                alert("This is self signed");
+                    data.self_signed =$('#self_signed').val();
+                    alert(data.self_signed);
                     break;
                 default:
-                    alert('no match');
+                  
             }
 
             $.ajax('/sheets/{{ $sheet->id }}', {
