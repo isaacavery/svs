@@ -26,36 +26,29 @@
                     <h4>Problem with this sheet?</h4>
                     <div class="form-group">
                         {{ Form::textarea('comment',$sheet->comments,['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                        <a href="#" class="btn btn-default pull-right updateBtn selected" data-field="comment">Add Note</a>
+                        <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
-                <div class="radio selected" data-field="self_signed">
+                <div class="radio">
                     <label>
-                        <input type="radio" name="type" id="type" value="multiline" checked>
+                        <input type="radio" name="type" id="type" value="0" checked>
                         Multi-line (5 or 10 lines)
                     </label>
                 </div>
                 <div class="radio selected">
                     <label>
-                        <input type="radio" name="type" id="type" value="single">
+                        <input type="radio" name="type" id="type" value="1">
                         Single signer
                     </label>
                 </div>
                 <h3>Number of Signatures</h3>
-                <div class="btn-group selected" id="group" role="group" aria-label="..."  data-field="signature_count">
-                    <button type="button" class="btn btn-default" id = '1'>1</button>
-                    <button type="button" class="btn btn-default" id = '2'>2</button>
-                    <button type="button" class="btn btn-default" id = '3'>3</button>
-                    <button type="button" class="btn btn-default" id = '4'>4</button>
-                    <button type="button" class="btn btn-default" id = '5'>5</button>
-                    <button type="button" class="btn btn-default" id = '6'>6</button>
-                    <button type="button" class="btn btn-default" id = '7'>7</button>
-                    <button type="button" class="btn btn-default" id = '8'>8</button>
-                    <button type="button" class="btn btn-default" id = '9'>9</button>
-                    <button type="button" class="btn btn-default" id  = '10'>10</button>
+                <div class="btn-group selected" id="signature-count-group" role="group">
+                @for($i=1; $i<11;$i++)
+                    <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
+                @endfor
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
@@ -184,45 +177,54 @@
                 }
             });
         });
-        $('.selected').click(function(e){
-            var field = $(e.currentTarget).data('field');
-            var data = {'_token': $('input[name="_token"').val()};
-            switch(field){
-                case 'comment' :
-                    data.comments = $('#comment').val();
-                    alert(data.comments);
-                break;
-                case 'signature_count' :
-                    $('button').click(function(){
-                        data.signature_count = this.id; 
-                        alert(data.signature_count);
-                    });
-                break;
-                
-                
-                    
-                    
-                case 'self_signed' :
-                alert("This is self signed");
-                    data.self_signed =$('#self_signed').val();
-                    alert(data.self_signed);
-                    break;
-                default:
-                  
-            }
 
+        // Listen for update to comment
+        $('#comment_update_btn').click(function(e){
+            console.log('Updating comment ...');
+            var comment = $('#comment').val();
+            // Submit comment to the AJAX function
+            ajaxUpdate('comment',comment);
+        });
+
+        // Listen for update to Self Signer status
+        $('input[name="type"]').change(function(e){
+            console.log('Updated Type:');
+            var self_signed = $(e.currentTarget).val();
+            // Submit self_signed (bool) to AJAX function
+            ajaxUpdate('self_signed',self_signed);
+        });
+
+        // Listen for update on Signature Count
+        $('#signature-count-group button').click(function(e){
+            var tgt = $(e.currentTarget);
+            if(tgt.hasClass('btn-primary')) {
+                // Take no action because count is not changing
+            } else {
+                $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default');
+                tgt.addClass('btn-primary');
+                var val = tgt.html();
+                // Submit val to the AJAX function
+                ajaxUpdate('signature_count',val);
+            }
+        })
+
+        // Submit AJAX update request
+        function ajaxUpdate(type,val){
+            var data = {'_token': $('input[name="_token"').val()};
+            data[type] = val;
             $.ajax('/sheets/{{ $sheet->id }}', {
                 'data': data,
                 'success': function(res, status, jqXHR){
-                 // Deal with response
-                    alert(res);
+                    // Deal with response
+                    console.log(res);
                 },
                 'error': function(xhr){
-                    alert(errors);
+                    console.log("ERROR");
+                    console.log(errors);
                 },
                 'method': 'PUT'
             });
-        });
+        }
     });
 </script>
 </div>
