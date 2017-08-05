@@ -122,7 +122,9 @@ class SheetController extends Controller
             $sheet->{$key} = $val;
         }
         if($sheet->save()){
-            return json_encode(['success' => 'true']);
+            return json_encode(['success' => 'true', 'message' => 'Successfully updated ' . implode(', ', array_keys($values)) . ' for Sheet #' . $id]);
+        } else {
+            return json_encode(['success' => false, 'error' => 'Unknown error saving changes']);
         }
 
         //return $sheet->filename;

@@ -10,6 +10,8 @@
     }
 </style>
 <div class="col-md-12" style="padding-bottom: 40px;">
+    <div id="messages">
+    </div>
     <div class="panel panel-default">
         <div class="panel-heading">Circulator Queue</div>
 
@@ -214,9 +216,17 @@
             data[type] = val;
             $.ajax('/sheets/{{ $sheet->id }}', {
                 'data': data,
+                'dataType': 'json',
                 'success': function(res, status, jqXHR){
                     // Deal with response
                     console.log(res);
+                    if(res.success){
+                        var msg = "Success: " + res.message;
+                        $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                    } else {
+                        var err = "Error: " + res.error;
+                        $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
+                    }
                 },
                 'error': function(xhr){
                     console.log("ERROR");
