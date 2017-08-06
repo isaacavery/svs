@@ -31,30 +31,50 @@
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>
+                <div class="col-xs-12">
+                    <h4>Recent Circulators</h4>
+                    <p>@todo: place recent circulators here</p>
+                </div>
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
                 <div class="radio">
                     <label>
-                        <input type="radio" name="type" id="type" value="0" checked>
+                        <input type="radio" name="type" id="type" value="0"{{ ($sheet->self_signed) ? '' : ' checked="checked"' }}>
                         Multi-line (5 or 10 lines)
                     </label>
                 </div>
-                <div class="radio selected">
+                <div class="radio">
                     <label>
-                        <input type="radio" name="type" id="type" value="1">
+                        <input type="radio" name="type" id="type" value="1"{{ ($sheet->self_signed) ? 'checked="checked"' : '' }}>
                         Single signer
                     </label>
                 </div>
                 <h3>Number of Signatures</h3>
-                <div class="btn-group selected" id="signature-count-group" role="group">
+                <div class="btn-group" id="signature-count-group" role="group">
                 @for($i=1; $i<11;$i++)
                     <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
                 @endfor
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
-                <h3>Circulator Name</h3>
+                <div class="col-xs-6">
+                    <h3>Circulator</h3>
+                </div>
+                <div class="col-xs-6">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                            Exact Match
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="exact_match" id="exact_match" value="0">
+                            Loose Search 
+                        </label>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="form-group col-xs-6">
                         {{ Form::label('first', 'First Name') }}
@@ -81,17 +101,23 @@
                         {{ Form::text('zip','',['class'=>'form-control']) }}
                     </div>
                 </div>
-                <a href="#" class="col-xs-4 pull-right btn btn-primary">Search</a>
+                <a href="#" class="col-xs-4 pull-right btn btn-primary" id="search_submit_btn">Search</a>
                 <div class="clearfix"></div>
                 <hr />
                 <div class="row clearfix">
-                    <div class="col-xs-6">
+                    <div class="col-xs-12">
                         <h4>Search Results</h4>
-                        <p>@todo: get search results</p>
-                    </div>
-                    <div class="col-xs-6">
-                        <h4>Recent Circulators</h4>
-                        <p>@todo: place recent circulators here</p>
+                        <table class="table table-striped table-condensed table-hover">
+                            <thead>
+                                <tr>
+                                    <td>NAME</td>
+                                    <td>ADDRESS</td>
+                                    <td>ALT ADDRESS</td>
+                                </tr>
+                            </thead>
+                            <tbody id="search-results">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</a>
@@ -209,6 +235,50 @@
                 ajaxUpdate('signature_count',val);
             }
         })
+        $('#search_submit_btn').click(function(e){
+            e.preventDefault();
+            // Submit Circulator search
+            $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
+            var data = {
+                exact_match: 1,
+                first: $('#first').val(),
+                last: $('#last').val(),
+                street_name: $('#street_name').val(),
+                number: $('#number').val(),
+                city: $('#city').val(),
+                zip: $('#zip').val(),
+                _token: $('input[name="_token"').val()
+            };
+            if ($('input#exact_match[value="0"]').is(':checked')) {
+                data['exact_match'] = 0;
+            }
+
+            $.post('/circulators/search',data, function(res, status, jqXHR){
+                // Deal with response
+                console.log(res);
+                if(res.success){
+                    if(!res.count) {
+                        $('#search-results').html('<tr><td colspan="3" class="text-danger">No matches found!</td></tr>');
+                    } else {
+                        var html = '';
+                        $.each(res.matches, function(i,v){
+                            console.log(v);
+                            html += '<tr><td>'
+                                + v.first_name + ' ';
+                            if(v.middle_name)
+                                html += v.middle_name + ' ';
+                            html += v.last_name + '</td><td>'
+                                + v.res_address_1 + ' ' + v.city + ' ' + v.zip_code + '</td><td>';
+                            html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '<td>';
+                        });
+                        $('#search-results').html(html);
+                    }
+                } else {
+                    $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + res.error + '</div>');
+                }
+            }, 'json');
+
+        });
 
         // Submit AJAX update request
         function ajaxUpdate(type,val){
