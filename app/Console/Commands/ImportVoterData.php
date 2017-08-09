@@ -50,14 +50,15 @@ class ImportVoterData extends Command
         foreach ($list_files as $k => $value) {
             echo " - FILE $k ( $value ) beginning at " . date('H:i:s:a') . ":\n";
             $headers = false;
+            $insert_data = array();
             $row = 0;
             if(!preg_match('/^.*\.txt$/', $value)){
                 echo "  - Skipping: invalid file type!\n";
                 continue;
             }
             $file = fopen("$dir/list/$value",'r');
+            $start_time = time();
             while(($line = fgetcsv($file, 0, "\t")) !== false) {
-                $row++;
                 if(!$headers) {
                     $headers = $line;
                     if($headers[count($headers)-1 == ''])
@@ -66,14 +67,22 @@ class ImportVoterData extends Command
                         $headers[$key] = strtolower($value);
                     }   
                 } else {
-                    if($row % 100 === 0)
-                        echo "  - $row \r";
-                    $line_write = array_combine($headers,$line);
-                    DB::table('voters')->insert($line_write);
+                    $row++;
+                    $insert_data[] = array_combine($headers,$line);
+
+                    if($row % 100 === 0){
+                        echo "  - " . count($insert_data) . ":$row records using " . memory_get_usage() . " bytes of memory\r";
+                        Voter::insert($insert_data);
+                        $insert_data = array();
+                    }
                 }   
-            }
+            }  
+            fclose($file);
+            echo "\n  - data parsing complete: $row records at " . memory_get_usage() . " bytes of memory.\n  - Beginning query ... ";
+            
+            echo "complete!\n  - Inserted $row records.\n";
             $total_voters += $row;
-            echo "  - Completed $row records at " . date('H:i:s:a') . ".\n";
+
         }
         echo "\nSuccessfully imported $total_voters voters.";
     }
