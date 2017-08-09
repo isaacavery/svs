@@ -37,47 +37,44 @@ class ImportVoterData extends Command
      *
      * @return mixed
      */
+
     public function handle()
     {
-        echo "Retrieve and parse voter data\n";
+        echo "Importing voter data ...\n";
         $dir = storage_path('voter_data');
-        $precinct_path = storage_path('voter_data') . '/precinct.txt';
         $list_files = scandir(storage_path('voter_data/list'));
-        $history_files = scandir(storage_path('voter_data/history'));
-
+        $total_voters = 0;
+        
         // Parse and write Voter List to the database
-        echo "Retrieving Voter List ...\n";
-        foreach ($list_files as $value) {
-            $lines = [];
+        echo "Loading " . count($list_files) . " files from " . storage_path('voter_data/list') . " ...\n";
+        foreach ($list_files as $k => $value) {
+            echo " - FILE $k ( $value ) beginning at " . date('H:i:s:a') . ":\n";
             $headers = false;
-            if(!preg_match('/^.*\.txt$/', $value))
+            $row = 0;
+            if(!preg_match('/^.*\.txt$/', $value)){
+                echo "  - Skipping: invalid file type!\n";
                 continue;
+            }
             $file = fopen("$dir/list/$value",'r');
             while(($line = fgetcsv($file, 0, "\t")) !== false) {
+                $row++;
                 if(!$headers) {
                     $headers = $line;
                     if($headers[count($headers)-1 == ''])
                         unset($headers[count($headers)-1]);
                     foreach ($headers as $key => $value) {
                         $headers[$key] = strtolower($value);
-                    }
+                    }   
                 } else {
-                    $lines[] = array_combine($headers,$line);
-                }
+                    if($row % 100 === 0)
+                        echo "  - $row \r";
+                    $line_write = array_combine($headers,$line);
+                    DB::table('voters')->insert($line_write);
+                }   
             }
-            echo date('H:i:a:s') . "\n";
-            echo(count($lines) . " Voters found in file $value.\nWriting voters to the database ...");
-
-            // Write the lines to the database
-            foreach($lines as $line){
-                try {
-                    DB::table('voters')->insert($line);
-                } catch( Exception $e ) {
-                    dd($e);
-                }
-            }
-            echo date('H:i:a:s') . "\n";
-            echo "COMPLETE!\n";
+            $total_voters += $row;
+            echo "  - Completed $row records at " . date('H:i:s:a') . ".\n";
         }
+        echo "\nSuccessfully imported $total_voters voters.";
     }
 }
