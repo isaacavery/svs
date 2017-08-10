@@ -17,7 +17,7 @@ class CirculatorController extends Controller
 
     	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
     	if(!$data['sheet'])
-            return Redirect::back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
+            return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
         // Parse comments
         $data['comments'] = explode('|',$data['sheet']->comments);
         foreach($data['comments'] as $k => $v){
