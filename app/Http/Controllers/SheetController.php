@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Batch;
 use App\Sheet;
 use Input;
+use Auth;
 
 class SheetController extends Controller
 {
@@ -119,7 +120,7 @@ class SheetController extends Controller
         if(isset($values['_token']))
             unset($values['_token']);
         foreach ($values as $key => $val) {
-            $sheet->{$key} = $val;
+            $sheet->{$key} = ($key == 'comments') ? $sheet->{$key} . '|[' . Auth::user()->name . ' on ' . date('m/d/Y h:i:s') . '] ' . $val : $val;
         }
         if($sheet->save()){
             return json_encode(['success' => 'true', 'message' => 'Successfully updated ' . implode(', ', array_keys($values)) . ' for Sheet #' . $id]);

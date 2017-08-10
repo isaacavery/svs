@@ -2,6 +2,15 @@
 
 @section('content')
 <div class="container">
+@if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -13,7 +22,7 @@
                         <p><strong>1.872 Circulators</strong> ready to be added</p>
                         <a href="/circulators/queue" class="btn btn-primary">Start ></a>
                         <h3>Circulator stats</h3>
-                        <p><strong>4,154 Circulators added.</strong></p>
+                        <p><strong>{{ $circulator_count }} Circulators added.</strong></p>
                         <p>890 unique Circulators have gathered a total of <strong>40,783 signatures</strong></p>
                         <table>
                             <tfoot><strong>Circulators added per user:</strong></tfoot>
@@ -75,7 +84,10 @@
     <div class="col-md-3">
         <h4>Sheets</h4>
         <ul>
-            <li><a href="#">Upload sheets</a></li>
+
+        @if(Auth::user()->admin)
+            <li><a href="/sheets/create">Upload sheets</a></li>
+        @endif
             <li><a href="#">View flagged sheets</a></li>
         </ul>
     </div>

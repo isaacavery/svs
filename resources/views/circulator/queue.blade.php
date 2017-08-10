@@ -25,9 +25,14 @@
                     <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
                 </div>
                 <div class="col-xs-6">
-                    <h4>Problem with this sheet?</h4>
+                    <h4>Comments or problem with this sheet:</h4>
+                    <ul id="comments">
+                    @foreach($comments as $comment)
+                        <li class="text-primary">{{ $comment }}</li>
+                    @endforeach
+                    </ul>
                     <div class="form-group">
-                        {{ Form::textarea('comment',$sheet->comments,['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
+                        {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>
@@ -149,15 +154,15 @@
                         {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
                         {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first']) }}
                         <span class="help-block hidden"></span>
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
+                        {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
+                        <span class="help-block hidden"></span>
+                    </div>
                     </div>
                     <div class="form-group col-xs-6">
                         {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
                         {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
-                        {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
                         <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
@@ -213,7 +218,7 @@
             console.log('Updating comment ...');
             var comment = $('#comment').val();
             // Submit comment to the AJAX function
-            ajaxUpdate('comment',comment);
+            ajaxUpdate('comments',comment);
         });
 
         // Listen for update to Self Signer status
@@ -288,15 +293,35 @@
                 } else {
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
                 }
-            }, 'json');
+            }, 'json').fail(function(xhr){
+                if(xhr.status == 422){
+                    // Add validation handling
+                    var errors = xhr.responseJSON;
+                    $.each(errors,function(k,v){
+                        $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
+                    });
+                } else {
+                    // Unknown error
+                    $('#search-results').html('<tr><td colspan="3" class="text-danger">' + xhr.status + ' ERROR: ' + xhr.responseText + '</td></tr>');
+                }
+            });
+        });
+        $('#first,#last,#street_name,#number,#city,#zip').keypress(function (e) {
+          if (e.which == 13) {
+            $('#search_submit_btn').click();
+          }
         });
         $('#flagBtn').click(function(e){
-            if(!$('#comment_update_btn').val()) {
-                alert("Please put a reason for flagging in the comments")
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
             }
             else {
-             ajaxUpdate('flagged_by',{{ 1 }});
-             location.reload();
+                // Add a comment for flagging
+                ajaxUpdate('comments',$('#comment').val());
+                // Flag the sheet
+                ajaxUpdate('flagged_by',{{ Auth::user()->id }});
+                // Reload the page to retreive the next sheet in the queue
+                location.reload();
             }
         });
 
@@ -304,15 +329,22 @@
         function ajaxUpdate(type,val){
             var data = {'_token': $('input[name="_token"').val()};
             data[type] = val;
+            var callbackData = {type: type, val: val};
             $.ajax('/sheets/{{ $sheet->id }}', {
                 'data': data,
+                'context': callbackData,
                 'dataType': 'json',
-                'success': function(res, status, jqXHR){
+                'success': function(res, status, jqXHR,){
                     // Deal with response
-                    console.log(res);
                     if(res.success){
+                        console.log(callbackData);
                         var msg = "Success: " + res.message;
                         $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                        if(callbackData.type == 'comments'){
+                            // Add new comment to the display
+                            $('ul#comments').append('<li class="text-success">' + callbackData.val + '</li>');
+                            $('textarea#comment').val('');
+                        }
                     } else {
                         var err = "Error: " + res.error;
                         $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
@@ -326,6 +358,14 @@
             });
         }
     });
+    setInterval(function(){
+        if($('#messages .alert').length){
+            console.log('found some');
+            $('#messages .alert').delay(1000).fadeOut(400,function(){
+                $(this).remove();
+            });
+        }
+    },3000);
 </script>
 </div>
 @endsection

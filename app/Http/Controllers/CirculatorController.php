@@ -9,13 +9,22 @@ use App\Http\Requests\StoreCirculator;
 use App\Sheet;
 use App\Circulator;
 use App\Voter;
+use Auth;
 
 class CirculatorController extends Controller
 {
     public function queue() {
+
     	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
     	if(!$data['sheet'])
-    		dd("Sorry, there are no sheets to review.");
+            return Redirect::back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
+        // Parse comments
+        $data['comments'] = explode('|',$data['sheet']->comments);
+        foreach($data['comments'] as $k => $v){
+            // Remove empty comments
+            if(!$v)
+                unset($data['comments'][$k]);
+        }
     	return view('circulator.queue',$data);
     }
     public function search(Request $request) {

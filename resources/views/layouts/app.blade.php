@@ -20,6 +20,15 @@
 
 </head>
 <body>
+<style type="text/css">
+    #messages {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        width: 100%;
+    }
+</style>
     <div id="app">
         <nav class="navbar navbar-default navbar-static-top">
             <div class="container">
@@ -41,15 +50,15 @@
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
+                    @if(Auth::check())
                     <ul class="nav navbar-nav">
+                    @if(Auth::user()->admin)
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sheets <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">View Queue</a></li>
-                            <li><a href="/sheets/create">Add</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Upload</a></li>
+                            <li><a href="/sheets/create">Upload</a></li>
                         </ul>
                         </li>
+                    @endif
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circulators <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#">View</a></li>
@@ -65,13 +74,13 @@
                         </ul>
                         </li>
                     </ul>
+                    @endif
 
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                         <!-- Authentication Links -->
                         @if (Auth::guest())
                             <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Register</a></li>
                         @else
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -90,6 +99,7 @@
                                             {{ csrf_field() }}
                                         </form>
                                     </li>
+                                    <li><a href="{{ route('register') }}">Add User</a>
                                 </ul>
                             </li>
                         @endif
