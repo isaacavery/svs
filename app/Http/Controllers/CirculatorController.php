@@ -10,6 +10,7 @@ use App\Sheet;
 use App\Circulator;
 use App\Voter;
 use Auth;
+use Exception;
 
 class CirculatorController extends Controller
 {
@@ -33,7 +34,7 @@ class CirculatorController extends Controller
         // Step 1: search for existing Circulators
         $v1 = [];
         $no_data = true;
-        $q1 = "SELECT first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE last_name IS NOT NULL ";
+        $q1 = "SELECT id voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE last_name IS NOT NULL ";
         if($form['first']) {
             $no_data = false;
             $q1 .= "AND first_name LIKE ? ";
@@ -77,11 +78,24 @@ class CirculatorController extends Controller
 
     public function add(StoreCirculator $request) {
     	// Store Circulator
-    	$circulator = Circulator::create(['first_name' => $request->first_name, 'last_name' => $request->last_name, 'street_name' => $request->street_name, 'street_number' => $request->street_number, 'city' => $request->city, 'zip' => $request->zip]);
-    	if($circulator){
-    		return json_encode(['success' => true, 'id' => $circulator->id]);
-    	} else {
-    		return json_encode(['success' => false, 'error' => 'Unknown error']);
-    	}
+        try{
+            $check = Circulator::where('first_name', trim(strtoupper($request->first_name)))->where('last_name',trim(strtoupper($request->last_name)))->first();
+            if($check) {
+                // User already exists. Return the user id
+                return json_encode(['success' => 'true', 'message' => 'Circulator already exists in the database as Circulator #' . $check->id, 'id' => $check->id]);
+            } else {
+                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'city' => trim(strtoupper($request->city)), 'zip' => trim($request->zip)]);
+                if($circulator){
+                    // Circulator was created. Return the id.
+                    return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);
+                } else {
+                    // Unknown error
+                    throw new Exception('There was an unknown error when adding the following data to the database: ' . json_encode($request->all()),1);
+                }
+            }
+        } catch(\Exception $e) {
+            // Exception handler
+            return json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }
