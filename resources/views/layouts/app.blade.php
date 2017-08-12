@@ -55,12 +55,14 @@
                     @if(Auth::user()->admin)
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sheets <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="/sheets/queue">Queue</a></li>
                             <li><a href="/sheets/create">Upload</a></li>
                         </ul>
                         </li>
                     @endif
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circulators <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="/circulators/queue">Queue</a></li>
                             <li><a href="#">View</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="#">Add</a></li>

@@ -36,10 +36,6 @@
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>
-                <div class="col-xs-12">
-                    <h4>Recent Circulators</h4>
-                    <p>@todo: place recent circulators here</p>
-                </div>
             </div>
             <div class="col-xs-12 col-md-6">
                 @if($sheet->signature_count>0)
@@ -56,9 +52,7 @@
                 @else
                     <h2>No Signatures on this Sheet</h2>
                 @endif
-                <h3>Circulator Date</h3>
-                {{ Form::date('name', \Carbon\Carbon::now()) }}
-                <h3>Circulator</h3>
+                <h3>Voter</h3>
                 <div id="voter-match" data-selected="0"></div><a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
                 <div class="col-xs-12">
