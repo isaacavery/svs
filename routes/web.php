@@ -19,6 +19,7 @@ Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
 Route::resource('sheets','SheetController');
+Route::get('sheets/queue', 'SheetController@queue')->middleware('auth');
 Route::get('circulators/queue', 'CirculatorController@queue')->middleware('auth');
 Route::post('circulators/search', 'CirculatorController@search')->middleware('auth');
 Route::post('circulators/add', 'CirculatorController@add')->middleware('auth');

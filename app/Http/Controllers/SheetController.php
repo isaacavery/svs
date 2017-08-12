@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Batch;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreCirculator;
 use App\Sheet;
-use Input;
+use App\Circulator;
+use App\Voter;
 use Auth;
+use Exception;
 
 class SheetController extends Controller
 {
@@ -82,6 +85,22 @@ class SheetController extends Controller
         }
         return view('sheets.uploaded', $result_data);
     }
+
+ public function queue() {
+
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
+    	if(!$data['sheet'])
+            return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
+        // Parse comments
+        $data['comments'] = explode('|',$data['sheet']->comments);
+        foreach($data['comments'] as $k => $v){
+            // Remove empty comments
+            if(!$v)
+                unset($data['comments'][$k]);
+        }
+    	return view('sheet.queue',$data);
+    }
+
 
     /**
      * Display the specified resource.
