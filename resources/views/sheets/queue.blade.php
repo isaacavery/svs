@@ -42,27 +42,20 @@
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
-                <h3>Sheet Type</h3>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="type" id="type" value="0"{{ ($sheet->self_signed) ? '' : ' checked="checked"' }}>
-                        Multi-line (5 or 10 lines)
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="type" id="type" value="1"{{ ($sheet->self_signed) ? 'checked="checked"' : '' }}>
-                        Single signer
-                    </label>
-                </div>
-                <div class="numOfSignatures{{ ($sheet->self_signed) ? ' hidden' : '' }}">                  
-                    <h3>Number of Signatures</h3>
-                    <div class="btn-group selected" id="signature-count-group" role="group">
-                    @for($i=1; $i<11;$i++)
-                        <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
+                @if($sheet->signature_count>0)
+                    @for($i = 0; $i < $sheet->signature_count; $i++)
+                        <div class="form-group col-xs-6">
+                            {{ Form::label('first', 'First Name') }}
+                            {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
+                        </div>
+                        <div class="form-group col-xs-6">
+                            {{ Form::label('last', 'Last Name') }}
+                            {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
+                        </div>
                     @endfor
-                    </div>
-                </div>
+                @else
+                    <h2>No Signatures on this Sheet</h2>
+                @endif
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
                 <h3>Circulator</h3>
