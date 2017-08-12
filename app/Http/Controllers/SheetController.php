@@ -87,7 +87,6 @@ class SheetController extends Controller
     }
 
  public function queue() {
-
     	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
@@ -98,7 +97,7 @@ class SheetController extends Controller
             if(!$v)
                 unset($data['comments'][$k]);
         }
-    	return view('sheet.queue',$data);
+    	return view('sheets.queue',$data);
     }
 
 
