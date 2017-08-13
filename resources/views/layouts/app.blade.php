@@ -19,7 +19,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
 
 </head>
-<body>
+<body style="padding-top:70px">
 <style type="text/css">
     #messages {
         position: fixed;
@@ -30,7 +30,7 @@
     }
 </style>
     <div id="app">
-        <nav class="navbar navbar-default navbar-static-top">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
 

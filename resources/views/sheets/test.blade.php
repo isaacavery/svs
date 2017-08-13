@@ -13,8 +13,7 @@
     <div id="messages">
     </div>
     <div class="panel panel-default">
-         {{--  <div class="panel-heading">Circulator Queue</div>   --}}
-
+        <div class="panel-heading">Testing</div>
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
@@ -36,51 +35,13 @@
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>
-                <div class="col-xs-12">
-                    <h4>Recent Circulators</h4>
-                    <p>@todo: place recent circulators here</p>
-                </div>
             </div>
             <div class="col-xs-12 col-md-6">
-                <h3>Sheet Type</h3>
-                <div class="radio-inline">
-                    <label>
-                        <input type="radio" name="type" id="type" value="0"{{ ($sheet->self_signed) ? '' : ' checked="checked"' }}>
-                        Multi-line (5 or 10 lines)
-                    </label>
-                </div>
-                <div class="radio-inline">
-                    <label>
-                        <input type="radio" name="type" id="type" value="1"{{ ($sheet->self_signed) ? 'checked="checked"' : '' }}>
-                        Single signer
-                    </label>
-                </div>
-                <div class="numOfSignatures{{ ($sheet->self_signed) ? ' hidden' : '' }}">                  
-                    <h3>Number of Signatures</h3>
-                    <div class="btn-group selected" id="signature-count-group" role="group">
-                    @for($i=1; $i<11;$i++)
-                        <button type="button" class="btn {{ ($sheet->signature_count == $i) ? 'btn-primary' : 'btn-default' }}">{{ $i }}</button>
-                    @endfor
-                    </div>
-                </div>
-                <h3>Circulator Date</h3>
-                {{ Form::date('name', \Carbon\Carbon::now()) }}
-                <h3>Circulator</h3>
-                <div id="voter-match" data-selected="0"></div><a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
+                <h2 id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <ol id="signer-match" data-selected="0"></ol>
                 <div id="voter-search">
                 <div class="col-xs-12">
-                    <div class="radio-inline" style="padding:10px">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
-                            Exact Match
-                        </label>
-                    </div>
-                    <div class="radio-inline" style="padding:10px">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="0">
-                            Loose Search 
-                        </label>
-                    </div>
+
                 </div>
                 <div class="row">
                     <div class="form-group col-xs-6">
@@ -108,7 +69,21 @@
                         {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
                     </div>
                 </div>
-                <a href="#" class="col-xs-4 pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                <div class = "col-xs-12">
+                <div class="radio-inline">  
+                  <label>
+                      <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                      Exact Match
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                      <input type="radio" name="exact_match" id="exact_match" value="0">
+                      Loose Search 
+                  </label>
+                </div>
+                <a href="#" class="pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                </div>
                 <div class="clearfix"></div>
                 <hr />
                 <div class="row clearfix">
@@ -127,7 +102,6 @@
                         </table>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
                 </button>
             </div>
             {{ Form::close() }}
@@ -137,8 +111,8 @@
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12">
         <a href="#" class="btn btn-primary">Exit</a>
-        <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
-        <a href="#" class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
+        <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
+        <a class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
@@ -192,7 +166,9 @@
     </div>
 <script type="text/javascript">
     var searchResults;
+    
     $('document').ready(function(){
+      var signerCnt  = 0;
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -227,38 +203,6 @@
             // Submit comment to the AJAX function
             ajaxUpdate('sheets','comments',comment);
         });
-
-        // Listen for update to Self Signer status
-        $('input[name="type"]').change(function(e){
-            console.log('Updated Type:');
-            var self_signed = $(e.currentTarget).val();
-            // If only one signer disallow hide multiple signature option
-            if (self_signed ==1) {
-                $('.numOfSignatures').addClass('hidden');
-                ajaxUpdate('sheets','signature_count',1);
-                $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default').first().removeClass('btn-default').addClass('btn-primary');
-            } else {
-                $('.numOfSignatures').removeClass('hidden').show();
-            }
-            // Submit self_signed (bool) to AJAX function
-            ajaxUpdate('sheets','self_signed',self_signed);
-        });
-
-        // Listen for update on Signature Count
-        $('#signature-count-group button').click(function(e){
-            var tgt = $(e.currentTarget);
-            if(tgt.hasClass('btn-primary')) {
-                // Take no action because count is not changing
-            } else {
-                $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default');
-                tgt.addClass('btn-primary');
-                var val = tgt.html();
-                // Submit val to the AJAX function
-                ajaxUpdate('sheets','signature_count',val);
-            }
-        });
-
-
 
         // Search for signer
         $('#search_submit_btn').click(function(e){
@@ -326,7 +270,7 @@
           }
         });
 
-        // Check for comment before flagging sheet if comment exists move to next sheet else require reason for flagging
+        // Listen for Flag Sheet Button
         $('#flagBtn').click(function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
@@ -337,14 +281,8 @@
                 // Flag the sheet
                 ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retreive the next sheet in the queue
-                location.reload(true);
+                location.reload();
             }
-        });
-
-        // Listen for finish sheet
-        $('#bottom-bar').on('click', '#finish-sheet', function(e){
-          location.reload();
-          ajaxUpdate('sheets','circulator',)
         });
 
         // Submit AJAX update request
@@ -382,26 +320,21 @@
 
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
+          if(signerCnt  <{{$sheet->signature_count}}){
+            signerCnt  = signerCnt  +1;
             var voterId = $(e.currentTarget).data('voter-id');
             var voter = searchResults[voterId]; // Set 
             var html = '<p class="text-muted"><strong class="text-primary">'
                 + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
                 + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code;
-            $('#voter-match').attr('data-selected',voterId).html(html).show();
-            $('#remove-circulator-btn').show();
-            $('#voter-search').hide();
-            $('#finish-sheet').attr('disabled',false);
+            $('#signer-match').append($('<li>').attr('data-selected',voterId).html(html).show());
+            $('#numOfSigners').html('<h2>' + signerCnt   + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+            //if signature count is reached allow sheet to be submitted and move to next.
+            if(signerCnt   == {{$sheet->signature_count}}) {  
+              $('#finish-sheet').attr('disabled',false);
+            }
+          }
         });
-        $('#remove-circulator-btn').click(function(e){
-            $('#voter-match').attr('data-selected','0').html('').hide();
-            $('#remove-circulator-btn').hide();
-            $('#voter-search').show();
-            $('#finish-sheet').attr('disabled',true);
-        });
-
-        $('input[name="first"]').focus();
-
-
     });
     // Remove AJAX feedback notices
     setInterval(function(){

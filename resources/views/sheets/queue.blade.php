@@ -14,7 +14,6 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Sheets Queue</div>
-
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
@@ -53,7 +52,6 @@
                     <h2>No Signatures on this Sheet</h2>
                 @endif
                 <h3>Voter</h3>
-                <div id="voter-match" data-selected="0"></div><a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
                 <div class="col-xs-12">
                     <div class="radio">
@@ -213,36 +211,6 @@
             var comment = $('#comment').val();
             // Submit comment to the AJAX function
             ajaxUpdate('sheets','comments',comment);
-        });
-
-        // Listen for update to Self Signer status
-        $('input[name="type"]').change(function(e){
-            console.log('Updated Type:');
-            var self_signed = $(e.currentTarget).val();
-            // If only one signer disallow hide multiple signature option
-            if (self_signed ==1) {
-                $('.numOfSignatures').addClass('hidden');
-                ajaxUpdate('sheets','signature_count',1);
-                $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default').first().removeClass('btn-default').addClass('btn-primary');
-            } else {
-                $('.numOfSignatures').removeClass('hidden').show();
-            }
-            // Submit self_signed (bool) to AJAX function
-            ajaxUpdate('sheets','self_signed',self_signed);
-        });
-
-        // Listen for update on Signature Count
-        $('#signature-count-group button').click(function(e){
-            var tgt = $(e.currentTarget);
-            if(tgt.hasClass('btn-primary')) {
-                // Take no action because count is not changing
-            } else {
-                $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default');
-                tgt.addClass('btn-primary');
-                var val = tgt.html();
-                // Submit val to the AJAX function
-                ajaxUpdate('sheets','signature_count',val);
-            }
         });
 
         // Search for signer
