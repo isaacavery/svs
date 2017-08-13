@@ -10,6 +10,7 @@ use App\Sheet;
 use App\Circulator;
 use App\Voter;
 use Auth;
+use App\Batch;
 use Exception;
 
 class SheetController extends Controller
