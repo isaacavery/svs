@@ -13,7 +13,7 @@
     <div id="messages">
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Circulator Queue</div>
+         {{--  <div class="panel-heading">Circulator Queue</div>   --}}
 
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
@@ -43,13 +43,13 @@
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
-                <div class="radio">
+                <div class="radio-inline">
                     <label>
                         <input type="radio" name="type" id="type" value="0"{{ ($sheet->self_signed) ? '' : ' checked="checked"' }}>
                         Multi-line (5 or 10 lines)
                     </label>
                 </div>
-                <div class="radio">
+                <div class="radio-inline">
                     <label>
                         <input type="radio" name="type" id="type" value="1"{{ ($sheet->self_signed) ? 'checked="checked"' : '' }}>
                         Single signer
@@ -69,13 +69,13 @@
                 <div id="voter-match" data-selected="0"></div><a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
                 <div class="col-xs-12">
-                    <div class="radio">
+                    <div class="radio-inline" style="padding:10px">
                         <label>
                             <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
                             Exact Match
                         </label>
                     </div>
-                    <div class="radio">
+                    <div class="radio-inline" style="padding:10px">
                         <label>
                             <input type="radio" name="exact_match" id="exact_match" value="0">
                             Loose Search 
@@ -137,8 +137,8 @@
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12">
         <a href="#" class="btn btn-primary">Exit</a>
-        <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
-        <a class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
+        <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
+        <a href="#" class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
@@ -258,6 +258,8 @@
             }
         });
 
+
+
         // Search for signer
         $('#search_submit_btn').click(function(e){
             e.preventDefault();
@@ -323,6 +325,8 @@
             $('#search_submit_btn').click();
           }
         });
+
+        // Check for comment before flagging sheet if comment exists move to next sheet else require reason for flagging
         $('#flagBtn').click(function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
@@ -333,8 +337,14 @@
                 // Flag the sheet
                 ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retreive the next sheet in the queue
-                location.reload();
+                location.reload(true);
             }
+        });
+
+        // Listen for finish sheet
+        $('#bottom-bar').on('click', '#finish-sheet', function(e){
+          location.reload();
+          ajaxUpdate('sheets','circulator',)
         });
 
         // Submit AJAX update request
@@ -390,6 +400,8 @@
         });
 
         $('input[name="first"]').focus();
+
+
     });
     // Remove AJAX feedback notices
     setInterval(function(){

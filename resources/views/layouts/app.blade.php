@@ -19,7 +19,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
 
 </head>
-<body>
+<body style="padding-top:70px">
 <style type="text/css">
     #messages {
         position: fixed;
@@ -30,7 +30,7 @@
     }
 </style>
     <div id="app">
-        <nav class="navbar navbar-default navbar-static-top">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
 
@@ -55,6 +55,7 @@
                     @if(Auth::user()->admin)
                         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sheets <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="/sheets/queue">Queue</a></li>
                             <li><a href="/sheets/create">Upload</a></li>
                         </ul>
                         </li>
