@@ -13,7 +13,7 @@
     <div id="messages">
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Sheets Queue</div>
+        <div class="panel-heading">Testing</div>
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
@@ -37,35 +37,11 @@
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
-                @if($sheet->signature_count>0)
-                    @for($i = 0; $i < $sheet->signature_count; $i++)
-                        <div class="form-group col-xs-6">
-                            {{ Form::label('first', 'First Name') }}
-                            {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
-                        </div>
-                        <div class="form-group col-xs-6">
-                            {{ Form::label('last', 'Last Name') }}
-                            {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
-                        </div>
-                    @endfor
-                @else
-                    <h2>No Signatures on this Sheet</h2>
-                @endif
-                <h3>Voter</h3>
+                <h2 id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <ol id="signer-match" data-selected="0"></ol>
                 <div id="voter-search">
                 <div class="col-xs-12">
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
-                            Exact Match
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="0">
-                            Loose Search 
-                        </label>
-                    </div>
+
                 </div>
                 <div class="row">
                     <div class="form-group col-xs-6">
@@ -93,7 +69,21 @@
                         {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
                     </div>
                 </div>
-                <a href="#" class="col-xs-4 pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                <div class = "col-xs-12">
+                <div class="radio-inline">  
+                  <label>
+                      <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                      Exact Match
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                      <input type="radio" name="exact_match" id="exact_match" value="0">
+                      Loose Search 
+                  </label>
+                </div>
+                <a href="#" class="pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                </div>
                 <div class="clearfix"></div>
                 <hr />
                 <div class="row clearfix">
@@ -112,7 +102,6 @@
                         </table>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
                 </button>
             </div>
             {{ Form::close() }}
@@ -177,7 +166,9 @@
     </div>
 <script type="text/javascript">
     var searchResults;
+    
     $('document').ready(function(){
+      var signerCnt  = 0;
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -278,6 +269,8 @@
             $('#search_submit_btn').click();
           }
         });
+
+        // Listen for Flag Sheet Button
         $('#flagBtn').click(function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
@@ -327,24 +320,21 @@
 
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
+          if(signerCnt  <{{$sheet->signature_count}}){
+            signerCnt  = signerCnt  +1;
             var voterId = $(e.currentTarget).data('voter-id');
             var voter = searchResults[voterId]; // Set 
             var html = '<p class="text-muted"><strong class="text-primary">'
                 + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
                 + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code;
-            $('#voter-match').attr('data-selected',voterId).html(html).show();
-            $('#remove-circulator-btn').show();
-            $('#voter-search').hide();
-            $('#finish-sheet').attr('disabled',false);
+            $('#signer-match').append($('<li>').attr('data-selected',voterId).html(html).show());
+            $('#numOfSigners').html('<h2>' + signerCnt   + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+            //if signature count is reached allow sheet to be submitted and move to next.
+            if(signerCnt   == {{$sheet->signature_count}}) {  
+              $('#finish-sheet').attr('disabled',false);
+            }
+          }
         });
-        $('#remove-circulator-btn').click(function(e){
-            $('#voter-match').attr('data-selected','0').html('').hide();
-            $('#remove-circulator-btn').hide();
-            $('#voter-search').show();
-            $('#finish-sheet').attr('disabled',true);
-        });
-
-        $('input[name="first"]').focus();
     });
     // Remove AJAX feedback notices
     setInterval(function(){
