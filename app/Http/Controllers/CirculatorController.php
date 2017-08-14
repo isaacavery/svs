@@ -39,13 +39,26 @@ class CirculatorController extends Controller
         if($form['first']) {
             $no_data = false;
             $q1 .= "AND first_name LIKE ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['first']) : '%' . strtoupper($form['first']) . '%';
-            $circulators->where('first_name',strtoupper($form['first']));
+            if($exact_match){
+                $v1[] = strtoupper($form['first']);
+                $circulators->where('first_name',strtoupper($form['first']));
+            } else {
+                $v1[] = '%' . strtoupper($form['first']) . '%';
+                $circulators->where('first_name','%' . strtoupper($form['first']) . '%');
+
+            }
         }
         if($form['last']) {
             $no_data = false;
             $q1 .= "AND last_name LIKE ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['last']) : '%' . strtoupper($form['last']) . '%';
+            if($exact_match){
+                $v1[] = strtoupper($form['last']);
+                $circulators->where('last_name',strtoupper($form['last']));
+            } else {
+                $v1[] = '%' . strtoupper($form['last']) . '%';
+                $circulators->where('last_name','%' . strtoupper($form['last']) . '%');
+
+            }
         }
         if($form['city']) {
             $no_data = false;
@@ -86,7 +99,7 @@ class CirculatorController extends Controller
                 'eff_address_1' => '',
                 'city' => $res->city,
                 'county' => '',
-                'zip_code' => $res->zip
+                'zip_code' => $res->zip_code
             ];
         }
         // Search existing Circulators:
@@ -104,7 +117,7 @@ class CirculatorController extends Controller
                 // User already exists. Return the user id
                 return json_encode(['success' => 'true', 'message' => 'Circulator already exists in the database as Circulator #' . $check->id, 'id' => $check->id]);
             } else {
-                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'city' => trim(strtoupper($request->city)), 'zip' => trim($request->zip)]);
+                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip)]);
                 if($circulator){
                     // Circulator was created. Return the id.
                     return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);
@@ -125,9 +138,7 @@ class CirculatorController extends Controller
             if($request->cid){
                 // Circulator ID is provided, so look up and return Circulator record
                 $circulator = Circulator::find($request->cid);
-            }
-
-            if($request->vid){
+            } else if($request->vid){
                 // Circulator ID is NOT provided, so create a new Circulator and return the data
                 $voter = Voter::where('voter_id',$request->vid)->first();
                 if(!$voter)

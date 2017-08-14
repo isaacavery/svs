@@ -28,6 +28,19 @@
         z-index: 9999;
         width: 100%;
     }
+ol  {
+    margin: 0 0 30px 20px;
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    column-gap: 30px;
+    -webkit-column-gap: 30px;
+    -moz-column-gap: 30px;
+}
+li.signer {
+    padding-bottom:5px;
+}
+
 </style>
     <div id="app">
         <nav class="navbar navbar-default navbar-fixed-top">

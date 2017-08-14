@@ -40,7 +40,7 @@
                     <h4>Recent Circulators</h4>
                     <ul>
                     @foreach($recent_circulators as $circ)
-                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ $circ->voter_id }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
                     @endforeach
                     </ul>
                 </div>
@@ -71,11 +71,11 @@
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
                 <h3>Circulator</h3>
                 <div id="voter-match">
-                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{ $sheet->circulator->middle_name }} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
+                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
 
-                <a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
+                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
                 <div class="col-xs-12">
                     <div class="radio-inline" style="padding:10px">
@@ -349,14 +349,15 @@
         $('#flagBtn').click(function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
-            }
-            else {
+            } else {
                 // Add a comment for flagging
                 ajaxUpdate('sheets','comments',$('#comment').val());
                 // Flag the sheet
                 ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retrieve the next sheet in the queue
-                location.reload(true);
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
             }
         });
 
@@ -372,7 +373,7 @@
 
         // Submit AJAX update request
         function ajaxUpdate(resource,type,val){
-            
+                    var data = {'_token': $('input[name="_token"').val()};
             data[type] = val;
             var callbackData = {type: type, val: val};
             $.ajax('/' + resource + '/{{ $sheet->id }}', {
@@ -468,11 +469,37 @@
             'method': 'POST'
         });
     }
-    console.log('loaded');
-    $('.select-circulator').click(function(e){
-        e.preventDefault();
-        console.log('Select circ:');
-    });
+    function removeCirculator(){
+        var data = {
+            '_token': $('input[name="_token"').val(),
+            'sid': {{ $sheet->id }}
+        };
+        $.ajax('/circulators/ajaxRemoveCirculator', {
+            'data': data,
+            'dataType': 'json',
+            'success': function(res, status, jqXHR,){
+                // Deal with response
+                if(res.success){
+                    var msg = "Success: " + res.message;
+                    $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                    // Update the UI
+                    $('#voter-match').hide();
+                    $('#remove-circulator-btn').hide();
+                    $('#voter-search').show();
+                    $('#finish-sheet').attr('disabled',true);
+
+                } else {
+                    var err = "Error: " + res.error;
+                    $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
+                }
+            },
+            'error': function(xhr){
+                console.log("ERROR");
+                console.log(errors);
+            },
+            'method': 'POST'
+        });
+    }
 </script>
 </div>
 @endsection
