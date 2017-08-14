@@ -363,12 +363,12 @@
 
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
-            // @todo: add validation here
-
-            // Mark sheet as finished
-            ajaxUpdate('completed_by',{{ Auth::user()->id }});
-            // Reload the page to retreive the next sheet in the queue
-            location.reload(true);
+            // Check for count
+            if(!$('#signature-count-group .btn.btn-primary').length){
+                alert('Please select the number of signatures before continuing');
+            } else {
+                location.reload(true);
+            }
         });
 
         // Submit AJAX update request

@@ -48,7 +48,7 @@
                     <div class="col-xs-12 col-md-6">
                     <h2>Add Signers</h2>
                         <p><strong>14.219 Signers</strong> ready to be added</p>
-                        <a href="#" class="btn btn-primary">Start ></a>
+                        <a href="/sheets/queue" class="btn btn-primary">Start ></a>
                         <h3>Signer stats</h3>
                         <p><strong>26,564 Signers added.</strong></p></p>
                         <table>

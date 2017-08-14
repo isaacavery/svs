@@ -15,6 +15,14 @@ class CreateSignersTable extends Migration
     {
         Schema::create('signers', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('voter_id')
+                ->references('voter_id')
+                ->on('voters')
+                ->nullable();
+            $table->integer('sheet_id')
+                ->references('id')
+                ->on('sheets');
+            $table->integer('row');
             $table->timestamps();
         });
     }
