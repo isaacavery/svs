@@ -38,7 +38,13 @@
             </div>
             <div class="col-xs-12 col-md-6">
                 <h2 id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
-                <ol id="signer-match" data-selected="0"></ol>
+                <ol id="signer-match" data-selected="0">
+                    @for($i=0; $i<$sheet->signature_count; $i++)
+                        <li class="signer"><strong class="text-primary">
+                            First Middle Last </strong><br />
+                            1234 Test Street, <br /> Voter City, OR 12345</li>
+                    @endfor
+                </ol>
                 <div id="voter-search">
                 <div class="col-xs-12">
 
@@ -318,21 +324,29 @@
             });
         }
 
+        //Watch for a signer to be selected and change classes to identify selected
+        $(document.body).on('click', '.signer', function(e){
+            $('.signer').removeClass('bg-info activeSigner');
+            $(this).addClass('bg-info activeSigner');
+            
+        });
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
-          if(signerCnt  <{{$sheet->signature_count}}){
-            signerCnt  = signerCnt  +1;
+          if($('li.signer').not('.done').length != 0){
             var voterId = $(e.currentTarget).data('voter-id');
             var voter = searchResults[voterId]; // Set 
-            var html = '<p class="text-muted"><strong class="text-primary">'
+            var html = '<strong class="text-primary signer">'
                 + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
                 + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code;
-            $('#signer-match').append($('<li>').attr('data-selected',voterId).html(html).show());
-            $('#numOfSigners').html('<h2>' + signerCnt   + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+            $('.activeSigner').attr('data-selected',voterId).html(html).show();
+            $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
+            $('#numOfSigners').html('<h2>' + ({{$sheet->signature_count}}-$('li.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
             //if signature count is reached allow sheet to be submitted and move to next.
-            if(signerCnt   == {{$sheet->signature_count}}) {  
+            if(!$('li.signer').not('.done').length){  
               $('#finish-sheet').attr('disabled',false);
             }
+          } else {
+              alert("Please select a signer to modify");
           }
         });
     });
