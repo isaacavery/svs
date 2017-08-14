@@ -33,9 +33,9 @@ ol  {
     columns: 2;
     -webkit-columns: 2;
     -moz-columns: 2;
-    column-gap: 30px;
-    -webkit-column-gap: 30px;
-    -moz-column-gap: 30px;
+    column-gap: 40px;
+    -webkit-column-gap: 40px;
+    -moz-column-gap: 40px;
 }
 li.signer {
     padding-bottom:5px;
