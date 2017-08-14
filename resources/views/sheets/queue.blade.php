@@ -337,7 +337,7 @@
             var voter = searchResults[voterId]; // Set 
             var html = '<strong class="text-primary signer">'
                 + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
-                + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code;
+                + voter.res_address_1 + ',<br /> ' + voter.city + ', OR ' + voter.zip_code;
             $('.activeSigner').attr('data-selected',voterId).html(html).show();
             $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
             $('#numOfSigners').html('<h2>' + ({{$sheet->signature_count}}-$('li.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
