@@ -88,7 +88,10 @@
                       Loose Search 
                   </label>
                 </div>
-                <a href="#" class="pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                <div class="pull-right">
+                    <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">Not Readable</a>
+                    <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
+                </div>
                 </div>
                 <div class="clearfix"></div>
                 <hr />
@@ -332,22 +335,32 @@
         });
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
-          if($('li.signer').not('.done').length != 0){
-            var voterId = $(e.currentTarget).data('voter-id');
-            var voter = searchResults[voterId]; // Set 
-            var html = '<strong class="text-primary signer">'
-                + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
-                + voter.res_address_1 + ',<br /> ' + voter.city + ', OR ' + voter.zip_code;
-            $('.activeSigner').attr('data-selected',voterId).html(html).show();
-            $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
-            $('#numOfSigners').html('<h2>' + ({{$sheet->signature_count}}-$('li.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
-            //if signature count is reached allow sheet to be submitted and move to next.
-            if(!$('li.signer').not('.done').length){  
-              $('#finish-sheet').attr('disabled',false);
-            }
+          if($('li.signer').hasClass('activeSigner')){
+            if($('li.signer').not('.done').length != 0){
+                var voterId = $(e.currentTarget).data('voter-id');
+                var voter = searchResults[voterId]; // Set 
+                var html = '<strong class="text-primary signer">'
+                    + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
+                    + voter.res_address_1 + ',<br /> ' + voter.city + ', OR ' + voter.zip_code;
+                $('.activeSigner').attr('data-selected',voterId).html(html).show();
+                $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
+                $('#numOfSigners').html('<h2>' + ({{$sheet->signature_count}}-$('li.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+                //if signature count is reached allow sheet to be submitted and move to next.
+                if(!$('li.signer').not('.done').length){  
+                  $('#finish-sheet').attr('disabled',false);
+                }
+            } 
           } else {
-              alert("Please select a signer to modify");
-          }
+              alert("Please select a signer to update");
+            }
+        });
+        $('#not_readable').on('click', function(e){
+            if($('li.signer').hasClass('activeSigner')){
+                $('.activeSigner').html('<li class="signer"><strong class="text-primary">Not Readable </strong><br />---- ---------, <br /> ----------, -- -----</li>');
+                ajaxUpdate('sheets','voter_id',null);    
+            } else {
+                alert("Please select a signer to update");
+            }
         });
     });
     // Remove AJAX feedback notices
