@@ -290,7 +290,9 @@
                 // Flag the sheet
                 ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retreive the next sheet in the queue
-                location.reload();
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
             }
         });
 
@@ -356,7 +358,8 @@
         });
         $('#not_readable').on('click', function(e){
             if($('li.signer').hasClass('activeSigner')){
-                $('.activeSigner').html('<li class="signer"><strong class="text-primary">Not Readable </strong><br />---- ---------, <br /> ----------, -- -----</li>');
+                $('.activeSigner').html('<strong class="text-primary">Not Readable </strong><br />---- ---------, <br /> ----------, -- -----');
+                $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
                 ajaxUpdate('sheets','voter_id',null);    
             } else {
                 alert("Please select a signer to update");
