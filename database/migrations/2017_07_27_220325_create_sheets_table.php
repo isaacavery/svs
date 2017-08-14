@@ -20,6 +20,10 @@ class CreateSheetsTable extends Migration
 
         Schema::create('sheets', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('circulator_id')
+                ->references('id')
+                ->on('circulators')
+                ->nullable();
             $table->char('filename', 255);
             $table->char('original_filename', 255);
             $table->char('md5_hash',32)->unique();

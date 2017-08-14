@@ -38,7 +38,11 @@
                 </div>
                 <div class="col-xs-12">
                     <h4>Recent Circulators</h4>
-                    <p>@todo: place recent circulators here</p>
+                    <ul>
+                    @foreach($recent_circulators as $circ)
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ $circ->voter_id }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                    @endforeach
+                    </ul>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
@@ -66,7 +70,12 @@
                 <h3>Circulator Date</h3>
                 {{ Form::date('name', \Carbon\Carbon::now()) }}
                 <h3>Circulator</h3>
-                <div id="voter-match" data-selected="0"></div><a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
+                <div id="voter-match">
+                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{ $sheet->circulator->middle_name }} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
+                @endif
+                </div>
+
+                <a id="remove-circulator-btn" href="#" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
                 <div class="col-xs-12">
                     <div class="radio-inline" style="padding:10px">
@@ -185,7 +194,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary">Add</button>
             </div>
         </div>
         {{ Form::close() }}
@@ -201,10 +210,17 @@
             $.post('/circulators/add',form.serialize(), function(res, status, jqXHR){
                 // Deal with response
                 console.log(res);
-                if(res.success){
-                    $('ul#comments').append('<li class="text-success">' + res.message + '</li>')
+                var resData = $.parseJSON(res);
+                if(resData.success){
+                    $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
+                    $('#addCirculator').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
                 } else {
-                    $('ul#comments').append('<li class="text-danger">' + res.message + '</li>')
+                    $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
+                    $('#addCirculator').modal('hide');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
                 }
             }).fail(function(xhr){
                 if(xhr.status == 422){
@@ -294,8 +310,11 @@
                         }
                         var html = '';
                         $.each(res.matches, function(i,v){
-                            html += '<tr class="match" data-voter-id="' + v.voter_id + '"><td>'
-                                + v.first_name + ' ';
+                            html += '<tr class="match" data-voter-id="' + v.voter_id + '" data-circulator-id="' + v.circulator_id + '" onclick="javascript:selectCirculator(\'' + v.voter_id + '\',\'' + v.circulator_id + '\')"><td>';
+                            if(v.circulator_id){
+                                html += '<span class="glyphicon glyphicon-user"></span> ';
+                            }
+                            html += v.first_name + ' ';
                             if(v.middle_name)
                                 html += v.middle_name + ' ';
                             html += v.last_name + '</td><td>'
@@ -336,20 +355,24 @@
                 ajaxUpdate('sheets','comments',$('#comment').val());
                 // Flag the sheet
                 ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retreive the next sheet in the queue
+                // Reload the page to retrieve the next sheet in the queue
                 location.reload(true);
             }
         });
 
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
-          location.reload();
-          ajaxUpdate('sheets','circulator',)
+            // @todo: add validation here
+
+            // Mark sheet as finished
+            ajaxUpdate('completed_by',{{ Auth::user()->id }});
+            // Reload the page to retreive the next sheet in the queue
+            location.reload(true);
         });
 
         // Submit AJAX update request
         function ajaxUpdate(resource,type,val){
-            var data = {'_token': $('input[name="_token"').val()};
+            
             data[type] = val;
             var callbackData = {type: type, val: val};
             $.ajax('/' + resource + '/{{ $sheet->id }}', {
@@ -380,18 +403,11 @@
             });
         }
 
-        // Assign selected voter
-        $("#search-results").on('click','tr.match',function(e){
-            var voterId = $(e.currentTarget).data('voter-id');
-            var voter = searchResults[voterId]; // Set 
-            var html = '<p class="text-muted"><strong class="text-primary">'
-                + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
-                + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code;
-            $('#voter-match').attr('data-selected',voterId).html(html).show();
+@if($sheet->circulator)
             $('#remove-circulator-btn').show();
             $('#voter-search').hide();
             $('#finish-sheet').attr('disabled',false);
-        });
+@endif
         $('#remove-circulator-btn').click(function(e){
             $('#voter-match').attr('data-selected','0').html('').hide();
             $('#remove-circulator-btn').hide();
@@ -412,6 +428,51 @@
             });
         }
     },3000);
+
+    function selectCirculator(vid,cid){
+        console.log('Selcting circulator: ' + vid + ' / ' + cid);
+        var data = {
+            '_token': $('input[name="_token"').val(),
+            'vid': vid,
+            'cid': cid,
+            'sid': {{ $sheet->id }}
+        };
+        $.ajax('/circulators/ajaxSelect', {
+            'data': data,
+            'dataType': 'json',
+            'success': function(res, status, jqXHR,){
+                // Deal with response
+                if(res.success){
+                    var msg = "Success: " + res.message;
+                    $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                    // Update the UI
+                    var voter = res.circulator;
+            console.log(voter);
+            var html = '<p class="text-muted"><strong class="text-primary">'
+                + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
+                + voter.address + ', ' + voter.city + ', OR ' + voter.zip_code;
+            $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
+            $('#remove-circulator-btn').show();
+            $('#voter-search').hide();
+            $('#finish-sheet').attr('disabled',false);
+
+                } else {
+                    var err = "Error: " + res.error;
+                    $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
+                }
+            },
+            'error': function(xhr){
+                console.log("ERROR");
+                console.log(errors);
+            },
+            'method': 'POST'
+        });
+    }
+    console.log('loaded');
+    $('.select-circulator').click(function(e){
+        e.preventDefault();
+        console.log('Select circ:');
+    });
 </script>
 </div>
 @endsection

@@ -13,7 +13,7 @@
     <div id="messages">
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Testing</div>
+        <div class="panel-heading">Signer Queue</div>
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
@@ -320,7 +320,7 @@
 
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
-          if(signerCnt  <{{$sheet->signature_count}}){
+          if(signerCnt  < {{$sheet->signature_count}}){
             signerCnt  = signerCnt  +1;
             var voterId = $(e.currentTarget).data('voter-id');
             var voter = searchResults[voterId]; // Set 

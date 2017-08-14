@@ -15,8 +15,8 @@ use Exception;
 class CirculatorController extends Controller
 {
     public function queue() {
-
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->first();
+        $data['recent_circulators'] = Circulator::limit(3)->orderBy('updated_at','desc')->get();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->with('circulator')->first();
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
         // Parse comments
@@ -32,13 +32,15 @@ class CirculatorController extends Controller
         $form = $request->all();
         $exact_match = $form['exact_match'];
         // Step 1: search for existing Circulators
+        $circulators = Circulator::limit(5);
         $v1 = [];
         $no_data = true;
-        $q1 = "SELECT id voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE last_name IS NOT NULL ";
+        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE last_name IS NOT NULL ";
         if($form['first']) {
             $no_data = false;
             $q1 .= "AND first_name LIKE ? ";
             $v1[] = ($exact_match) ? strtoupper($form['first']) : '%' . strtoupper($form['first']) . '%';
+            $circulators->where('first_name',strtoupper($form['first']));
         }
         if($form['last']) {
             $no_data = false;
@@ -73,6 +75,24 @@ class CirculatorController extends Controller
         $q1 .= 'LIMIT 10';
         //$q1 .= 'LIMIT 10';
         $res1 = DB::select($q1,$v1);
+        foreach($circulators->get() as $res){
+            $res2[] = [
+                'circulator_id' => $res->id,
+                'voter_id' => '',
+                'first_name' => $res->first_name,
+                'middle_name' => '',
+                'last_name' => $res->last_name,
+                'res_address_1' => $res->street_number . ' ' . $res->street_name,
+                'eff_address_1' => '',
+                'city' => $res->city,
+                'county' => '',
+                'zip_code' => $res->zip
+            ];
+        }
+        // Search existing Circulators:
+        if($circulators->count())
+            $res1 = array_merge($res2,$res1);
+
         return json_encode(['success' => true, 'count' => count($res1), 'matches' => $res1]);
     }
 
@@ -97,5 +117,70 @@ class CirculatorController extends Controller
             // Exception handler
             return json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function ajaxSelect(Request $request)
+    {
+        try{
+            if($request->cid){
+                // Circulator ID is provided, so look up and return Circulator record
+                $circulator = Circulator::find($request->cid);
+            }
+
+            if($request->vid){
+                // Circulator ID is NOT provided, so create a new Circulator and return the data
+                $voter = Voter::where('voter_id',$request->vid)->first();
+                if(!$voter)
+                    throw new Exception('Unable to find Voter with ID ' . $request->vid);
+
+                $circulator = $this->createCirculatorFromVoter($voter);
+            }
+
+            if($request->sid){
+                $sheet = Sheet::find($request->sid);
+                $sheet->circulator_id = $circulator->id;
+                $sheet->save();
+            } else {
+                throw new Exception('No Sheet ID specified');
+            }
+
+            return json_encode(['success' => true, 'message' => 'Assigned ' . $circulator->first_name . ' ' . $circulator->last_name . ' as the circulator for this sheet', 'circulator' => $circulator->toArray()]);
+        } catch(\Exception $e) {
+            return json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    public function ajaxRemoveCirculator(Request $request)
+    {
+        try{
+            if(!$request->sid)
+                throw new Exception('No Sheet ID specified');
+
+            $sheet = Sheet::find($request->sid);
+            $sheet->circulator_id = null;
+            $sheet->save();
+
+            return json_encode(['success' => true, 'message' => 'Removed circulator from sheet ' . $request->sid]);
+        } catch(\Exception $e) {
+            return json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    private function createCirculatorFromVoter($voter){
+        if(Circulator::where('voter_id',$voter->voter_id)->count()){
+            $circulator = Circulator::where('voter_id')->first();
+        } else {
+            $circulator = Circulator::create([
+                'first_name' => $voter->first_name,
+                'middle_name' => $voter->middle_name,
+                'last_name' => $voter->last_name,
+                'street_number' => $voter->house_num,
+                'street_name' => $voter->street_name,
+                'city' => $voter->city,
+                'zip_code' => $voter->eff_szip_code,
+                'address' => $voter->res_address_1,
+                'voter_id' => $voter->voter_id,
+                'zip_code' => $voter->zip_code
+            ]);
+        }
+        return $circulator;
     }
 }

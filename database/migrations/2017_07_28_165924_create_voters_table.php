@@ -37,15 +37,15 @@ class CreateVotersTable extends Migration
                 $table->text('house_num');
                 $table->text('house_suffix')->nullable();
                 $table->text('pre_direction')->nullable();
-                $table->text('street_name');
+                $table->char('street_name',255);
                 $table->text('street_type')->nullable();
                 $table->text('post_direction')->nullable();
                 $table->text('unit_type')->nullable();
                 $table->text('unit_num')->nullable();
                 $table->text('addr_non_std')->nullable();
-                $table->text('city');
+                $table->char('city',255);
                 $table->text('state');
-                $table->text('zip_code');
+                $table->char('zip_code',20);
                 $table->text('zip_plus_four')->nullable();
                 $table->text('eff_address_1')->nullable();
                 $table->text('eff_address_2')->nullable();
@@ -61,6 +61,10 @@ class CreateVotersTable extends Migration
                 $table->text('split');
                 $table->timestamps();
                 $table->index(['first_name','last_name']);
+                $table->index('voter_id');
+                $table->index('city');
+                $table->index('zip_code');
+
             });
         }
     }
