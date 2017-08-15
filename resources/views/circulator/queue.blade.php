@@ -9,7 +9,7 @@
         bottom: 0;
     }
 </style>
-<div class="col-md-12" style="padding-bottom: 40px;">
+<div class="col-md-12" style="padding-bottom: 40px; padding-left:0px; padding-right:0px;">
     <div id="messages">
     </div>
     <div class="panel panel-default">
@@ -19,7 +19,7 @@
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
-                <div class="col-xs-6">
+                {{--  <div class="col-xs-6">
                     <h4>Sheet Info</h4>
                     <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span></p>
                     <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
@@ -35,7 +35,7 @@
                         {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
-                </div>
+                </div>  --}}
                 <div class="col-xs-12">
                     <h4>Recent Circulators</h4>
                     <ul>
@@ -74,7 +74,7 @@
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
-                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-danger">Remove Circulator</a>
+                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-danger hidden">Remove Circulator</a>
                 <div id="voter-search">
                     <div class="row">
                         <div class="form-group col-xs-6">
@@ -139,8 +139,15 @@
                         </table>
                     </div>
                 </div>
-                
-            
+                <div id="modalComment" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div class="form-group">
+                            {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
+                            <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             {{ Form::close() }}
         </div>
@@ -148,9 +155,11 @@
 </div>
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12">
-        <a href="#" class="btn btn-primary">Exit</a>
-        <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
-        <a href="#" class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
+         <div class="btn-toolbar">
+            <a href="#" class="btn btn-primary">Exit</a>
+            <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
+            <a href="#" type="button" class="btn btn-primary pull-right" id="myBtn">Flag Sheet &amp; Skip</a>
+        </div>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
@@ -205,6 +214,25 @@
 <script type="text/javascript">
     var searchResults;
     $('document').ready(function(){
+        // Get the modal
+        var modal = document.getElementById('modalComment');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on the button, open the modal 
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -374,6 +402,8 @@
             }
         });
 
+
+
         // Submit AJAX update request
         function ajaxUpdate(resource,type,val){
                     var data = {'_token': $('input[name="_token"').val()};
@@ -422,6 +452,7 @@
         $('input[name="first"]').focus();
 
 
+
     });
     // Remove AJAX feedback notices
     setInterval(function(){
@@ -456,7 +487,7 @@
                 + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
                 + voter.address + ', ' + voter.city + ', OR ' + voter.zip_code;
             $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
-            $('#remove-circulator-btn').show();
+            $('#remove-circulator-btn').show().removeClass('hidden');
             $('#voter-search').hide();
             $('#finish-sheet').attr('disabled',false);
 
@@ -502,7 +533,7 @@
             },
             'method': 'POST'
         });
-    }
+            }
 </script>
 </div>
 @endsection

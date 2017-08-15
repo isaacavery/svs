@@ -29,43 +29,6 @@
         width: 100%;
     }
 
-li.signer {
-    margin-top:10px;
-    height: 25px;
-    border-bottom:1px solid;
-}
-
-ol {vertical-align:bottom;
-}
-
-table.signer {
-    counter-reset: rowNumber;
-}
-
-tr:hover {
-    background-color:lightblue;
-}
-
-table tr {
-    counter-increment: rowNumber;
-}
-
-table tr td:first-child::before {
-    content: counter(rowNumber);
-    min-width: 1em;
-    margin-right: 0.5em;
-}
-
-.panel-body{
-    padding: 0px;
-}
-
-input.form-control {
-    padding:0px;
-}
-#formDiv {
-    padding:0px;
-}
 
 
 </style>
