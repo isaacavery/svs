@@ -74,50 +74,53 @@
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
-
                 <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-danger">Remove Circulator</a>
                 <div id="voter-search">
-                <div class="col-xs-12">
-                    <div class="radio-inline" style="padding:10px">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
-                            Exact Match
-                        </label>
+                    <div class="row">
+                        <div class="form-group col-xs-6">
+                            {{ Form::label('first', 'First Name') }}
+                            {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
+                        </div>
+                        <div class="form-group col-xs-6">
+                            {{ Form::label('last', 'Last Name') }}
+                            {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('street_name', 'Street Name') }}
+                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('number', 'Street Number') }}
+                            {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '4']) }}
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('city', 'City') }}
+                            {{ Form::text('city','',['class'=>'form-control', 'tabindex' => '5']) }}
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('zip', 'Zip') }}
+                            {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
+                        </div>
                     </div>
-                    <div class="radio-inline" style="padding:10px">
-                        <label>
-                            <input type="radio" name="exact_match" id="exact_match" value="0">
-                            Loose Search 
-                        </label>
+                    <div class="col-xs-12">
+                        <div class="radio-inline" style="padding:10px">
+                            <label>
+                                <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                                Exact Match
+                            </label>
+                        </div>
+                        <div class="radio-inline" style="padding:10px">
+                            <label>
+                                <input type="radio" name="exact_match" id="exact_match" value="0">
+                                Loose Search 
+                            </label>
+                        </div>
+                        <div class="pull-right">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
+                        </button>
+                        <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('first', 'First Name') }}
-                        {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
-                    </div>
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('last', 'Last Name') }}
-                        {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('street_name', 'Street Name') }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('number', 'Street Number') }}
-                        {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '4']) }}
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('city', 'City') }}
-                        {{ Form::text('city','',['class'=>'form-control', 'tabindex' => '5']) }}
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('zip', 'Zip') }}
-                        {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
-                    </div>
-                </div>
-                <a href="#" class="col-xs-4 pull-right btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
                 <div class="clearfix"></div>
                 <hr />
                 <div class="row clearfix">
@@ -136,8 +139,8 @@
                         </table>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
-                </button>
+                
+            
             </div>
             {{ Form::close() }}
         </div>

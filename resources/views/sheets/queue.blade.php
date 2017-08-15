@@ -8,15 +8,17 @@
         position: fixed;
         bottom: 0;
     }
+    #numOfSigners {
+    margin:0px;
+}
 </style>
 <div class="col-md-12" style="padding-bottom: 40px;">
     <div id="messages">
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Signer Queue</div>
         <div class="panel-body">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
-            <div class="col-xs-12 col-md-6">
+            <div id="formDiv" class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
                 <div class="col-xs-6">
                     <h4>Sheet Info</h4>
@@ -38,13 +40,13 @@
             </div>
             <div class="col-xs-12 col-md-6">
                 <h2 id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
-                <ol id="signer-match" data-selected="0">
+                <table class="table" id="signer-match" data-selected="0">
+                    <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
-                        <li class="signer"><strong class="text-primary">
-                            First Middle Last </strong><br />
-                            1234 Test Street, <br /> Voter City, OR 12345</li>
+                        <tr class="signer"><td></td><td></td></tr>
                     @endfor
-                </ol>
+                    </tbody>
+                </table>
                 <div id="voter-search">
                 <div class="col-xs-12">
 
@@ -89,7 +91,7 @@
                   </label>
                 </div>
                 <div class="pull-right">
-                    <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">Not Readable</a>
+                    <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">No Match</a>
                     <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
                 </div>
                 </div>
@@ -337,18 +339,18 @@
         });
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
-          if($('li.signer').hasClass('activeSigner')){
-            if($('li.signer').not('.done').length != 0){
+          if($('tr.signer').hasClass('activeSigner')){
+            if($('tr.signer').not('.done').length != 0){
                 var voterId = $(e.currentTarget).data('voter-id');
                 var voter = searchResults[voterId]; // Set 
-                var html = '<strong class="text-primary signer">'
-                    + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
-                    + voter.res_address_1 + ',<br /> ' + voter.city + ', OR ' + voter.zip_code;
+                var html = '<td><strong class="text-primary signer">'
+                    + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong></td><td>'
+                    + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '</td>';
                 $('.activeSigner').attr('data-selected',voterId).html(html).show();
                 $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
-                $('#numOfSigners').html('<h2>' + ({{$sheet->signature_count}}-$('li.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+                $('#numOfSigners').html('<h2 style=margin:0px>' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
                 //if signature count is reached allow sheet to be submitted and move to next.
-                if(!$('li.signer').not('.done').length){  
+                if(!$('tr.signer').not('.done').length){  
                   $('#finish-sheet').attr('disabled',false);
                 }
             } 

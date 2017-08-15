@@ -19,7 +19,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
 
 </head>
-<body style="padding-top:70px">
+<body style="padding-top:60px">
 <style type="text/css">
     #messages {
         position: fixed;
@@ -28,18 +28,45 @@
         z-index: 9999;
         width: 100%;
     }
-ol  {
-    margin: 0 0 30px 20px;
-    columns: 2;
-    -webkit-columns: 2;
-    -moz-columns: 2;
-    column-gap: 40px;
-    -webkit-column-gap: 40px;
-    -moz-column-gap: 40px;
-}
+
 li.signer {
-    padding-bottom:5px;
+    margin-top:10px;
+    height: 25px;
+    border-bottom:1px solid;
 }
+
+ol {vertical-align:bottom;
+}
+
+table.signer {
+    counter-reset: rowNumber;
+}
+
+tr:hover {
+    background-color:lightblue;
+}
+
+table tr {
+    counter-increment: rowNumber;
+}
+
+table tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+.panel-body{
+    padding: 0px;
+}
+
+input.form-control {
+    padding:0px;
+}
+#formDiv {
+    padding:0px;
+}
+
 
 </style>
     <div id="app">
