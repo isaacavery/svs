@@ -28,9 +28,6 @@
         z-index: 9999;
         width: 100%;
     }
-
-
-
 </style>
     <div id="app">
         <nav class="navbar navbar-default navbar-fixed-top">
@@ -113,7 +110,26 @@
                 </div>
             </div>
         </nav>
-
+        <div id="modalComment" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Please enter reason for flagging the sheet.</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form">
+                            <div class="form-group">  
+                                {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
+                            </div> 
+                        </form>  
+                    </div> 
+                    <div class="modal-footer">
+                        <a href="javascript:flagSheet()" type="button" class="btn btn-primary pull-right close" id="#flagBtn">Flag Sheet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         @yield('content')
     </div>
 

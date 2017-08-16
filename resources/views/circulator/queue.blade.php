@@ -36,13 +36,17 @@
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>  --}}
-                <div class="col-xs-12">
-                    <h4>Recent Circulators</h4>
-                    <ul>
-                    @foreach($recent_circulators as $circ)
-                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
-                    @endforeach
-                    </ul>
+                <div class ="container-fluid">
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>Recent Circulators</h4>
+                            <ul>
+                                @foreach($recent_circulators as $circ)
+                                    <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div> 
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-md-6">
@@ -122,43 +126,34 @@
                         </div>
                     </div>
                 <div class="clearfix"></div>
-                <hr />
-                <div class="row clearfix">
-                    <div class="col-xs-12">
-                        <h4>Search Results</h4>
-                        <table class="table table-striped table-condensed table-hover">
-                            <thead>
-                                <tr>
-                                    <td>NAME</td>
-                                    <td>ADDRESS</td>
-                                    <td>ALT ADDRESS</td>
-                                </tr>
-                            </thead>
-                            <tbody id="search-results">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div id="modalComment" class="modal">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <div class="form-group">
-                            {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                            <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
-                        </div>
-                    </div>
-                </div>
+                <hr / style="margin-bottom:12px;">
+                <div class="col">
+                <h4>Search Results</h4>
+                <table class="table table-striped table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <td>NAME</td>
+                            <td>ADDRESS</td>
+                            <td>ALT ADDRESS</td>
+                        </tr>
+                    </thead>
+                    <tbody id="search-results">
+                    </tbody>
+                </table>
+            </div>
+                
             </div>
             {{ Form::close() }}
         </div>
     </div>
+    
 </div>
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12">
          <div class="btn-toolbar">
             <a href="#" class="btn btn-primary">Exit</a>
             <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
-            <a href="#" type="button" class="btn btn-primary pull-right" id="myBtn">Flag Sheet &amp; Skip</a>
+            <a href="#modalComment" class="btn btn-primary pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
         </div>
     </div>
 </div>
@@ -214,25 +209,6 @@
 <script type="text/javascript">
     var searchResults;
     $('document').ready(function(){
-        // Get the modal
-        var modal = document.getElementById('modalComment');
-
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks on the button, open the modal 
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -376,8 +352,8 @@
           }
         });
 
-        // Check for comment before flagging sheet if comment exists move to next sheet else require reason for flagging
-        $('#flagBtn').click(function(e){
+        // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
+        $('.modalComment').on('click','#flagBtn', function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
             } else {
@@ -435,6 +411,21 @@
                 },
                 'method': 'PUT'
             });
+        function flagSheet(){
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
+                } else {
+                    // Add a comment for flagging
+                    ajaxUpdate('sheets','comments',$('#comment').val());
+                    // Flag the sheet
+                    ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                    
+                    // Reload the page to retrieve the next sheet in the queue
+                    setTimeout(function(){
+                        location.reload(true);
+                    }, 1000);
+                }
+            }
         }
 
 @if($sheet->circulator)
@@ -534,6 +525,8 @@
             'method': 'POST'
         });
             }
+
+        
 </script>
 </div>
 @endsection

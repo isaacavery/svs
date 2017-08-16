@@ -20,7 +20,7 @@
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div id="formDiv" class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
-                <div class="col-xs-6">
+                {{--  <div class="col-xs-6">
                     <h4>Sheet Info</h4>
                     <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span></p>
                     <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
@@ -36,22 +36,8 @@
                         {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
-                </div>
-            </div>
-            <div class="col-xs-12 col-md-6">
-                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
-                <table class="table" id="signer-match" data-selected="0">
-                    <tbody>
-                    @for($i=0; $i<$sheet->signature_count; $i++)
-                        <tr class="signer"><td></td><td></td></tr>
-                    @endfor
-                    </tbody>
-                </table>
-                <div id="voter-search">
-                <div class="col-xs-12">
-
-                </div>
-                <div class="row">
+                </div>  --}}
+                 <div class="row">
                     <div class="form-group col-xs-6">
                         {{ Form::label('first', 'First Name') }}
                         {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
@@ -95,35 +81,39 @@
                     <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
                 </div>
                 </div>
-                <div class="clearfix"></div>
-                <hr />
-                <div class="row clearfix">
-                    <div class="col-xs-12">
-                        <h4>Search Results</h4>
-                        <table class="table table-striped table-condensed table-hover">
-                            <thead>
-                                <tr>
-                                    <td>NAME</td>
-                                    <td>ADDRESS</td>
-                                    <td>ALT ADDRESS</td>
-                                </tr>
-                            </thead>
-                            <tbody id="search-results">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                </button>
             </div>
-            {{ Form::close() }}
+            <div class="col-xs-12 col-md-6">
+                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <table class="table" id="signer-match" data-selected="0">
+                    <tbody>
+                    @for($i=0; $i<$sheet->signature_count; $i++)
+                        <tr class="signer"><td></td><td></td></tr>
+                    @endfor
+                    </tbody>
+                </table>
+                <div id="voter-search">
+                    <h4>Search Results</h4>
+                    <table class="table table-striped table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <td>NAME</td>
+                                <td>ADDRESS</td>
+                                <td>ALT ADDRESS</td>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results">
+                        </tbody>
+                    </table>
+                    {{ Form::close() }}
+                </div>
+            </div>
         </div>
     </div>
-</div>
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12 btn-toolbar">
         <a href="#" class="btn btn-primary">Exit</a>
         <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
-        <a class="btn btn-primary pull-right" id="flagBtn">Flag Sheet &amp; Skip</a>
+        <a href="#modalComment" class="btn btn-primary pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
@@ -369,6 +359,21 @@
             }
             ajaxUpdate('sheets','voter_id',null); 
         }
+        function flagSheet(){
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
+                } else {
+                    // Add a comment for flagging
+                    ajaxUpdate('sheets','comments',$('#comment').val());
+                    // Flag the sheet
+                    ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                    
+                    // Reload the page to retrieve the next sheet in the queue
+                    setTimeout(function(){
+                        location.reload(true);
+                    }, 1000);
+                }
+        }
     });
     // Remove AJAX feedback notices
     setInterval(function(){
@@ -379,6 +384,7 @@
             });
         }
     },3000);
+        
 </script>
 </div>
 @endsection
