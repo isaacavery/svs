@@ -1,3 +1,21 @@
+<style>
+ table {
+    text-align:center;
+    margin-left:15%;
+    margin-right:15%;
+    width:70%;
+}
+.mainPanel{
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+hr{
+    margin:5px;
+}
+td {
+	text-align:center;
+}
+</style>
 @extends('layouts.app')
 
 @section('content')
@@ -10,11 +28,10 @@
         </ul>
     </div>
 @endif
+<div class="mainPanel">
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Home</div>
-
+            <div class="panel panel-default container" style="text-align:center;">
                 <div class="panel-body">
                     <div class="col-xs-12 col-md-6">
                         <h2>Add Circulators</h2>
@@ -23,8 +40,9 @@
                         <h3>Circulator stats</h3>
                         <p><strong>{{ $circulator_count }} Circulators added.</strong></p>
                         <p>890 unique Circulators have gathered a total of <strong>40,783 signatures</strong></p>
-                        <table>
+                        <table class="table-striped">
                             <tfoot><strong>Circulators added per user:</strong></tfoot>
+                            <hr class="noMargin">
                             <tbody>
                                 <tr>
                                     <td>1,930</td>
@@ -45,14 +63,15 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-xs-12 col-md-6">
+                    <div class="col-xs-12 col-md-6" style="text-align:center">
                     <h2>Add Signers</h2>
                         <p><strong>14.219 Signers</strong> ready to be added</p>
                         <a href="/sheets/queue" class="btn btn-primary">Start ></a>
                         <h3>Signer stats</h3>
                         <p><strong>26,564 Signers added.</strong></p></p>
-                        <table>
+                        <table class="table-striped">
                             <tfoot><strong>Signers added per user:</strong></tfoot>
+                            <hr class="noMargin">
                             <tbody>
                                 <tr>
                                     <td>10,930</td>
@@ -77,39 +96,39 @@
             </div>
         </div>
     </div>
-</div>
-<div class="container">
-    <h3>Admin Tools & Reports</h3>
-    <div class="col-md-3">
-        <h4>Sheets</h4>
-        <ul>
+    <div class="container">
+        <h3 style="text-align:center;">Admin Tools & Reports</h3>
+        <div class="col-md-3">
+            <h4>Sheets</h4>
+            <ul>
 
-        @if(Auth::user()->admin)
-            <li><a href="/sheets/create">Upload sheets</a></li>
-        @endif
-            <li><a href="#">View flagged sheets</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h4>Circulators</h4>
-        <ul>
-            <li><a href="#">Download all circulators (CSV)</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h4>Signers</h4>
-        <ul>
-            <li><a href="#">View list of duplicates</a></li>
-            <li><a href="#">View list of no matches</a></li>
-            <li><a href="#">Download all Signers (CSV)</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h4>Users</h4>
-        <ul>
-            <li><a href="#">View user activity report</a></li>
-            <li><a href="#">Manage users</a></li>
-        </ul>
+            @if(Auth::user()->admin)
+                <li><a href="/sheets/create">Upload sheets</a></li>
+            @endif
+                <li><a href="#">View flagged sheets</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4>Circulators</h4>
+            <ul>
+                <li><a href="#">Download all circulators (CSV)</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4>Signers</h4>
+            <ul>
+                <li><a href="#">View list of duplicates</a></li>
+                <li><a href="#">View list of no matches</a></li>
+                <li><a href="#">Download all Signers (CSV)</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h4>Users</h4>
+            <ul>
+                <li><a href="#">View user activity report</a></li>
+                <li><a href="#">Manage users</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 @endsection

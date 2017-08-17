@@ -51,3 +51,7 @@ input.form-control {
 #formDiv {
 	padding:0px;
 }
+
+td.home {
+	text-align:center;
+}
