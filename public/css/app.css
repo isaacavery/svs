@@ -28,6 +28,7 @@ table {
 }
 
 tr:hover {
+	cursor: pointer;
 	background-color:lightgrey;
 }
 
@@ -54,7 +55,14 @@ input.form-control {
 
 #searchHeader {
 	text-align: center;
-	background-color: lightblue;
+	background-color: #286091;
 	color:white !important;
 	margin-top: 5px; 
+	border-radius: 5px;
+	font-size: 20px;
+	padding: 2px;
+}
+
+#numOfSignatures:hover {
+	cursor: pointer;
 }

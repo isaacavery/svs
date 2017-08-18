@@ -39,7 +39,7 @@
                 <div class ="container-fluid">
                     <div class="row">
                         <div class="col-6">
-                            <h4>Recent Circulators</h4>
+                            <h3 id="searchHeader">Recent Circulators</h3>
                             <ul>
                                 @foreach($recent_circulators as $circ)
                                     <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
@@ -128,7 +128,7 @@
                 <div class="clearfix"></div>
                 <hr / style="margin-bottom:12px;">
                 <div class="col">
-                <h4>Search Results</h4>
+                <h3 id="searchHeader">Search Results</h3>
                 <table class="table table-striped table-condensed table-hover">
                     <thead>
                         <tr>
@@ -250,7 +250,7 @@
             // Submit comment to the AJAX function
             ajaxUpdate('sheets','comments',comment);
         });
-        
+
         $('#flagBtn').click(function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
