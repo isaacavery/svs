@@ -13,7 +13,7 @@ div.panel-body {
 	padding:5px;
 }
 
-.modal-header, h4, .close {
+.modal-header,h4, .close {
 	background-color: lightblue;
 	color:white !important;
 	text-align: center;
@@ -52,3 +52,9 @@ input.form-control {
 	padding:0px;
 }
 
+#searchHeader {
+	text-align: center;
+	background-color: lightblue;
+	color:white !important;
+	margin-top: 5px; 
+}

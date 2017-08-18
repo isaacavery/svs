@@ -37,7 +37,18 @@
                         <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
                     </div>
                 </div>  --}}
-                 <div class="row">
+                 
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <table class="table" id="signer-match" data-selected="0">
+                    <tbody>
+                    @for($i=0; $i<$sheet->signature_count; $i++)
+                        <tr class="signer"><td></td><td></td></tr>
+                    @endfor
+                    </tbody>
+                </table>
+                <div class="row">
                     <div class="form-group col-xs-6">
                         {{ Form::label('first', 'First Name') }}
                         {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
@@ -62,37 +73,29 @@
                         {{ Form::label('zip', 'Zip') }}
                         {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
                     </div>
-                </div>
+                
                 <div class = "col-xs-12">
-                <div class="radio-inline">  
-                  <label>
-                      <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
-                      Exact Match
-                  </label>
+                    <div class="radio-inline">  
+                    <label>
+                        <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                        Exact Match
+                    </label>
+                    </div>
+                    <div class="radio-inline">
+                    <label>
+                        <input type="radio" name="exact_match" id="exact_match" value="0">
+                        Loose Search 
+                    </label>
+                    </div>
+                    <div class="pull-right">
+                        <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">No Match</a>
+                        <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
+                    </div>
                 </div>
-                <div class="radio-inline">
-                  <label>
-                      <input type="radio" name="exact_match" id="exact_match" value="0">
-                      Loose Search 
-                  </label>
                 </div>
-                <div class="pull-right">
-                    <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">No Match</a>
-                    <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
-                </div>
-                </div>
-            </div>
-            <div class="col-xs-12 col-md-6">
-                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
-                <table class="table" id="signer-match" data-selected="0">
-                    <tbody>
-                    @for($i=0; $i<$sheet->signature_count; $i++)
-                        <tr class="signer"><td></td><td></td></tr>
-                    @endfor
-                    </tbody>
-                </table>
+                <h3 id="searchHeader">Search Results</h3>
                 <div id="voter-search">
-                    <h4>Search Results</h4>
+                    
                     <table class="table table-striped table-condensed table-hover">
                         <thead>
                             <tr>
@@ -113,7 +116,7 @@
     <div class="col-xs-12 btn-toolbar">
         <a href="#" class="btn btn-primary">Exit</a>
         <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
-        <a href="#modalComment" class="btn btn-primary pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
+        <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
 </div>
 <div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">

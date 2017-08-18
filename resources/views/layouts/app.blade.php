@@ -110,6 +110,8 @@
                 </div>
             </div>
         </nav>
+        
+        @yield('content')
         <div id="modalComment" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -125,12 +127,11 @@
                         </form>  
                     </div> 
                     <div class="modal-footer">
-                        <a href="javascript:flagSheet()" type="button" class="btn btn-primary pull-right close" id="#flagBtn">Flag Sheet</a>
+                        <a href="#" type="button" class="btn btn-primary pull-right close" id="#flagBtn">Flag Sheet</a>
                     </div>
                 </div>
             </div>
         </div>
-        @yield('content')
     </div>
 
     <!-- Scripts -->

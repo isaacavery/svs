@@ -153,7 +153,7 @@
          <div class="btn-toolbar">
             <a href="#" class="btn btn-primary">Exit</a>
             <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
-            <a href="#modalComment" class="btn btn-primary pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
+            <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
         </div>
     </div>
 </div>
@@ -250,7 +250,22 @@
             // Submit comment to the AJAX function
             ajaxUpdate('sheets','comments',comment);
         });
-
+        
+        $('#flagBtn').click(function(e){
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
+            }
+            else {
+                // Add a comment for flagging
+                ajaxUpdate('sheets','comments',$('#comment').val());
+                // Flag the sheet
+                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                // Reload the page to retreive the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
+            }
+        });
         // Listen for update to Self Signer status
         $('input[name="type"]').change(function(e){
             console.log('Updated Type:');
@@ -411,22 +426,23 @@
                 },
                 'method': 'PUT'
             });
-        function flagSheet(){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-                } else {
-                    // Add a comment for flagging
-                    ajaxUpdate('sheets','comments',$('#comment').val());
-                    // Flag the sheet
-                    ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
-                    
-                    // Reload the page to retrieve the next sheet in the queue
-                    setTimeout(function(){
-                        location.reload(true);
-                    }, 1000);
-                }
+        }
+    function flagSheet(){
+        if(!$('#comment').val()) {
+            alert("Please put a reason for flagging in the comments.");
+            } else {
+                // Add a comment for flagging
+                ajaxUpdate('sheets','comments',$('#comment').val());
+                // Flag the sheet
+                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                
+                // Reload the page to retrieve the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
             }
         }
+        
 
 @if($sheet->circulator)
             $('#remove-circulator-btn').show();
