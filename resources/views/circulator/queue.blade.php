@@ -78,7 +78,7 @@
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
-                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-danger hidden">Remove Circulator</a>
+                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default hidden">Remove Circulator</a>
                 <div id="voter-search">
                     <div class="row">
                         <div class="form-group col-xs-6">
