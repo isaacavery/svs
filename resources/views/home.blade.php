@@ -70,6 +70,7 @@ td {
                         <h3>Signer stats</h3>
                         <p><strong>26,564 Signers added.</strong></p></p>
                         <table class="table-striped">
+                        <p>&nbsp;</p>
                             <tfoot><strong>Signers added per user:</strong></tfoot>
                             <hr class="noMargin">
                             <tbody>
@@ -99,7 +100,7 @@ td {
     <div class="container">
         <h3 style="text-align:center;">Admin Tools & Reports</h3>
         <div class="col-md-3">
-            <h4>Sheets</h4>
+            <h3 id="searchHeader">Sheets</h3>
             <ul>
 
             @if(Auth::user()->admin)
@@ -109,13 +110,13 @@ td {
             </ul>
         </div>
         <div class="col-md-3">
-            <h4>Circulators</h4>
+            <h3 id="searchHeader">Circulators</h3>
             <ul>
                 <li><a href="#">Download all circulators (CSV)</a></li>
             </ul>
         </div>
         <div class="col-md-3">
-            <h4>Signers</h4>
+            <h3 id="searchHeader">Signers</h3>
             <ul>
                 <li><a href="#">View list of duplicates</a></li>
                 <li><a href="#">View list of no matches</a></li>
@@ -123,7 +124,7 @@ td {
             </ul>
         </div>
         <div class="col-md-3">
-            <h4>Users</h4>
+            <h3 id="searchHeader">Users</h4>
             <ul>
                 <li><a href="#">View user activity report</a></li>
                 <li><a href="#">Manage users</a></li>

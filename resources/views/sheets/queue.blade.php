@@ -96,7 +96,7 @@
                 <h3 id="searchHeader">Search Results</h3>
                 <div id="voter-search">
                     
-                    <table class="table table-striped table-condensed table-hover">
+                    <table class="table table-condensed">
                         <thead>
                             <tr>
                                 <td>NAME</td>

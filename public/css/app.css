@@ -14,7 +14,7 @@ div.panel-body {
 }
 
 .modal-header,h4, .close {
-	background-color: lightblue;
+	background-color: #286091;
 	color:white !important;
 	text-align: center;
 	font-size: 30px;
@@ -29,7 +29,7 @@ table {
 
 tr:hover {
 	cursor: pointer;
-	background-color:lightgrey;
+	background-color:lightyellow;
 }
 
 table tr.signer {
@@ -40,6 +40,10 @@ table tr.signer td:first-child::before {
 	content: counter(rowNumber);
 	min-width: 1em;
 	margin-right: 0.5em;
+}
+
+tr #search-results:hover {
+	background-color:lightyellow;
 }
 
 .panel-body{
