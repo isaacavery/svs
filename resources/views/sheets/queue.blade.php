@@ -41,7 +41,7 @@
             </div>
             <div class="col-xs-12 col-md-6">
                 <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
-                <table class="table" id="signer-match" data-selected="0">
+                <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
                         <tr class="signer"><td></td><td></td></tr>

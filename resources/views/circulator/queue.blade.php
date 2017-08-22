@@ -209,6 +209,13 @@
 <script type="text/javascript">
     var searchResults;
     $('document').ready(function(){
+        $(document)
+        .ajaxStart(function(){
+            $("#ajaxSpinnerImage").show();
+        })
+        .ajaxStop(function(){
+            $("#ajaxSpinnerImage").hide();
+        });
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);

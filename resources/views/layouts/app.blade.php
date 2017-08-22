@@ -115,7 +115,7 @@
                 </div>
             </div>
         </nav>
-        
+
         @yield('content')
         <div id="modalComment" class="modal fade" role="dialog">
             <div class="modal-dialog">
@@ -138,7 +138,9 @@
             </div>
         </div>
     </div>
-
+    <div id="ajaxSpinnerContainer">
+    <img src="{{URL::asset('/img/ajax-loader.gif')}}" id="ajaxSpinnerImage" title="working...">
+    </div>  
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
