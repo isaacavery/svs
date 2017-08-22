@@ -17,6 +17,11 @@
     <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript">
+        var csrf_token = '{{ csrf_token() }}';
+        var resource_id = '{{ (isset($sheet->id)) ? $sheet->id : ''}}';
+    </script>
+    <script src="{{ asset('js/svs.js') }}"></script>
 
 </head>
 <body style="padding-top:60px">

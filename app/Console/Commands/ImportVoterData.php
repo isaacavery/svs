@@ -38,6 +38,10 @@ class ImportVoterData extends Command
      * @return mixed
      */
 
+    function convertString(&$val)
+    {
+        $val = iconv('Windows-1252','UTF-8',$val);
+    }
     public function handle()
     {
         echo "Importing voter data ...\n";
@@ -61,14 +65,16 @@ class ImportVoterData extends Command
             while(($line = fgetcsv($file, 0, "\t")) !== false) {
                 if(!$headers) {
                     $headers = $line;
-                    if($headers[count($headers)-1 == ''])
-                        unset($headers[count($headers)-1]);
                     foreach ($headers as $key => $value) {
                         $headers[$key] = strtolower($value);
-                    }   
+                    }
                 } else {
                     $row++;
+                    foreach($line as $k => $v){
+                        $line[$k] = iconv('Windows-1252', 'UTF-8', $v);
+                    }
                     $insert_data[] = array_combine($headers,$line);
+
 
                     if($row % 100 === 0){
                         echo "  - " . count($insert_data) . ":$row records using " . memory_get_usage() . " bytes of memory\r";
@@ -86,4 +92,5 @@ class ImportVoterData extends Command
         }
         echo "\nSuccessfully imported $total_voters voters.";
     }
+
 }

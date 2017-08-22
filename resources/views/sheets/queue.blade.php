@@ -211,6 +211,7 @@
         // Search for signer
         $('#search_submit_btn').click(function(e){
             e.preventDefault();
+            $('input,textarea,select').blur();
             // Submit Circulator search
             $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
             var data = {
@@ -323,12 +324,48 @@
                 'method': 'PUT'
             });
         }
+        $(document).keydown(function (e) {
+            if ($(e.target).is('input, textarea, select')) {
+                return;
+            } else {
+                switch(e.which){
+                    case 9 :
+                        $('tr.signer td:empty').first().click();
+                        return false;
+                        break;
+                    case 13 :
+                        if($('tr.match.info').length){
+                            var voter_id = $('tr.match.info').first().click();
+                        }
+                        break;
+                    case 38 :
+                        // Get selected row
+                        if(!$('tr.match.info').length){
+                            $('tr.match').last().addClass('info');
+                        } else {
+                            $('tr.match.info').first().not(':first-child').removeClass('info').prev().addClass('info');
+                        }
+                        return false;
+                        break;
+                    case 40 :
+                        // Get selected row
+                        if(!$('tr.match.info').length){
+                            $('tr.match').first().addClass('info');
+                        } else {
+                            $('tr.match.info').first().not(':last-child').removeClass('info').next().addClass('info');
+                        }
+                        return false;
+                        break;
+                }
+            }
+        });
 
         //Watch for a signer to be selected and change classes to identify selected
         $(document.body).on('click', '.signer', function(e){
             $('.signer').removeClass('bg-info activeSigner');
             $(this).addClass('bg-info activeSigner');
-            
+            // Focus on and clear Search form
+            $('input#first').focus().select();
         });
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){

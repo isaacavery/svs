@@ -13,3 +13,4 @@ Homestead.yaml
 npm-debug.log
 .env
 .DS_Store
+ubuntu-xenial-16.04-cloudimg-console.log

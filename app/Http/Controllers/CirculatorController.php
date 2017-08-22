@@ -16,9 +16,7 @@ class CirculatorController extends Controller
 {
     public function queue() {
         $data['recent_circulators'] = Circulator::limit(3)->orderBy('updated_at','desc')->get();
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_id')->orWhere(function ($query) {
-                $query->whereNull('signature_count');
-            })->with('circulator')->first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')->with('circulator')->first();
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
         // Parse comments

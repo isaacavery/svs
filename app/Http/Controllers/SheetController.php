@@ -88,7 +88,7 @@ class SheetController extends Controller
     }
 
  public function queue() {
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNotNull('circulator_id')->whereNotNull('signature_count')->first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNotNull('circulator_id')->first();
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
         // Parse comments

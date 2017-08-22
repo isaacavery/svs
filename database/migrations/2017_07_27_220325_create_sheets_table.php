@@ -30,7 +30,8 @@ class CreateSheetsTable extends Migration
             $table->integer('user_id');
             $table->integer('batch_id');
             $table->integer('flagged_by')->nullable();
-            $table->integer('completed_by')->nullable();
+            $table->integer('signatures_completed_by')->nullable();
+            $table->integer('circulator_completed_by')->nullable();
             $table->integer('reviewed_by')->nullable();
             $table->date('date_signed')->nullable();
             $table->integer('signature_count')->nullable();

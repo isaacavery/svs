@@ -72,13 +72,13 @@
                     </div>
                 </div>
                 <h3>Circulator Date</h3>
-                {{ Form::date('name', \Carbon\Carbon::now()) }}
+                {{ Form::date('date', $sheet->date_signed) }}<a href="#" class="btn btn-default" id="setDate">Set</a> <span class="text-primary" id="date_signed">{{ $sheet->date_signed }}</span>
                 <h3>Circulator</h3>
                 <div id="voter-match">
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
-                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default hidden">Remove Circulator</a>
+                <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default {{ ($sheet->circulator) ? '' : 'hidden' }}">Remove Circulator</a>
                 <div id="voter-search">
                     <div class="row">
                         <div class="form-group col-xs-6">
@@ -248,7 +248,7 @@
             console.log('Updating comment ...');
             var comment = $('#comment').val();
             // Submit comment to the AJAX function
-            ajaxUpdate('sheets','comments',comment);
+            updateSheet('comments',comment);
         });
 
         $('#flagBtn').click(function(e){
@@ -257,9 +257,9 @@
             }
             else {
                 // Add a comment for flagging
-                ajaxUpdate('sheets','comments',$('#comment').val());
+                updateSheet('comments',$('#comment').val());
                 // Flag the sheet
-                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                updateSheet('flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retreive the next sheet in the queue
                 setTimeout(function(){
                     location.reload(true);
@@ -273,13 +273,13 @@
             // If only one signer disallow hide multiple signature option
             if (self_signed ==1) {
                 $('.numOfSignatures').addClass('hidden');
-                ajaxUpdate('sheets','signature_count',1);
+                updateSheet('signature_count',1);
                 $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default').first().removeClass('btn-default').addClass('btn-primary');
             } else {
                 $('.numOfSignatures').removeClass('hidden').show();
             }
             // Submit self_signed (bool) to AJAX function
-            ajaxUpdate('sheets','self_signed',self_signed);
+            updateSheet('self_signed',self_signed);
         });
 
         // Listen for update on Signature Count
@@ -292,7 +292,7 @@
                 tgt.addClass('btn-primary');
                 var val = tgt.html();
                 // Submit val to the AJAX function
-                ajaxUpdate('sheets','signature_count',val);
+                updateSheet('signature_count',val);
             }
         });
 
@@ -373,9 +373,9 @@
                 alert("Please put a reason for flagging in the comments.");
             } else {
                 // Add a comment for flagging
-                ajaxUpdate('sheets','comments',$('#comment').val());
+                updateSheet('comments',$('#comment').val());
                 // Flag the sheet
-                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                updateSheet('flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
                     location.reload(true);
@@ -389,52 +389,22 @@
             if(!$('#signature-count-group .btn.btn-primary').length){
                 alert('Please select the number of signatures before continuing');
             } else {
-                location.reload(true);
+                updateSheet('circulator_completed_by', {{ Auth::user()->id }});
+                // Reload the page to retrieve the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 500);
             }
         });
 
-
-
-        // Submit AJAX update request
-        function ajaxUpdate(resource,type,val){
-                    var data = {'_token': $('input[name="_token"').val()};
-            data[type] = val;
-            var callbackData = {type: type, val: val};
-            $.ajax('/' + resource + '/{{ $sheet->id }}', {
-                'data': data,
-                'context': callbackData,
-                'dataType': 'json',
-                'success': function(res, status, jqXHR,){
-                    // Deal with response
-                    if(res.success){
-                        console.log(callbackData);
-                        var msg = "Success: " + res.message;
-                        $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
-                        if(callbackData.type == 'comments'){
-                            // Add new comment to the display
-                            $('ul#comments').append('<li class="text-success">' + callbackData.val + '</li>');
-                            $('textarea#comment').val('');
-                        }
-                    } else {
-                        var err = "Error: " + res.error;
-                        $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
-                    }
-                },
-                'error': function(xhr){
-                    console.log("ERROR");
-                    console.log(errors);
-                },
-                'method': 'PUT'
-            });
-        }
     function flagSheet(){
         if(!$('#comment').val()) {
             alert("Please put a reason for flagging in the comments.");
             } else {
                 // Add a comment for flagging
-                ajaxUpdate('sheets','comments',$('#comment').val());
+                updateSheet('comments',$('#comment').val());
                 // Flag the sheet
-                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
+                updateSheet('flagged_by',{{ Auth::user()->id }});
                 
                 // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
@@ -442,6 +412,13 @@
                 }, 1000);
             }
         }
+
+        $('#setDate').click(function(e) {
+            e.preventDefault();
+            var date = $('input[name="date"]').val();
+            updateSheet('date_signed',date);
+            $('#date_signed').html(date);
+        });
         
 
 @if($sheet->circulator)
