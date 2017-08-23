@@ -14,28 +14,17 @@
     </div>
     <div class="">
          {{--  <div class="panel-heading">Circulator Queue</div>   --}}
-
         <div class="">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
-                <div class="col-xs-6">
-                    <h4>Sheet Info</h4>
-                    <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span></p>
-                    <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
-                </div>
-                <div class="col-xs-6">
-                    <div class="row">
-                        <div class="col-6">
-                            <h3 id="searchHeader">Recent Circulators</h3>
-                            <ul>
-                                @foreach($recent_circulators as $circ)
-                                    <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
-                                @endforeach
-                            </ul>
-                        </div> 
-                    </div>
-                </div>
+                <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
+                <h3>Recent Circulators</h3>
+                <ul>
+                    @foreach($recent_circulators as $circ)
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                    @endforeach
+                </ul>
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>

@@ -26,4 +26,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function circulators()
+    {
+        return $this->hasMany('App\Sheet','circulator_completed_by','id');
+    }
+
 }
