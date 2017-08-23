@@ -14,7 +14,6 @@
     </div>
     <div class="">
          {{--  <div class="panel-heading">Circulator Queue</div>   --}}
-
         <div class="">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
