@@ -19,24 +19,12 @@
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
-                {{--  <div class="col-xs-6">
+                <div class="col-xs-6">
                     <h4>Sheet Info</h4>
                     <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span></p>
                     <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
                 </div>
                 <div class="col-xs-6">
-                    <h4>Comments or problem with this sheet:</h4>
-                    <ul id="comments">
-                    @foreach($comments as $comment)
-                        <li class="text-primary">{{ $comment }}</li>
-                    @endforeach
-                    </ul>
-                    <div class="form-group">
-                        {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                        <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
-                    </div>
-                </div>  --}}
-                <div class ="container-fluid">
                     <div class="row">
                         <div class="col-6">
                             <h3 id="searchHeader">Recent Circulators</h3>
