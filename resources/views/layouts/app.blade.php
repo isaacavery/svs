@@ -96,12 +96,12 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
-                        <li style="color:#ccc;">Circulators added: {{ Auth::user()->circulators()->count() }}<br>
-                            Signers added: 0</li>
                         <!-- Authentication Links -->
                         @if (Auth::guest())
                             <li><a href="{{ route('login') }}">Login</a></li>
                         @else
+                            <li style="color:#ccc;">Circulators added: {{ Auth::user()->circulators()->count() }}<br>
+                            Signers added: 0</li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
