@@ -19,12 +19,7 @@
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
                 <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
-                <h3>Recent Circulators</h3>
-                <ul>
-                    @foreach($recent_circulators as $circ)
-                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
-                    @endforeach
-                </ul>
+               
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
@@ -50,13 +45,19 @@
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('date', $sheet->date_signed) }}<a href="#" class="btn btn-default" id="setDate">Set</a> <span class="text-primary" id="date_signed">{{ $sheet->date_signed }}</span>
-                <h3>Circulator</h3>
+               
                 <div id="voter-match">
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
                 <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default {{ ($sheet->circulator) ? '' : 'hidden' }}">Remove Circulator</a>
                 <div id="voter-search">
+                 <h3>Circulator</h3>
+                <ul>
+                    @foreach($recent_circulators as $circ)
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                    @endforeach
+                </ul>
                     <div class="row">
                         <div class="form-group col-xs-6">
                             {{ Form::label('first', 'First Name') }}
