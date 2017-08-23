@@ -6,10 +6,10 @@
         display: block;
         background: #ccc;
         position: fixed;
-        bottom: 0;
+        bottom: 0px;
     }
 </style>
-<div class="col-md-12" style="padding-bottom: 40px; padding-left:0px; padding-right:0px;">
+<div class="col-md-12" style="padding-bottom: 70px; padding-left:0px; padding-right:0px;">
     <div id="messages">
     </div>
     <div class="">
@@ -108,16 +108,14 @@
                             </label>
                         </div>
                         <div class="pull-right">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
-                        </button>
                         <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7">Search</a>
                         </div>
                     </div>
                 <div class="clearfix"></div>
                 <hr / style="margin-bottom:12px;">
-                <div class="col">
-                <h3 id="searchHeader">Search Results</h3>
-                <table class="table table-condensed">
+                <div id="searchFinished" class="col" hidden="true">
+                   <h3 id="searchHeader">Search Results</h3>
+                   <table class="table table-condensed">
                     <thead>
                         <tr>
                             <td>NAME</td>
@@ -127,9 +125,12 @@
                     </thead>
                     <tbody id="search-results">
                     </tbody>
-                </table>
-            </div>
-                
+                    </table>
+                    <div class="pull-right">
+                       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
+                    </div>
+                </div>
+              
             </div>
             {{ Form::close() }}
         </div>
@@ -308,6 +309,7 @@
                 zip: $('#zip').val(),
                 _token: $('input[name="_token"').val()
             };
+            
             if ($('input#exact_match[value="0"]').is(':checked')) {
                 data['exact_match'] = 0;
             }
@@ -339,6 +341,7 @@
                             html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '<td>';
                         });
                         $('#search-results').html(html);
+                        $('#searchFinished').show();
                     }
                 } else {
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
