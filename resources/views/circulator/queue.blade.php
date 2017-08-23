@@ -152,7 +152,7 @@
     <div class="col-xs-12">
          <div class="btn-toolbar">
             <a href="#" class="btn btn-primary">Exit</a>
-            <a href="#" class="btn btn-default pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
+            <a href="#" class="btn btn-primary pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
             <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
         </div>
     </div>
@@ -211,12 +211,10 @@
     $('document').ready(function(){
         $(document)
         .ajaxStart(function(){
-            $.blockUI();
-            $("#ajaxSpinnerContainer").show();
+            $('#blockui, #ajaxSpinnerContainer').fadeIn();
         })
         .ajaxStop(function(){
-            $.unblockUI();
-            $("#ajaxSpinnerContainer").hide();
+            $('#blockui, #ajaxSpinnerContainer').fadeOut();
         });
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
