@@ -17,6 +17,8 @@
     <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script scr="{{ asset('js/jquery.blockUI.js') }}"></script>
+    
     <script type="text/javascript">
         var csrf_token = '{{ csrf_token() }}';
         var resource_id = '{{ (isset($sheet->id)) ? $sheet->id : ''}}';
@@ -138,9 +140,9 @@
             </div>
         </div>
     </div>
-    <div id="ajaxSpinnerContainer">
-    <img src="{{URL::asset('/img/ajax-loader.gif')}}" id="ajaxSpinnerImage" title="working...">
-    </div>  
+        <div id="ajaxSpinnerContainer">
+        <img src="{{URL::asset('/img/ajax-loader.gif')}}" id="ajaxSpinnerImage" title="working...">
+        </div>  
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
