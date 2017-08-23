@@ -12,10 +12,10 @@
 <div class="col-md-12" style="padding-bottom: 40px; padding-left:0px; padding-right:0px;">
     <div id="messages">
     </div>
-    <div class="panel panel-default">
+    <div class="">
          {{--  <div class="panel-heading">Circulator Queue</div>   --}}
 
-        <div class="panel-body">
+        <div class="">
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
