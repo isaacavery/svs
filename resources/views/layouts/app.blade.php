@@ -33,7 +33,18 @@
         z-index: 9999;
         width: 100%;
     }
+    #blockui {
+        width: 100%;
+        height: calc(100% + 120px);
+        background: rgba(0,0,0,0.5);
+        position: absolute;
+        z-index:1000;
+        top: -120px;
+        min-height: 300px;
+        display: none;
+    }
 </style>
+    <div id="blockui"></div>
     <div id="app">
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
             <div class="container">

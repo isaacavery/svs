@@ -12,4 +12,11 @@ class Sheet extends Model
     {
         return $this->belongsTo('App\Circulator');
     }
+
+    public function circulatorComplete()
+    {
+    	if($this->circulator && $this->date_signed && $this->signature_count)
+    		return true;
+    	return false;
+    }
 }

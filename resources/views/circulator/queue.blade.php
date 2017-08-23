@@ -431,7 +431,9 @@
 @if($sheet->circulator)
             $('#remove-circulator-btn').show();
             $('#voter-search').hide();
+    @if($sheet->date_signed && $sheet->signature_count)
             $('#finish-sheet').attr('disabled',false);
+    @endif
 @endif
         $('#remove-circulator-btn').click(function(e){
             $('#voter-match').attr('data-selected','0').html('').hide();

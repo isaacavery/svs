@@ -35,7 +35,7 @@ class CirculatorController extends Controller
         $circulators = Circulator::limit(5);
         $v1 = [];
         $no_data = true;
-        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE last_name IS NOT NULL ";
+        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id NOT IN (SELECT voter_id FROM circulators) ";
         if($form['first']) {
             $no_data = false;
             $q1 .= "AND first_name LIKE ? ";
@@ -93,7 +93,7 @@ class CirculatorController extends Controller
                 'circulator_id' => $res->id,
                 'voter_id' => '',
                 'first_name' => $res->first_name,
-                'middle_name' => '',
+                'middle_name' => $res->middle_name,
                 'last_name' => $res->last_name,
                 'res_address_1' => $res->street_number . ' ' . $res->street_name,
                 'eff_address_1' => '',
