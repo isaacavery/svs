@@ -131,7 +131,7 @@
          <div class="btn-toolbar">
             <a href="#" class="btn btn-primary">Exit</a>
             <a href="#" class="btn btn-primary pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
-            <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
+            <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal" style="margin-right: 20px;">Flag Sheet &amp; Skip</a>
         </div>
     </div>
 </div>
