@@ -211,10 +211,12 @@
     $('document').ready(function(){
         $(document)
         .ajaxStart(function(){
-            $("#ajaxSpinnerImage").show();
+            $.blockUI();
+            $("#ajaxSpinnerContainer").show();
         })
         .ajaxStop(function(){
-            $("#ajaxSpinnerImage").hide();
+            $.unblockUI();
+            $("#ajaxSpinnerContainer").hide();
         });
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
