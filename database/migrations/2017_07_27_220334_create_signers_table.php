@@ -23,6 +23,9 @@ class CreateSignersTable extends Migration
                 ->references('id')
                 ->on('sheets');
             $table->integer('row');
+            $table->integer('user_id')
+                ->references('id')
+                ->on('users');
             $table->timestamps();
         });
     }

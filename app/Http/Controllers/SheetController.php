@@ -80,7 +80,7 @@ class SheetController extends Controller
                 continue;
             }
             $filename = Storage::disk('uploads')->put('sheets',$sheet);
-            $sheet_data = ['md5_hash' => $md5_hash, 'original_filename' => $original_name, 'filename' => $filename, 'user_id' => $request->user()->id, 'batch_id' => $batch->id];
+            $sheet_data = ['md5_hash' => $md5_hash, 'original_filename' => $original_name, 'filename' => $filename, 'user_id' => $request->user()->id, 'batch_id' => $batch->id, 'user_id' => Auth::user()->id];
             $new_sheet = Sheet::create($sheet_data);
             $result_data['success'][] = "Added $original_name as <a href='/sheets/" . $new_sheet->id . "'>Sheet # " . $new_sheet->id . "</a>";
         }

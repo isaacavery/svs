@@ -61,7 +61,10 @@ class CreateVotersTable extends Migration
                 $table->char('split',20);
                 $table->timestamps();
                 $table->index(['first_name','last_name']);
-
+                $table->index('voter_id');
+                $table->index('house_num','street_name');
+                $table->index('city');
+                $table->index('zip_code');
             });
         }
     }

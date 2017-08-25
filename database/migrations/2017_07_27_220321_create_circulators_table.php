@@ -16,6 +16,9 @@ class CreateCirculatorsTable extends Migration
         Schema::create('circulators', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('voter_id')->nullable();
+            $table->integer('user_id')
+                ->references('id')
+                ->on('users');
             $table->char('first_name',255);
             $table->char('middle_name', 255)->nullable();
             $table->char('last_name', 255);

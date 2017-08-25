@@ -367,38 +367,26 @@
             // Focus on and clear Search form
             $('input#first').focus().select();
         });
+
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
           if($('tr.signer').hasClass('activeSigner')){
             var voterId = $(e.currentTarget).data('voter-id');
-            var voter = searchResults[voterId]; // Set 
-            var html = '<td><strong class="text-primary signer">'
-                + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong></td><td>'
-                + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '</td>';
-            $('.activeSigner').attr('data-selected',voterId).html(html).show();
-            updateRow();
+            setRow(voterId); // Make the AXAX and UI updates
           } else {
               alert("Please select a signer to update");
             }
         });
+
         $('#not_readable').on('click', function(e){
             if($('tr.signer').hasClass('activeSigner')){
                 $('.activeSigner').html('<td><strong class="text-primary" style="color:red;">No Match Found </strong></td><td>---- ---------, ----------, -- -----</td>');
-                updateRow();
+                setRow();
             } else {
                 alert("Please select a signer to update");
             }
         });
 
-        //Remove activeSigner class and highlighting from row
-        function updateRow(){
-             $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
-             $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
-             if(!$('tr.signer').not('.done').length){  
-                  $('#finish-sheet').attr('disabled',false).addClass('btn-primary');
-            }
-            ajaxUpdate('sheets','voter_id',null); 
-        }
         function flagSheet(){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
@@ -424,6 +412,57 @@
             });
         }
     },3000);
+
+    function setRow(voterId = 0) {
+        var rowId = $('.activeSigner').index() + 1; // Get the row number
+        console.log('Row is ' + rowId);
+        console.log('Voter is ' + voterId);
+
+        var data = {'_token': $('input[name="_token"').val()};
+            data.sheet_id = {{ $sheet->id }};
+            data.voter_id = voterId;
+
+        $.post('/signers', data, function(res, status, jqXHR){
+            // Deal with response
+            console.log(res);
+            if(res.success){
+                console.log(voterId);
+                $('ul#comments').append('<li class="text-success">' + res.message + '</li>');
+
+                if(voterId != 0){
+                    var voter = searchResults[voterId]; // Set 
+                    var html = '<td><strong class="text-primary signer">'
+                    + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong></td><td>'
+                    + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '</td>';
+                } else {
+                    var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
+                    var html = '<td colspan="2"><span class="text-danger signer">NO MATCH FOUND</span></td>'
+                }
+                
+                $('.activeSigner').attr('data-selected',voterId).html(html).show();
+                
+                
+                $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
+                 $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+                 if(!$('tr.signer').not('.done').length){  
+                      $('#finish-sheet').attr('disabled',false).addClass('btn-primary');
+                }
+            } else {
+                $('ul#comments').append('<li class="text-danger">' + res.message + '</li>')
+            }
+        }, 'json').fail(function(xhr){
+            if(xhr.status == 422){
+                // Add validation handling
+                var errors = xhr.responseJSON;
+                $.each(errors,function(k,v){
+                    $('input#' + k).closest('.form-group').addClass('has-error').find('.help-block').html(v).removeClass('hidden');
+                });
+            } else {
+                // Unknown error
+                alert('Unknown ' + xhr.status + ' error: ' + xhr.responseText);
+            }
+        });
+    }
         
 </script>
 </div>

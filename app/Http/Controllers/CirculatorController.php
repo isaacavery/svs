@@ -117,7 +117,7 @@ class CirculatorController extends Controller
                 // User already exists. Return the user id
                 return json_encode(['success' => 'true', 'message' => 'Circulator already exists in the database as Circulator #' . $check->id, 'id' => $check->id]);
             } else {
-                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip)]);
+                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip), 'user_id' => Auth::user()->id]);
                 if($circulator){
                     // Circulator was created. Return the id.
                     return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);
@@ -189,7 +189,8 @@ class CirculatorController extends Controller
                 'zip_code' => $voter->eff_szip_code,
                 'address' => $voter->res_address_1,
                 'voter_id' => $voter->voter_id,
-                'zip_code' => $voter->zip_code
+                'zip_code' => $voter->zip_code,
+                'user_id' => Auth::user()->id
             ]);
         }
         return $circulator;
