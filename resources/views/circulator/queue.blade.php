@@ -44,16 +44,15 @@
                     </div>
                 </div>
                 <h3>Circulator Date</h3>
-                {{ Form::date('date', $sheet->date_signed) }}<a href="#" class="btn btn-default" id="setDate">Set</a> <span class="text-primary" id="date_signed">{{ $sheet->date_signed }}</span>
-               
-                <div id="voter-match">
+                {{ Form::date('date', $sheet->date_signed) }}
+                <div style="padding-top:20px" id="voter-match">
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
                 <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default {{ ($sheet->circulator) ? '' : 'hidden' }}">Remove Circulator</a>
                 <div id="voter-search">
                  <h3>Circulator</h3>
-                <ul>
+                <ul class="recent-circulators">
                     @foreach($recent_circulators as $circ)
                         <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
                     @endforeach
@@ -259,10 +258,12 @@
             // If only one signer disallow hide multiple signature option
             if (self_signed ==1) {
                 $('.numOfSignatures').addClass('hidden');
+                $('.recent-circulators').addClass('hidden');
                 updateSheet('signature_count',1);
                 $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default').first().removeClass('btn-default').addClass('btn-primary');
             } else {
                 $('.numOfSignatures').removeClass('hidden').show();
+                $('.recent-circulators').removeClass('hidden').show();
             }
             // Submit self_signed (bool) to AJAX function
             updateSheet('self_signed',self_signed);
@@ -356,7 +357,7 @@
         });
 
         // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
-        $('.modalComment').on('click','#flagBtn', function(e){
+        $('#modalComment .modal-footer button').on('click', function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
             } else {
@@ -385,23 +386,8 @@
             }
         });
 
-    function flagSheet(){
-        if(!$('#comment').val()) {
-            alert("Please put a reason for flagging in the comments.");
-            } else {
-                // Add a comment for flagging
-                updateSheet('comments',$('#comment').val());
-                // Flag the sheet
-                updateSheet('flagged_by',{{ Auth::user()->id }});
-                
-                // Reload the page to retrieve the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 1000);
-            }
-        }
-
-        $('#setDate').click(function(e) {
+        $('input[type="date"]').change(function(e) {
+            console.log("Date Changed");
             e.preventDefault();
             var date = $('input[name="date"]').val();
             updateSheet('date_signed',date);
