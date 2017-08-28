@@ -44,7 +44,13 @@
                 <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
-                        <tr class="signer"><td></td><td></td></tr>
+                        <tr class="signer">
+                            @if(isset($voters[$i+1]))
+                            <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}</td>
+                            @else
+                            <td></td><td></td>
+                            @endif
+                        </tr>
                     @endfor
                     </tbody>
                 </table>
@@ -115,7 +121,7 @@
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12 btn-toolbar">
         <a href="#" class="btn btn-primary">Exit</a>
-        <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
+        <a href="#" id="finish-sheet" class="btn btn-default pull-right" {{ (count($voters) != $sheet->signature_count) ? 'disabled="disabled"' : '' }}>Finish &amp; Get Next Sheet ></a>
         <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
 </div>
@@ -421,6 +427,7 @@
         var data = {'_token': $('input[name="_token"').val()};
             data.sheet_id = {{ $sheet->id }};
             data.voter_id = voterId;
+            data.row = rowId;
 
         $.post('/signers', data, function(res, status, jqXHR){
             // Deal with response

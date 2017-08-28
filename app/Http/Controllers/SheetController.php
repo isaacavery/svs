@@ -88,9 +88,15 @@ class SheetController extends Controller
     }
 
  public function queue() {
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')->first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')->with('signers')->first();
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
+
+        // Get associated voters:
+        foreach ($data['sheet']->signers as $signer) {
+            $data['voters'][$signer->row] = Voter::select(['first_name','middle_name','last_name','voter_id','res_address_1','city','zip_code'])->where('voter_id',$signer->voter_id)->first();
+        }
+
         // Parse comments
         $data['comments'] = explode('|',$data['sheet']->comments);
         foreach($data['comments'] as $k => $v){
