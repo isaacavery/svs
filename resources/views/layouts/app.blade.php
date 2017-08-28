@@ -49,7 +49,7 @@
     <div id="blockui"></div>
     <div id="app">
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
 
                     <!-- Collapsed Hamburger -->
@@ -132,22 +132,22 @@
         </nav>
 
         @yield('content')
-        <div id="modalComment" class="modal fade" role="dialog">
+        <div id="modalComment" class="modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">Please enter reason for flagging the sheet.</h4>
                     </div>
-                    <div class="modal-body">
-                        <form role="form">
-                            <div class="form-group">  
+                    <form role="form">
+                        <div class="modal-body">
+                            <div class="form-group">
                                 {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                            </div> 
-                        </form>  
-                    </div> 
+                            </div>
+                        </div>
+                    </form>  
                     <div class="modal-footer">
-                        <a href="#" type="button" class="btn btn-primary pull-right close" id="#flagBtn">Flag Sheet</a>
+                        <button class="btn btn-primary pull-right" id="#flagBtn">Flag Sheet</button>
                     </div>
                 </div>
             </div>

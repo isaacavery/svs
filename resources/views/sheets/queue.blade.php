@@ -20,24 +20,7 @@
             {{ Form::open(['route' => 'sheets.store', 'enctype' => 'multipart/form-data']) }}
             <div id="formDiv" class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
-                {{--  <div class="col-xs-6">
-                    <h4>Sheet Info</h4>
-                    <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span></p>
-                    <p><strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
-                </div>
-                <div class="col-xs-6">
-                    <h4>Comments or problem with this sheet:</h4>
-                    <ul id="comments">
-                    @foreach($comments as $comment)
-                        <li class="text-primary">{{ $comment }}</li>
-                    @endforeach
-                    </ul>
-                    <div class="form-group">
-                        {{ Form::textarea('comment','',['placeholder'=>'Describe the problem...', 'style' => 'width: 100%;','rows'=>3, 'id' => 'comment']) }}
-                        <a href="#" class="btn btn-default pull-right" id="comment_update_btn">Add Note</a>
-                    </div>
-                </div>  --}}
-                 
+                <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
             </div>
             <div class="col-xs-12 col-md-6">
                 <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
@@ -73,41 +56,41 @@
                         {{ Form::label('zip', 'Zip') }}
                         {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
                     </div>
-                
-                <div class = "col-xs-12">
-                    <div class="radio-inline">  
-                    <label>
-                        <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
-                        Exact Match
-                    </label>
-                    </div>
-                    <div class="radio-inline">
-                    <label>
-                        <input type="radio" name="exact_match" id="exact_match" value="0">
-                        Loose Search 
-                    </label>
-                    </div>
-                    <div class="pull-right">
-                        <a href="#" class="btn btn-primary" id="not_readable" tabindex="7">No Match</a>
-                        <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
+                    <div class = "col-xs-12">
+                        <div class="radio-inline">  
+                            <label>
+                                <input type="radio" name="exact_match" id="exact_match" value="1" checked="checked">
+                                Exact Match
+                            </label>
+                        </div>
+                        <div class="radio-inline">
+                            <label>
+                                <input type="radio" name="exact_match" id="exact_match" value="0">
+                                Loose Search 
+                            </label>
+                        </div>
+                        <div class="pull-right">
+                            <a href="#" class="btn btn-primary" id="search_submit_btn" tabindex="7" sytle="margin:10px">Search</a>
+                        </div>
                     </div>
                 </div>
-                </div>
-                <h3 id="searchHeader">Search Results</h3>
-                <div id="voter-search">
-                    
-                    <table class="table table-condensed">
-                        <thead>
-                            <tr>
-                                <td>NAME</td>
-                                <td>ADDRESS</td>
-                                <td>ALT ADDRESS</td>
-                            </tr>
-                        </thead>
-                        <tbody id="search-results">
-                        </tbody>
-                    </table>
-                    {{ Form::close() }}
+                <div id="results-container" class="hidden">
+                    <h3 id="searchHeader">Search Results</h3>
+                    <div id="voter-search">
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <td>NAME</td>
+                                    <td>ADDRESS</td>
+                                    <td>ALT ADDRESS</td>
+                                </tr>
+                            </thead>
+                            <tbody id="search-results">
+                            </tbody>
+                        </table>
+                        <a href="#" class="btn btn-primary pull-right" id="not_readable" tabindex="7">No Match</a>
+                        {{ Form::close() }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -207,6 +190,38 @@
             // Submit comment to the AJAX function
             ajaxUpdate('sheets','comments',comment);
         });
+        // Listen for Flag Sheet Button
+        $('#flagBtn').click(function(e){
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
+            }
+            else {
+                // Add a comment for flagging
+                updateSheet('comments',$('#comment').val());
+                // Flag the sheet
+                updateSheet('flagged_by',{{ Auth::user()->id }});
+                // Reload the page to retreive the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
+            }
+        });
+
+        // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
+        $('#modalComment .modal-footer button').on('click', function(e){
+            if(!$('#comment').val()) {
+                alert("Please put a reason for flagging in the comments.");
+            } else {
+                // Add a comment for flagging
+                updateSheet('comments',$('#comment').val());
+                // Flag the sheet
+                updateSheet('flagged_by',{{ Auth::user()->id }});
+                // Reload the page to retrieve the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 1000);
+            }
+        });
 
         // Search for signer
         $('#search_submit_btn').click(function(e){
@@ -273,24 +288,10 @@
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }
+        $('#results-container').removeClass('hidden');
         });
 
-        // Listen for Flag Sheet Button
-        $('#flagBtn').click(function(e){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-            }
-            else {
-                // Add a comment for flagging
-                ajaxUpdate('sheets','comments',$('#comment').val());
-                // Flag the sheet
-                ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retreive the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 1000);
-            }
-        });
+
 
         // Submit AJAX update request
         function ajaxUpdate(resource,type,val){
@@ -386,23 +387,7 @@
                 alert("Please select a signer to update");
             }
         });
-
-        function flagSheet(){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-                } else {
-                    // Add a comment for flagging
-                    ajaxUpdate('sheets','comments',$('#comment').val());
-                    // Flag the sheet
-                    ajaxUpdate('sheets','flagged_by',{{ Auth::user()->id }});
-                    
-                    // Reload the page to retrieve the next sheet in the queue
-                    setTimeout(function(){
-                        location.reload(true);
-                    }, 1000);
-                }
-        }
-    });
+ 
     // Remove AJAX feedback notices
     setInterval(function(){
         if($('#messages .alert').length){
@@ -445,7 +430,7 @@
                 $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
                  $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
                  if(!$('tr.signer').not('.done').length){  
-                      $('#finish-sheet').attr('disabled',false).addClass('btn-primary');
+                      $('#finish-sheet').attr('disabled',false).removeClass('btn-default').addClass('btn-primary');
                 }
             } else {
                 $('ul#comments').append('<li class="text-danger">' + res.message + '</li>')
@@ -463,6 +448,7 @@
             }
         });
     }
+    });
         
 </script>
 </div>
