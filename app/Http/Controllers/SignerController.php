@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Sheet;
 use App\Voter;
 use App\Signer;
@@ -127,5 +128,62 @@ class SignerController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+       public function search(Request $request) {
+        $form = $request->all();
+        $exact_match = $form['exact_match'];
+        $v1 = [];
+        $no_data = true;
+        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id IS NOT NULL ";
+        if($form['first']) {
+            $no_data = false;
+            $q1 .= "AND first_name LIKE ? ";
+            if($exact_match){
+                $v1[] = strtoupper($form['first']);
+            } else {
+                $v1[] = '%' . strtoupper($form['first']) . '%';
+
+            }
+        }
+        if($form['last']) {
+            $no_data = false;
+            $q1 .= "AND last_name LIKE ? ";
+            if($exact_match){
+                $v1[] = strtoupper($form['last']);
+            } else {
+                $v1[] = '%' . strtoupper($form['last']) . '%';
+
+            }
+        }
+        if($form['city']) {
+            $no_data = false;
+            $q1 .= "AND city LIKE ? ";
+            $v1[] = ($exact_match) ? strtoupper($form['city']) : '%' . strtoupper($form['city']) . '%';
+        }
+        if($form['zip']) {
+            $no_data = false;
+            $q1 .= "AND (zip_code LIKE ? OR eff_zip_code LIKE ?) ";
+            $val = ($exact_match) ? $form['zip'] : '%' . $form['zip'] . '%';
+            $v1[] = $val;
+            $v1[] = $val;
+        }
+        if($form['number']) {
+            $no_data = false;
+            $q1 .= "AND house_num like ? ";
+            $v1[] = ($exact_match) ? strtoupper($form['number']) : '%' . strtoupper($form['number']) . '%';
+        }
+        if($form['street_name']) {
+            $no_data = false;
+            $q1 .= "AND street_name like ? ";
+            $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
+        }
+        if($no_data){
+            return json_encode(['success' => false, 'error' => 'No search parameters provided']);
+        }
+        $q1 .= 'LIMIT 10';
+        $res1 = DB::select($q1,$v1);
+
+        return json_encode(['success' => true, 'count' => count($res1), 'matches' => $res1]);
     }
 }

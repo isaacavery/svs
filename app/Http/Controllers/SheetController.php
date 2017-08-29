@@ -95,7 +95,11 @@ class SheetController extends Controller
         $data['voters'] = array();
         // Get associated voters:
         foreach ($data['sheet']->signers as $signer) {
-            $data['voters'][$signer->row] = Voter::select(['first_name','middle_name','last_name','voter_id','res_address_1','city','zip_code'])->where('voter_id',$signer->voter_id)->first();
+            if($signer->voter_id){
+                $data['voters'][$signer->row] = Voter::select(['first_name','middle_name','last_name','voter_id','res_address_1','city','zip_code'])->where('voter_id',$signer->voter_id)->first();
+            } else {
+                $data['voters'][$signer->row] = is_null($signer->voter_id) ? 1 : 0;
+            }
         }
 
         // Parse comments

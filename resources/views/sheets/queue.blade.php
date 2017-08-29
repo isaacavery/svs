@@ -23,14 +23,24 @@
                 <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
             </div>
             <div class="col-xs-12 col-md-6">
-                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <h2 class="noMargin" id = 'numOfSigners'>{{ count($voters) }} of {{$sheet->signature_count}} signers added</h2>
                 <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
-                        <tr class="signer">
+                        
                             @if(isset($voters[$i+1]))
-                            <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}</td>
+                            <tr class="signer done">
+                                @if (is_int($voters[$i+1]))
+                                    @if($voters[$i+1] == 0)
+                                        <td><strong class="text-danger signer">NO MATCH</strong></td><td></td>
+                                     @elseif ($voters[$i+1] == 1)
+                                        <td><strong class="signer">INVALID LINE</strong></td><td></td>
+                                    @endif
+                                @else
+                                   <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}</td>
+                                @endif
                             @else
+                            <tr class="signer">
                             <td></td><td></td>
                             @endif
                         </tr>
@@ -47,12 +57,12 @@
                         {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
                     </div>
                     <div class="form-group col-xs-3">
-                        {{ Form::label('street_name', 'Street Name') }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
-                    </div>
-                    <div class="form-group col-xs-3">
                         {{ Form::label('number', 'Street Number') }}
                         {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '4']) }}
+                    </div>
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('street_name', 'Street Name') }}
+                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('city', 'City') }}
@@ -129,13 +139,13 @@
                         <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
-                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
-                        {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
+                        {{ Form::label('street_name', 'Street Name', ['class' => 'control-label']) }}
+                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name']) }}
                         <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
-                        {{ Form::label('street_name', 'Street Name', ['class' => 'control-label']) }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name']) }}
+                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
+                        {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
                         <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
@@ -161,7 +171,7 @@
     var searchResults;
     
     $('document').ready(function(){
-      var signerCnt  = 0;
+      var signerCnt  = {{ count($voters) }};
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -249,7 +259,7 @@
                 data['exact_match'] = 0;
             }
 
-            $.post('/circulators/search',data, function(res, status, jqXHR){
+            $.post('/signers/search',data, function(res, status, jqXHR){
                 // Deal with response
                 if(res.success){
                     if(!res.count) {
@@ -408,14 +418,12 @@
         if($(e.currentTarget).attr('disabled')){
             console.log('oops');
             return false;
+        } else {
+            ajaxUpdate('sheets','signatures_completed_by',{{ Auth::user()->id }});
+            setTimeout(function(){
+                location.reload(true);
+            }, 1000);
         }
-        $.post('/sheets/finish/{{ $sheet->id }}', '', function(res,status,jqXHR){
-            if(res.success){
-                location.reload();
-            } else {
-                $('ul#comments').append('<li class="text-danger">' + res.message + '</li>');
-            }
-        });
     });
 
 

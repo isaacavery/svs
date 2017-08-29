@@ -30,3 +30,4 @@ Route::post('circulators/ajaxSelect', 'CirculatorController@ajaxSelect')->middle
 Route::post('circulators/ajaxRemoveCirculator', 'CirculatorController@ajaxRemoveCirculator')->middleware('auth');
 Route::post('circulators/add', 'CirculatorController@add')->middleware('auth');
 Route::resource('signers', 'SignerController');
+Route::post('signers/search', 'SignerController@search')->middleware('auth');
