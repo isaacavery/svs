@@ -92,6 +92,7 @@ class SheetController extends Controller
     	if(!$data['sheet'])
             return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
 
+        $data['voters'] = array();
         // Get associated voters:
         foreach ($data['sheet']->signers as $signer) {
             $data['voters'][$signer->row] = Voter::select(['first_name','middle_name','last_name','voter_id','res_address_1','city','zip_code'])->where('voter_id',$signer->voter_id)->first();

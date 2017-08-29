@@ -69,6 +69,10 @@ class ImportVoterData extends Command
                         $headers[$key] = strtolower($value);
                     }
                 } else {
+                    if(!is_numeric($line[0])){
+                        echo('Skipping ' . $line[0]);
+                        continue;
+                    }
                     $row++;
                     foreach($line as $k => $v){
                         $line[$k] = iconv('Windows-1252', 'UTF-8', $v);

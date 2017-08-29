@@ -19,7 +19,7 @@ class CreateVotersTable extends Migration
         if (!Schema::hasTable('voters')) {
             Schema::create('voters', function (Blueprint $table) {
                 $table->increments('id');
-                $table->char('voter_id',32);
+                $table->integer('voter_id');
                 $table->char('first_name',100);
                 $table->char('middle_name',100)->nullable();
                 $table->char('last_name',100);

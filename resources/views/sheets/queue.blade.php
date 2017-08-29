@@ -403,6 +403,21 @@
             });
         }
     },3000);
+    $('#finish-sheet').click(function(e){
+        e.preventDefault();
+        if($(e.currentTarget).attr('disabled')){
+            console.log('oops');
+            return false;
+        }
+        $.post('/sheets/finish/{{ $sheet->id }}', '', function(res,status,jqXHR){
+            if(res.success){
+                location.reload();
+            } else {
+                $('ul#comments').append('<li class="text-danger">' + res.message + '</li>');
+            }
+        });
+    });
+
 
     function setRow(voterId = 0) {
         var rowId = $('.activeSigner').index() + 1; // Get the row number
@@ -440,7 +455,7 @@
                       $('#finish-sheet').attr('disabled',false).removeClass('btn-default').addClass('btn-primary');
                 }
             } else {
-                $('ul#comments').append('<li class="text-danger">' + res.message + '</li>')
+                $('ul#comments').append('<li class="text-danger">' + res.message + '</li>');
             }
         }, 'json').fail(function(xhr){
             if(xhr.status == 422){
