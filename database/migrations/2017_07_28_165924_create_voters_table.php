@@ -29,8 +29,6 @@ class CreateVotersTable extends Migration
                 $table->char('eff_regn_date',10);
                 $table->char('status',10);
                 $table->char('party_code',10);
-                $table->char('phone_num',100);
-                $table->char('unlisted',60);
                 $table->char('county',60);
                 $table->char('res_address_1',255);
                 $table->char('res_address_2',255);
