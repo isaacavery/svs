@@ -70,6 +70,7 @@ class ImportVoterData extends Command
                     foreach ($headers as $key => $value) {
                         $headers[$key] = strtolower($value);
                     }
+dd($headers);
                 } else {
                     // Skip all the ACP lines
                     if(!is_numeric($line[0])){
