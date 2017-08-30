@@ -44,6 +44,8 @@ class ImportVoterData extends Command
     }
     public function handle()
     {
+        $skip = 0;
+
         echo "Importing voter data ...\n";
         $dir = storage_path('voter_data');
         $list_files = scandir(storage_path('voter_data/list'));
@@ -69,15 +71,30 @@ class ImportVoterData extends Command
                         $headers[$key] = strtolower($value);
                     }
                 } else {
+                    // Skip all the ACP lines
                     if(!is_numeric($line[0])){
-                        echo('Skipping ' . $line[0]);
+                        $skip++;
                         continue;
                     }
+
+                    // Clear the House Number from Confidential addresses
+                    if($line[13] == 'XXXXXXXX' || empty($line[13])){
+                        $line[13] = null;
+                    } elseif(!is_numeric($line[13])){
+                        $line[13] = null;
+                        echo "\nREMOVING HOUSE NUMBER " . $line[13] . "\n";
+                    } else {
+                        $line[13] = intval($line[13]);
+                    }
+
                     $row++;
                     foreach($line as $k => $v){
                         $line[$k] = iconv('Windows-1252', 'UTF-8', $v);
                     }
-                    $insert_data[] = array_combine($headers,$line);
+                    $data = array_combine($headers,$line);
+                    if($data['house_num'] == '')
+                        $data['house_num'] = null;
+                    $insert_data[] = $data;
 
 
                     if($row % 100 === 0){
@@ -94,7 +111,7 @@ class ImportVoterData extends Command
             $total_voters += $row;
 
         }
-        echo "\nSuccessfully imported $total_voters voters.";
+        echo "\nSuccessfully imported $total_voters voters. Skipped $skip";
     }
 
 }
