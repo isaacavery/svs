@@ -19,4 +19,9 @@ class Sheet extends Model
     		return true;
     	return false;
     }
+
+    public function signers()
+    {
+    	return $this->hasMany('App\Signer')->orderBy('row');
+    }
 }

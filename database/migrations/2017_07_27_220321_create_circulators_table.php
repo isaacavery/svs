@@ -22,8 +22,8 @@ class CreateCirculatorsTable extends Migration
             $table->char('first_name',255);
             $table->char('middle_name', 255)->nullable();
             $table->char('last_name', 255);
-            $table->char('street_name', 255);
-            $table->char('street_number',20);
+            $table->char('street_name', 255)->nullable();
+            $table->integer('street_number')->nullable()->default(null);
             $table->char('address',255);
             $table->char('city',255);
             $table->integer('zip_code');

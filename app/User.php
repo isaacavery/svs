@@ -32,4 +32,9 @@ class User extends Authenticatable
         return $this->hasMany('App\Sheet','circulator_completed_by','id');
     }
 
+    public function signers()
+    {
+        return $this->hasMany('App\Signer','user_id','id')->whereNotNull('voter_id')->where('voter_id','>',0);
+    }
+
 }

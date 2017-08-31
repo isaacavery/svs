@@ -102,7 +102,7 @@
                             <li><a href="{{ route('login') }}">Login</a></li>
                         @else
                             <li style="color:#ccc;">Circulators added: {{ Auth::user()->circulators()->count() }}<br>
-                            Signers added: 0</li>
+                            Signers added: {{ Auth::user()->signers()->count() }}</li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
