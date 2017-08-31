@@ -12,38 +12,33 @@
     </div>
 @endif
     <div class="panel panel-default">
-        <div class="panel-heading">Edit User</div>
+        <div class="panel-heading">Add User</div>
 
         <div class="panel-body">
-            {{ Form::model($user, ['route' => ['users.update', $user->id]]) }}
+        	{{ Form::open(['route' => 'users.store'])}}
             <div class="form-group col-xs-12">
                 {{ Form::label('name', 'Name') }}
-                {{ Form::text('name',$user->name,['class'=>'form-control', 'tabindex' => '1']) }}
+                {{ Form::text('name','',['class'=>'form-control', 'tabindex' => '1']) }}
             </div>
             <div class="form-group col-xs-12">
                 {{ Form::label('email', 'Email') }}
-                {{ Form::text('email',$user->email,['class'=>'form-control', 'tabindex' => '2']) }}
+                {{ Form::text('email','',['class'=>'form-control', 'tabindex' => '2']) }}
             </div>
             <div class="form-group col-xs-12">
                 {{ Form::label('password', 'Password') }}
-                {{ Form::password('password',['class'=>'form-control', 'tabindex' => '3','placeholder' => 'Leave blank unless you want to change the password']) }}
+                {{ Form::password('password',['class'=>'form-control', 'tabindex' => '3']) }}
             </div>
             <div class="form-group col-xs-12">
                 {{ Form::label('password_confirmation', 'Confirm Password') }}
-                {{ Form::password('password_confirmation',['class'=>'form-control', 'tabindex' => '3','placeholder' => 'Leave blank unless you want to change the password']) }}
+                {{ Form::password('password_confirmation',['class'=>'form-control', 'tabindex' => '3']) }}
             </div>
 
             <div class="form-group col-xs-12">
-                {{ Form::checkbox('admin','1',$user->admin,['tabindex' => '4']) }} 
-                {{ Form::label('admin', 'ADMIN USER') }}
-            </div>
-            <div class="form-group col-xs-12">
-                {{ Form::checkbox('active','1',$user->active,['tabindex' => '4']) }} 
-                {{ Form::label('active', 'User is currently Active') }}
+                {{ Form::checkbox('admin','yes',0,['tabindex' => '4']) }} 
+                {{ Form::label('admin', 'Admin') }}
             </div>
             {{ Form::submit('Create', ['class' => 'btn btn-primary']) }}
 
-            {{ Form::close() }}
             {{ Form::close() }}
         </div>
     </div>

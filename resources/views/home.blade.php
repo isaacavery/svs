@@ -127,7 +127,7 @@ td {
             <h3 id="searchHeader">Users</h4>
             <ul>
                 <li><a href="#">View user activity report</a></li>
-                <li><a href="#">Manage users</a></li>
+                <li><a href="/users">Manage users</a></li>
             </ul>
         </div>
     </div>
