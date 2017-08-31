@@ -15,7 +15,7 @@
         <div class="panel-heading">Edit User</div>
 
         <div class="panel-body">
-            {{ Form::open($user, ['route' => ['users.update', $user->id]]) }}
+            {{ Form::model($user, ['route' => ['users.update', $user->id]]) }}
             <div class="form-group col-xs-12">
                 {{ Form::label('name', 'Name') }}
                 {{ Form::text('name',$user->name,['class'=>'form-control', 'tabindex' => '1']) }}
@@ -38,7 +38,7 @@
                 {{ Form::label('admin', 'ADMIN USER') }}
             </div>
             <div class="form-group col-xs-12">
-                {{ Form::checkbox('active','1',$user->admin,['tabindex' => '4']) }} 
+                {{ Form::checkbox('active','1',$user->active,['tabindex' => '4']) }} 
                 {{ Form::label('active', 'User is currently Active') }}
             </div>
             {{ Form::submit('Create', ['class' => 'btn btn-primary']) }}
