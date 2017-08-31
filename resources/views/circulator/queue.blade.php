@@ -186,6 +186,7 @@
     </div>
 <script type="text/javascript">
     var searchResults;
+
     $('document').ready(function(){
         $(document)
         .ajaxStart(function(){
@@ -229,23 +230,39 @@
         });
 
         // Listen for update to comment
-        $('#comment_update_btn').click(function(e){
-            console.log('Updating comment ...');
-            var comment = $('#comment').val();
-            // Submit comment to the AJAX function
-            updateSheet('comments',comment);
-        });
+        // $('#comment_update_btn').click(function(e){
+        //     console.log('Updating comment ...');
+        //     var comment = $('#comment').val();
+        //     // Submit comment to the AJAX function
+        //     updateSheet('comments',comment);
+        // });
 
-        $('#flagBtn').click(function(e){
+        // $('#flagBtn').click(function(e){
+        //     if(!$('#comment').val()) {
+        //         alert("Please put a reason for flagging in the comments.");
+        //     }
+        //     else {
+        //         // Add a comment for flagging
+        //         updateSheet('comments',$('#comment').val());
+        //         // Flag the sheet
+        //         updateSheet('flagged_by',{{ Auth::user()->id }});
+        //         // Reload the page to retreive the next sheet in the queue
+        //         setTimeout(function(){
+        //             location.reload(true);
+        //         }, 1000);
+        //     }
+        // });
+
+            // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
+            $('#modalComment .modal-footer button').on('click', function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
-            }
-            else {
+            } else {
                 // Add a comment for flagging
                 updateSheet('comments',$('#comment').val());
                 // Flag the sheet
                 updateSheet('flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retreive the next sheet in the queue
+                // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
                     location.reload(true);
                 }, 1000);
@@ -356,21 +373,7 @@
           }
         });
 
-        // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
-        $('#modalComment .modal-footer button').on('click', function(e){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-            } else {
-                // Add a comment for flagging
-                updateSheet('comments',$('#comment').val());
-                // Flag the sheet
-                updateSheet('flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retrieve the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 1000);
-            }
-        });
+
 
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){

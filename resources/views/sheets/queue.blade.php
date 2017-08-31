@@ -151,11 +151,19 @@
         </div>
         {{ Form::close() }}
     </div>
+    
 <script type="text/javascript">
     var searchResults;
-    
     $('document').ready(function(){
       var signerCnt  = 0;
+    $(document)
+        .ajaxStart(function(){
+            $('#blockui, #ajaxSpinnerContainer').fadeIn();
+        })
+        .ajaxStop(function(){
+            $('#blockui, #ajaxSpinnerContainer').fadeOut();
+        });
+
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -184,30 +192,30 @@
         });
 
         // Listen for update to comment
-        $('#comment_update_btn').click(function(e){
-            console.log('Updating comment ...');
-            var comment = $('#comment').val();
-            // Submit comment to the AJAX function
-            ajaxUpdate('sheets','comments',comment);
-        });
+        // $('#comment_update_btn').click(function(e){
+        //     console.log('Updating comment ...');
+        //     var comment = $('#comment').val();
+        //     // Submit comment to the AJAX function
+        //     ajaxUpdate('sheets','comments',comment);
+        // });
         // Listen for Flag Sheet Button
-        $('#flagBtn').click(function(e){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-            }
-            else {
-                // Add a comment for flagging
-                updateSheet('comments',$('#comment').val());
-                // Flag the sheet
-                updateSheet('flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retreive the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 1000);
-            }
-        });
+        // $('#flagBtn').click(function(e){
+        //     if(!$('#comment').val()) {
+        //         alert("Please put a reason for flagging in the comments.");
+        //     }
+        //     else {
+        //         // Add a comment for flagging
+        //         updateSheet('comments',$('#comment').val());
+        //         // Flag the sheet
+        //         updateSheet('flagged_by',{{ Auth::user()->id }});
+        //         // Reload the page to retreive the next sheet in the queue
+        //         setTimeout(function(){
+        //             location.reload(true);
+        //         }, 1000);
+        //     }
+        // });
 
-        // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
+        // Check for comment before flagging sheet if comment exists move to next sheet else require reason for flagging
         $('#modalComment .modal-footer button').on('click', function(e){
             if(!$('#comment').val()) {
                 alert("Please put a reason for flagging in the comments.");
@@ -267,6 +275,8 @@
                             html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '<td>';
                         });
                         $('#search-results').html(html);
+                        $('#searchFinished').show();
+												$('#results-container').removeClass('hidden');
                     }
                 } else {
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
@@ -288,10 +298,7 @@
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }
-          $('#results-container').removeClass('hidden');
         });
-
-
 
         // Submit AJAX update request
         function ajaxUpdate(resource,type,val){
@@ -371,13 +378,13 @@
             $('input#first').focus().select();
         });
 
-        // Assign selected voter
+        //Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
           if($('tr.signer').hasClass('activeSigner')){
             var voterId = $(e.currentTarget).data('voter-id');
             setRow(voterId); // Make the AXAX and UI updates
           } else {
-              alert("Please select a signer to update");
+            alert("Please select a signer to update");
             }
         });
 
@@ -430,7 +437,7 @@
                 
                 
                 $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
-                 $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
+                $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
                  if(!$('tr.signer').not('.done').length){  
                       $('#finish-sheet').attr('disabled',false).removeClass('btn-default').addClass('btn-primary');
                 }
