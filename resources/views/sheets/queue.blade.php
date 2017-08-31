@@ -27,7 +27,7 @@
                 <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
-                        <tr class="signer"><td></td><td></td></tr>
+                        <tr class="signer"><td></td><td></td><td><button class=" skip hidden pull-right btn-sm btn-primary">SKIP</button></td></tr>
                     @endfor
                     </tbody>
                 </table>
@@ -227,7 +227,7 @@
         $('#search_submit_btn').click(function(e){
             e.preventDefault();
             $('input,textarea,select').blur();
-            // Submit Circulator search
+            // Submit Voter search
             $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
             var data = {
                 exact_match: 1,
@@ -288,7 +288,7 @@
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }
-        $('#results-container').removeClass('hidden');
+          $('#results-container').removeClass('hidden');
         });
 
 
@@ -364,7 +364,9 @@
         //Watch for a signer to be selected and change classes to identify selected
         $(document.body).on('click', '.signer', function(e){
             $('.signer').removeClass('bg-info activeSigner');
+            $('.skip').addClass('hidden');
             $(this).addClass('bg-info activeSigner');
+            $(this).find('.skip').removeClass('hidden');
             // Focus on and clear Search form
             $('input#first').focus().select();
         });

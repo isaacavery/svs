@@ -14,6 +14,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-theme.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/extra.css') }}" rel="stylesheet">
     <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
@@ -147,7 +148,7 @@
                         </div>
                     </form>  
                     <div class="modal-footer">
-                        <button class="btn btn-primary pull-right" id="#flagBtn">Flag Sheet</button>
+                        <button class="btn btn-primary pull-right" id="#flagBtn">Flag Sheet and Skip</button>
                     </div>
                 </div>
             </div>
