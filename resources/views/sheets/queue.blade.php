@@ -37,11 +37,11 @@
                                         <td><strong class="signer">INVALID LINE</strong></td><td></td>
                                     @endif
                                 @else
-                                   <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}</td>
+                                   <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}<a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
                                 @endif
                             @else
                             <tr class="signer">
-                            <td></td><td></td>
+                            <td></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
                             @endif
                         </tr>
                     @endfor
@@ -171,7 +171,14 @@
     var searchResults;
     
     $('document').ready(function(){
-      var signerCnt  = {{ count($voters) }};
+        $(document)
+        .ajaxStart(function(){
+            $('#blockui, #ajaxSpinnerContainer').fadeIn();
+        })
+        .ajaxStop(function(){
+            $('#blockui, #ajaxSpinnerContainer').fadeOut();
+        });
+       var signerCnt  = {{ count($voters) }};
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -199,29 +206,29 @@
             });
         });
 
-        // Listen for update to comment
-        $('#comment_update_btn').click(function(e){
-            console.log('Updating comment ...');
-            var comment = $('#comment').val();
-            // Submit comment to the AJAX function
-            ajaxUpdate('sheets','comments',comment);
-        });
-        // Listen for Flag Sheet Button
-        $('#flagBtn').click(function(e){
-            if(!$('#comment').val()) {
-                alert("Please put a reason for flagging in the comments.");
-            }
-            else {
-                // Add a comment for flagging
-                updateSheet('comments',$('#comment').val());
-                // Flag the sheet
-                updateSheet('flagged_by',{{ Auth::user()->id }});
-                // Reload the page to retreive the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 1000);
-            }
-        });
+        // // Listen for update to comment
+        // $('#comment_update_btn').click(function(e){
+        //     console.log('Updating comment ...');
+        //     var comment = $('#comment').val();
+        //     // Submit comment to the AJAX function
+        //     ajaxUpdate('sheets','comments',comment);
+        // });
+        // // Listen for Flag Sheet Button
+        // $('#flagBtn').click(function(e){
+        //     if(!$('#comment').val()) {
+        //         alert("Please put a reason for flagging in the comments.");
+        //     }
+        //     else {
+        //         // Add a comment for flagging
+        //         updateSheet('comments',$('#comment').val());
+        //         // Flag the sheet
+        //         updateSheet('flagged_by',{{ Auth::user()->id }});
+        //         // Reload the page to retreive the next sheet in the queue
+        //         setTimeout(function(){
+        //             location.reload(true);
+        //         }, 1000);
+        //     }
+        // });
 
         // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
         $('#modalComment .modal-footer button').on('click', function(e){
@@ -379,11 +386,18 @@
 
         //Watch for a signer to be selected and change classes to identify selected
         $(document.body).on('click', '.signer', function(e){
-            $('.signer').removeClass('bg-info activeSigner');
-            $(this).addClass('bg-info activeSigner');
+            $('.signer').removeClass('signer-info activeSigner');
+            $('.skip').addClass('hidden');
+            $(this).addClass('signer-info activeSigner');
+            $(this).find('.skip').removeClass('hidden');
             // Focus on and clear Search form
             $('input#first').focus().select();
         });
+
+        $('.skip').on('click', function(e){
+            $('.activeSigner').html('<td><strong class="text-primary" style="color:red;">SKIPPED</strong></td><td></td>');
+            setRow();
+        })
 
         // Assign selected voter
         $("#search-results").on('click','tr.match',function(e){
@@ -397,7 +411,7 @@
 
         $('#not_readable').on('click', function(e){
             if($('tr.signer').hasClass('activeSigner')){
-                $('.activeSigner').html('<td><strong class="text-primary" style="color:red;">No Match Found </strong></td><td>---- ---------, ----------, -- -----</td>');
+                $('.activeSigner').html('<td><strong class="text-primary text-danger">No Match Found </strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>');
                 setRow();
             } else {
                 alert("Please select a signer to update");
@@ -448,7 +462,7 @@
                     var voter = searchResults[voterId]; // Set 
                     var html = '<td><strong class="text-primary signer">'
                     + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong></td><td>'
-                    + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '</td>';
+                    + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '<a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
                 } else {
                     var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
                     var html = '<td colspan="2"><span class="text-danger signer">NO MATCH FOUND</span></td>'
