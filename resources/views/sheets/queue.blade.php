@@ -27,9 +27,6 @@
                 <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
-<<<<<<< HEAD
-                        <tr class="signer"><td></td><td></td><td><button class=" skip hidden pull-right btn-sm btn-primary">SKIP</button></td></tr>
-=======
                         
                             @if(isset($voters[$i+1]))
                             <tr class="signer done">
@@ -47,7 +44,6 @@
                             <td></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
                             @endif
                         </tr>
->>>>>>> skipsigner
                     @endfor
                     </tbody>
                 </table>
@@ -175,23 +171,14 @@
 <script type="text/javascript">
     var searchResults;
     $('document').ready(function(){
-<<<<<<< HEAD
-      var signerCnt  = 0;
-    $(document)
-=======
         $(document)
->>>>>>> skipsigner
         .ajaxStart(function(){
             $('#blockui, #ajaxSpinnerContainer').fadeIn();
         })
         .ajaxStop(function(){
             $('#blockui, #ajaxSpinnerContainer').fadeOut();
         });
-<<<<<<< HEAD
-
-=======
        var signerCnt  = {{ count($voters) }};
->>>>>>> skipsigner
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
             var form = $(e.currentTarget);
@@ -219,22 +206,14 @@
             });
         });
 
-<<<<<<< HEAD
-        // Listen for update to comment
-=======
         // // Listen for update to comment
->>>>>>> skipsigner
         // $('#comment_update_btn').click(function(e){
         //     console.log('Updating comment ...');
         //     var comment = $('#comment').val();
         //     // Submit comment to the AJAX function
         //     ajaxUpdate('sheets','comments',comment);
         // });
-<<<<<<< HEAD
-        // Listen for Flag Sheet Button
-=======
         // // Listen for Flag Sheet Button
->>>>>>> skipsigner
         // $('#flagBtn').click(function(e){
         //     if(!$('#comment').val()) {
         //         alert("Please put a reason for flagging in the comments.");
@@ -406,30 +385,20 @@
 
         //Watch for a signer to be selected and change classes to identify selected
         $(document.body).on('click', '.signer', function(e){
-<<<<<<< HEAD
-            $('.signer').removeClass('bg-info activeSigner');
-            $('.skip').addClass('hidden');
-            $(this).addClass('bg-info activeSigner');
-=======
             $('.signer').removeClass('signer-info activeSigner');
             $('.skip').addClass('hidden');
             $(this).addClass('signer-info activeSigner');
->>>>>>> skipsigner
             $(this).find('.skip').removeClass('hidden');
             // Focus on and clear Search form
             $('input#first').focus().select();
         });
 
-<<<<<<< HEAD
-        //Assign selected voter
-=======
         $('.skip').on('click', function(e){
             $('.activeSigner').html('<td><strong class="text-primary" style="color:red;">SKIPPED</strong></td><td></td>');
             setRow();
         })
 
         // Assign selected voter
->>>>>>> skipsigner
         $("#search-results").on('click','tr.match',function(e){
           if($('tr.signer').hasClass('activeSigner')){
             var voterId = $(e.currentTarget).data('voter-id');

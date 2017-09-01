@@ -11,33 +11,18 @@
         background-color: #286091;
         color:white !important;
         text-align: center;
-<<<<<<< HEAD
-        
-=======
->>>>>>> skipsigner
     }
     .modal-footer {
         background-color: #f9f9f9;
     }
     
-<<<<<<< HEAD
-    .modal-backdrop {
-        opacity: 0.2 !important;
-     }
-    
-=======
->>>>>>> skipsigner
     table {
         counter-reset: rowNumber;
     }
     
     tr:hover {
         cursor: pointer;
-<<<<<<< HEAD
-        background-color:lightyellow !important;
-=======
         background-color:lightyellow;
->>>>>>> skipsigner
     }
     
     table tr.signer {
@@ -91,11 +76,7 @@
         width:100%;
         height: 100%;
         position: absolute;
-<<<<<<< HEAD
-        background: rgba(0,0,0.5);
-=======
         background: rgba(0,0,0,.5);
->>>>>>> skipsigner
         z-index: 1000;
     
     }
@@ -104,12 +85,6 @@
         padding: 0 5px !important;
     }
 
-<<<<<<< HEAD
-    .btn-sm {
-        padding:0px 5px 0px 5px;
-        border:0;
-    }
-=======
     .btn-xs {
         padding: 0px 5px 0px 5px;
         border: 0px;
@@ -120,4 +95,3 @@
         background-color: #d9edf7 !important;
     }
     
->>>>>>> skipsigner
