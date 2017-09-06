@@ -35,6 +35,7 @@ class CreateSheetsTable extends Migration
             $table->date('date_signed')->nullable();
             $table->integer('signature_count')->nullable();
             $table->boolean('self_signed')->default(false);
+            $table->dateTime('checked_out')->default(0);
             $table->integer('user_id')
                 ->references('id')
                 ->on('users');
