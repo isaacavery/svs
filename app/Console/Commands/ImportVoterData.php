@@ -71,29 +71,46 @@ class ImportVoterData extends Command
                         $headers[$key] = strtolower($value);
                     }
                 } else {
+
                     // Skip all the ACP lines
                     if(!is_numeric($line[0])){
                         $skip++;
                         continue;
                     }
 
-                    // Clear the House Number from Confidential addresses
-                    if($line[13] == 'XXXXXXXX' || empty($line[13])){
-                        $line[13] = null;
-                    } elseif(!is_numeric($line[13])){
-                        $line[13] = null;
-                        echo "\nREMOVING HOUSE NUMBER " . $line[13] . "\n";
-                    } else {
-                        $line[13] = intval($line[13]);
+                    // Handle all the Confidential lines
+                    if($line[6] == 'Confidential'){
+                        $line[5] = $line[11] = $line[12] = $line[13] = $line[14] = $line[15] = $line[16] = $line[17] = $line[18] = $line[19] = $line[20] = $line[21] = $line[22] = $line[23] = $line[24] = $line[25] = null;
+                    }
+
+                    // Handle all the empty spaces and character encoding issues
+                    foreach($line as $k => $v){
+                        $line[$k] = iconv('Windows-1252', 'UTF-8', $v);
+                        if($v == '')
+                            $line[$k] = null;
+                        switch($k){
+                            case 5 :
+                            case 13 :
+                            case 24 :
+                            case 25 :
+                            case 32 :
+                            case 33 :
+                            case 36 :
+                                // Handle Integer data type
+                                if($line[$k] != null)
+                                    $line[$k] = intval($line[$k]);
+                                break;
+                            case 7 :
+                                // Handle Date data type
+                                $line[$k] = date('Y-m-d', strtotime($line[$k]));
+                                break;
+                        }
                     }
 
                     $row++;
-                    foreach($line as $k => $v){
-                        $line[$k] = iconv('Windows-1252', 'UTF-8', $v);
-                    }
+
                     $data = array_combine($headers,$line);
-                    if($data['house_num'] == '')
-                        $data['house_num'] = null;
+
                     $insert_data[] = $data;
 
 
