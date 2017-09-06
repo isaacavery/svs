@@ -67,12 +67,12 @@
                             {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
                         </div>
                         <div class="form-group col-xs-3">
-                            {{ Form::label('street_name', 'Street Name') }}
-                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
+                            {{ Form::label('number', 'Street Number') }}
+                            {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '3']) }}
                         </div>
                         <div class="form-group col-xs-3">
-                            {{ Form::label('number', 'Street Number') }}
-                            {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '4']) }}
+                            {{ Form::label('street_name', 'Street Name') }}
+                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '4']) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('city', 'City') }}

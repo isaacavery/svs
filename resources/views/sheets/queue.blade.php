@@ -23,7 +23,7 @@
                 <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
             </div>
             <div class="col-xs-12 col-md-6">
-                <h2 class="noMargin" id = 'numOfSigners'>0 of {{$sheet->signature_count}} signers added</h2>
+                <h2 class="noMargin" id = 'numOfSigners'>{{ count($voters) }} of {{$sheet->signature_count}} signers added</h2>
                 <table class="table table-condensed" id="signer-match" data-selected="0">
                     <tbody>
                     @for($i=0; $i<$sheet->signature_count; $i++)
@@ -57,12 +57,12 @@
                         {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
                     </div>
                     <div class="form-group col-xs-3">
-                        {{ Form::label('street_name', 'Street Name') }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '3']) }}
+                        {{ Form::label('number', 'Street Number') }}
+                        {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '3']) }}
                     </div>
                     <div class="form-group col-xs-3">
-                        {{ Form::label('number', 'Street Number') }}
-                        {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '4']) }}
+                        {{ Form::label('street_name', 'Street Name') }}
+                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '4']) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('city', 'City') }}
