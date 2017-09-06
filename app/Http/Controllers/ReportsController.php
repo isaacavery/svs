@@ -35,7 +35,7 @@ class ReportsController extends Controller
     		zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from circulators c LEFT JOIN voters v USING (voter_id)');
     	if(!$circulators)
     		return 'There are no circulators to generate a report on.';
-    	$filename = "circulators.csv";
+    	$filename = "uploads/circulators.csv";
 	    $handle = fopen($filename, 'w+');
 		fputcsv($handle, array_keys((array) $circulators[0]));
 	    foreach($circulators as $row) {
@@ -59,7 +59,7 @@ class ReportsController extends Controller
     	$signers = DB::select('select voter_id,first_name,middle_name,last_name,name_suffix,birth_date,confidential,eff_regn_date,status,party_code,county,res_address_1,res_address_2,house_num,house_suffix,pre_direction,street_name,street_type,post_direction,unit_type,unit_num,addr_non_std,city,state,zip_code,zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from voters WHERE voter_id IN (SELECT voter_id FROM signers)');
     	if(!$signers)
     		return 'There are not signers to generate a report on.';
-		$filename = "signers.csv";
+		$filename = "uploads/signers.csv";
 	    $handle = fopen($filename, 'w+');
 		fputcsv($handle, array_keys((array) $signers[0]));
 	    foreach($signers as $row) {
