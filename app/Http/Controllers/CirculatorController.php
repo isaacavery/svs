@@ -152,7 +152,6 @@ class CirculatorController extends Controller
                 $voter = Voter::where('voter_id',$request->vid)->first();
                 if(!$voter)
                     throw new Exception('Unable to find Voter with ID ' . $request->vid);
-
                 $circulator = $this->createCirculatorFromVoter($voter);
             }
 

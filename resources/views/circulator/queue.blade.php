@@ -209,6 +209,7 @@
                     $('#addCirculator').modal('hide');
                     $('body').removeClass('modal-open');
                     $('.modal-backdrop').remove();
+                    selectCirculator(null,resData.id);
                 } else {
                     $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
                     $('#addCirculator').modal('hide');
@@ -329,6 +330,7 @@
                         // Clear the search results
                         searchResults = {};
                         $('#search-results').html('<tr><td colspan="3" class="text-danger">No matches found!</td></tr>');
+                        $('#searchFinished').show();
                     } else {
                         // Update the global search results
                         searchResults = {};
@@ -350,9 +352,12 @@
                         });
                         $('#search-results').html(html);
                         $('#searchFinished').show();
+                        console.log('Showing results:');
+                        console.log(res);
                     }
                 } else {
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
+                    $('#searchFinished').show();
                 }
             }, 'json').fail(function(xhr){
                 if(xhr.status == 422){
@@ -360,10 +365,12 @@
                     var errors = xhr.responseJSON;
                     $.each(errors,function(k,v){
                         $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
+                        $('#searchFinished').show();
                     });
                 } else {
                     // Unknown error
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">' + xhr.status + ' ERROR: ' + xhr.responseText + '</td></tr>');
+                    $('#searchFinished').show();
                 }
             });
         });
@@ -420,7 +427,6 @@
     // Remove AJAX feedback notices
     setInterval(function(){
         if($('#messages .alert').length){
-            console.log('found some');
             $('#messages .alert').delay(1000).fadeOut(400,function(){
                 $(this).remove();
             });
@@ -428,7 +434,7 @@
     },3000);
 
     function selectCirculator(vid,cid){
-        console.log('Selcting circulator: ' + vid + ' / ' + cid);
+        console.log('Selecting circulator: ' + vid + ' / ' + cid);
         var data = {
             '_token': $('input[name="_token"').val(),
             'vid': vid,
