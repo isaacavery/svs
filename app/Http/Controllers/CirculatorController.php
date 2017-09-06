@@ -16,9 +16,18 @@ class CirculatorController extends Controller
 {
     public function queue() {
         $data['recent_circulators'] = Circulator::limit(3)->orderBy('updated_at','desc')->get();
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')->with('circulator')->first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
+            ->where(function ($query) {
+                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 5 * 60))
+                ->orWhereNull('checked_out');
+            })->with('circulator')->first();
     	if(!$data['sheet'])
             return redirect('/')->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
+
+        // Check out sheet
+        $data['sheet']->checked_out = date("Y-m-d H:i:s");
+        $data['sheet']->save();
+
         // Parse comments
         $data['comments'] = explode('|',$data['sheet']->comments);
         foreach($data['comments'] as $k => $v){

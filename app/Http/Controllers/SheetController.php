@@ -88,7 +88,11 @@ class SheetController extends Controller
     }
 
  public function queue() {
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')->with('signers')->first();
+    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')
+            ->where(function ($query) {
+                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 5 * 60))
+                ->orWhereNull('checked_out');
+            })->with('signers')->first();
     	if(!$data['sheet'])
             return redirect('/')->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
 
@@ -109,6 +113,11 @@ class SheetController extends Controller
             if(!$v)
                 unset($data['comments'][$k]);
         }
+
+        // Check out sheet
+        $data['sheet']->checked_out = date("Y-m-d H:i:s");
+        $data['sheet']->save();
+        
     	return view('sheets.queue',$data);
     }
 
