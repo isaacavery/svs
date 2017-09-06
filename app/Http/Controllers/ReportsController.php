@@ -32,7 +32,7 @@ class ReportsController extends Controller
     		COALESCE(v.city, c.city) AS city,
     		state,
     		COALESCE(v.zip_code, c.zip_code) AS zip_code,
-    		zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from circulators c LEFT JOIN voters v USING (voter_id)');
+    		zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from circulators c LEFT JOIN voters v USING (voter_id) ORDER BY 1');
     	if(!$circulators)
     		return 'There are no circulators to generate a report on.';
     	$filename = "uploads/circulators.csv";
@@ -56,7 +56,7 @@ class ReportsController extends Controller
     		return 'Sorry, you do not have permission to generate the requested report';
 
 
-    	$signers = DB::select('select voter_id,first_name,middle_name,last_name,name_suffix,birth_date,confidential,eff_regn_date,status,party_code,county,res_address_1,res_address_2,house_num,house_suffix,pre_direction,street_name,street_type,post_direction,unit_type,unit_num,addr_non_std,city,state,zip_code,zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from voters WHERE voter_id IN (SELECT voter_id FROM signers)');
+    	$signers = DB::select('select voter_id,first_name,middle_name,last_name,name_suffix,birth_date,confidential,eff_regn_date,status,party_code,county,res_address_1,res_address_2,house_num,house_suffix,pre_direction,street_name,street_type,post_direction,unit_type,unit_num,addr_non_std,city,state,zip_code,zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split from voters WHERE voter_id IN (SELECT voter_id FROM signers) ORDER BY 1');
     	if(!$signers)
     		return 'There are not signers to generate a report on.';
 		$filename = "uploads/signers.csv";
