@@ -171,6 +171,18 @@
 <script type="text/javascript">
     var searchResults;
     $('document').ready(function(){
+        $('#finish-sheet').click(function(e){
+            if($(e).hasClass('disabled')){
+                console.log('Not ready');
+            } else {
+                console.log('Submitting');
+                updateSheet('signatures_completed_by', {{ Auth::user()->id }});
+                // Reload the page to retrieve the next sheet in the queue
+                setTimeout(function(){
+                    location.reload(true);
+                }, 500);
+            }
+        });
         $(document)
         .ajaxStart(function(){
             $('#blockui, #ajaxSpinnerContainer').fadeIn();
@@ -205,6 +217,10 @@
                 }
             });
         });
+
+        if(!$('tr.signer').not('.done').length){
+            $('#finish-sheet').attr('disabled',false);
+        }
 
         // // Listen for update to comment
         // $('#comment_update_btn').click(function(e){
@@ -435,6 +451,7 @@
         var data = {'_token': $('input[name="_token"').val()};
             data.sheet_id = {{ $sheet->id }};
             data.voter_id = voterId;
+            data.row = rowId;
 
         $.post('/signers', data, function(res, status, jqXHR){
             // Deal with response
