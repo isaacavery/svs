@@ -35,61 +35,46 @@ td {
                 <div class="panel-body">
                     <div class="col-xs-12 col-md-6">
                         <h2>Add Circulators</h2>
-                        <p><strong>1.872 Circulators</strong> ready to be added</p>
+                        <p><strong>{{ $circulator_ready }} Circulators</strong> ready to be added</p>
                         <a href="/circulators/queue" class="btn btn-primary">Start ></a>
                         <h3>Circulator stats</h3>
                         <p><strong>{{ $circulator_count }} Circulators added.</strong></p>
-                        <p>890 unique Circulators have gathered a total of <strong>40,783 signatures</strong></p>
+                        <p>{{ $circulator_unique }} unique Circulators have gathered a total of <strong>{{ $signature_count->count }} signatures</strong></p>
                         <table class="table-striped">
                             <tfoot><strong>Circulators added per user:</strong></tfoot>
                             <hr class="noMargin">
                             <tbody>
+                            @foreach($user_data as $user)
                                 <tr>
-                                    <td>1,930</td>
-                                    <td>Jane User</td>
+                                    <td>{{ $user['circulators'] }}</td>
+                                    <td>{{ $user['name'] }}</td>
                                 </tr>
-                                <tr>
-                                    <td>1,675</td>
-                                    <td>John User</td>
-                                </tr>
-                                <tr>
-                                    <td>451</td>
-                                    <td>Jill User</td>
-                                </tr>
-                                <tr>
-                                    <td>98</td>
-                                    <td>Jack User</td>
-                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
+<?php
+        usort($user_data, function($a, $b) {
+            return $b['signers'] - $a['signers'];
+        });
+?>
                     <div class="col-xs-12 col-md-6" style="text-align:center">
                     <h2>Add Signers</h2>
-                        <p><strong>14.219 Signers</strong> ready to be added</p>
+                        <p><strong>{{ $signers_ready->count }} Signers</strong> ready to be added</p>
                         <a href="/sheets/queue" class="btn btn-primary">Start ></a>
                         <h3>Signer stats</h3>
-                        <p><strong>26,564 Signers added.</strong></p></p>
+                        <p><strong>{{ $signers_added }} Signers added.</strong></p></p>
                         <table class="table-striped">
                         <p>&nbsp;</p>
                             <tfoot><strong>Signers added per user:</strong></tfoot>
                             <hr class="noMargin">
                             <tbody>
+                            @foreach($user_data as $user)
                                 <tr>
-                                    <td>10,930</td>
-                                    <td>Jane User</td>
+                                    <td>{{ $user['signers'] }}</td>
+                                    <td>{{ $user['name'] }}</td>
                                 </tr>
-                                <tr>
-                                    <td>10,675</td>
-                                    <td>John User</td>
-                                </tr>
-                                <tr>
-                                    <td>4,051</td>
-                                    <td>Jill User</td>
-                                </tr>
-                                <tr>
-                                    <td>908</td>
-                                    <td>Jack User</td>
-                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
