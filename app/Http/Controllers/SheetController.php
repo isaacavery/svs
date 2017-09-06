@@ -90,7 +90,7 @@ class SheetController extends Controller
  public function queue() {
     	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')->with('signers')->first();
     	if(!$data['sheet'])
-            return back()->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
+            return redirect('/')->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Signer Queue for review.']);
 
         $data['voters'] = array();
         // Get associated voters:
