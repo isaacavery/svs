@@ -97,7 +97,7 @@ td {
         <div class="col-md-3">
             <h3 id="searchHeader">Circulators</h3>
             <ul>
-                <li><a href="#">Download all circulators (CSV)</a></li>
+                <li><a href="/reports/circulators">Download all circulators (CSV)</a></li>
             </ul>
         </div>
         <div class="col-md-3">
@@ -105,7 +105,7 @@ td {
             <ul>
                 <li><a href="#">View list of duplicates</a></li>
                 <li><a href="#">View list of no matches</a></li>
-                <li><a href="#">Download all Signers (CSV)</a></li>
+                <li><a href="/reports/signers">Download all Signers (CSV)</a></li>
             </ul>
         </div>
         <div class="col-md-3">

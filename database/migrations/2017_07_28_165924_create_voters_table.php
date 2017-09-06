@@ -57,7 +57,6 @@ class CreateVotersTable extends Migration
                 $table->char('precinct_name',60);
                 $table->char('precinct',60);
                 $table->char('split',20);
-                $table->timestamps();
                 $table->index('first_name','last_name');
                 $table->index('voter_id');
                 $table->index('house_num','street_name');

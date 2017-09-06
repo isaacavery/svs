@@ -2,6 +2,8 @@
 /public/hot
 /public/uploads
 /public/storage
+/public/circulators.csv
+/public/signers.csv
 /storage/*.key
 /storage/voter_data
 composer.lock

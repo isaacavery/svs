@@ -31,3 +31,5 @@ Route::post('circulators/ajaxRemoveCirculator', 'CirculatorController@ajaxRemove
 Route::post('circulators/add', 'CirculatorController@add')->middleware('auth');
 Route::resource('signers', 'SignerController');
 Route::post('signers/search', 'SignerController@search')->middleware('auth');
+Route::get('reports/circulators', 'ReportsController@circulators')->middleware('auth');
+Route::get('reports/signers', 'ReportsController@signers')->middleware('auth');
