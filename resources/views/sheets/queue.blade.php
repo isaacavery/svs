@@ -282,13 +282,14 @@
                 data['exact_match'] = 0;
             }
 
-            $.post('/circulators/search',data, function(res, status, jqXHR){
+            $.post('/signers/search',data, function(res, status, jqXHR){
                 // Deal with response
                 if(res.success){
                     if(!res.count) {
                         // Clear the search results
                         searchResults = {};
                         $('#search-results').html('<tr><td colspan="3" class="text-danger">No matches found!</td></tr>');
+                        $('#results-container').removeClass('hidden');
                     } else {
                         // Update the global search results
                         searchResults = {};
@@ -406,6 +407,7 @@
             $(this).addClass('signer-info activeSigner');
             $(this).find('.skip').removeClass('hidden');
             // Focus on and clear Search form
+            $('input[type="text"]').val('');
             $('input#first').focus().select();
         });
 

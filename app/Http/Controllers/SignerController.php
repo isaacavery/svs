@@ -159,19 +159,19 @@ class SignerController extends Controller
         if($form['city']) {
             $no_data = false;
             $q1 .= "AND city LIKE ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['city']) : '%' . strtoupper($form['city']) . '%';
+            $v1[] = strtoupper($form['city']);
         }
         if($form['zip']) {
             $no_data = false;
             $q1 .= "AND (zip_code LIKE ? OR eff_zip_code LIKE ?) ";
-            $val = ($exact_match) ? $form['zip'] : '%' . $form['zip'] . '%';
+            $val = $form['zip'];
             $v1[] = $val;
             $v1[] = $val;
         }
         if($form['number']) {
             $no_data = false;
             $q1 .= "AND house_num like ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['number']) : '%' . strtoupper($form['number']) . '%';
+            $v1[] = strtoupper($form['number']);
         }
         if($form['street_name']) {
             $no_data = false;
