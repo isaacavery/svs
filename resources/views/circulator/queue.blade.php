@@ -185,7 +185,7 @@
         {{ Form::close() }}
     </div>
 <script type="text/javascript">
-    var done=0;
+    var searchResults;
 
     $('document').ready(function(){
         $(document)
@@ -230,30 +230,6 @@
             });
         });
 
-        // Listen for update to comment
-        // $('#comment_update_btn').click(function(e){
-        //     console.log('Updating comment ...');
-        //     var comment = $('#comment').val();
-        //     // Submit comment to the AJAX function
-        //     updateSheet('comments',comment);
-        // });
-
-        // $('#flagBtn').click(function(e){
-        //     if(!$('#comment').val()) {
-        //         alert("Please put a reason for flagging in the comments.");
-        //     }
-        //     else {
-        //         // Add a comment for flagging
-        //         updateSheet('comments',$('#comment').val());
-        //         // Flag the sheet
-        //         updateSheet('flagged_by',{{ Auth::user()->id }});
-        //         // Reload the page to retreive the next sheet in the queue
-        //         setTimeout(function(){
-        //             location.reload(true);
-        //         }, 1000);
-        //     }
-        // });
-
             // Check for commen't before flagging sheet if comment exists move to next sheet else require reason for flagging
             $('#modalComment .modal-footer button').on('click', function(e){
             if(!$('#comment').val()) {
@@ -285,6 +261,10 @@
             }
             // Submit self_signed (bool) to AJAX function
             updateSheet('self_signed',self_signed);
+
+            setTimeout(function(){
+                checkCompletion();
+            }, 500);
         });
 
         // Listen for update on Signature Count
@@ -298,11 +278,8 @@
                 var val = tgt.html();
                 // Submit val to the AJAX function
                 updateSheet('signature_count',val);
-                done=done+1;
-                if(done==3){
-                    $('#finish-sheet').attr('disabled',false);
-                }
             }
+            checkCompletion();
         });
 
 
@@ -386,62 +363,42 @@
 
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
-            // Check for count
-            if (done==3){
-                updateSheet('circulator_completed_by', {{ Auth::user()->id }});
-                // Reload the page to retrieve the next sheet in the queue
-                setTimeout(function(){
-                    location.reload(true);
-                }, 500);
-            }
-            else {
-                alert("Please complete all fields");
-            }
+            if($(e.currentTarget).attr('disabled'))
+                console.log('You cannot finish the sheet until all of the required data has been added.');
+
+            updateSheet('circulator_completed_by', {{ Auth::user()->id }});
+
+            // Reload the page to retrieve the next sheet in the queue
+            setTimeout(function(){
+                location.reload(true);
+            }, 500);
         });
         //Check for Valid Date
         $('input[type="date"]').focusout(function(e) {
-            console.log("Date Changed");
             e.preventDefault();
             var date = $('input[name="date"]').val();
-            if(isDate(date)){
+            console.log("Date Changed to " + date);
+            if(isValidDate(date)){
                 updateSheet('date_signed',date);
                 $('#date_signed').html(date);
-                done=done+1;
-                if(done==3){
-                    $('#finish-sheet').attr('disabled',false);
-                }
             }
             else {
-                alert("Please enter a valid date!")
-                done=done-1;
-                $('#finish-sheet').attr('disabled',true);
+                alert("Invalid date format! Please enter a date in 'MM/DD/YYYY' format.");
             }
+            setTimeout(function(){
+                checkCompletion();
+            }, 500);
         });
         
 
 @if($sheet->circulator)
-            done=1;
-            $('#remove-circulator-btn').show();
-            $('#voter-search').hide();
-    @if($sheet->date_signed)
-        done=2;
-    @endif
-        @if($sheet->signature_count)
-            $('#finish-sheet').attr('disabled',false);
-            done=3;
-        @endif
-    @endif
-@endif
- //       $('#remove-circulator-btn').click(function(e){
- //    //       $('#voter-match').attr('data-selected','0').html('').hide();
- //           $('#remove-circulator-btn').hide();
- //           $('#voter-search').show();
- //           $('#finish-sheet').attr('disabled',true);
- //       });
-
+            // Circulator has been added
+        $('#remove-circulator-btn').show();
+        $('#voter-search').hide();
+@else
+            // Circulator has not been added
         $('input[name="first"]').focus();
-
-
+@endif   
 
     });
     // Remove AJAX feedback notices
@@ -454,7 +411,6 @@
     },3000);
 
     function selectCirculator(vid,cid){
-        console.log('Selecting circulator: ' + vid + ' / ' + cid);
         var data = {
             '_token': $('input[name="_token"').val(),
             'vid': vid,
@@ -471,25 +427,22 @@
                     $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
                     // Update the UI
                     var voter = res.circulator;
-            console.log(voter);
-            var html = '<p class="text-muted"><strong class="text-primary">'
-                + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
-                + voter.address + ', ' + voter.city + ', OR ' + voter.zip_code;
-            $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
-            $('#remove-circulator-btn').show().removeClass('hidden');
-            $('#voter-search').hide();
-            done=done+1;
-            if(done==3){
-                $('#finish-sheet').attr('disabled',false);
-            }
+                    var html = '<p class="text-muted"><strong class="text-primary">'
+                        + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
+                        + voter.address + ', ' + voter.city + ', OR ' + voter.zip_code;
+                    $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
+                    $('#remove-circulator-btn').show().removeClass('hidden');
+                    $('#voter-search').hide();
                 } else {
                     var err = "Error: " + res.error;
                     $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
                 }
+                checkCompletion();
             },
             'error': function(xhr){
-                console.log("ERROR");
+                console.log("ERROR SELECTING CIRCULATOR");
                 console.log(errors);
+                alert('There was an error selecting the circulator. Please check the console for more info.');
             },
             'method': 'POST'
         });
@@ -511,15 +464,11 @@
                     $('#voter-match').hide();
                     $('#remove-circulator-btn').hide();
                     $('#voter-search').show();
-                    $('#finish-sheet').attr('disabled',true);
-                    if(done>1){
-                        done=done-1;
-                    }
-
                 } else {
                     var err = "Error: " + res.error;
                     $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
                 }
+                checkCompletion();
             },
             'error': function(xhr){
                 console.log("ERROR");
@@ -527,7 +476,55 @@
             },
             'method': 'POST'
         });
+    }
+
+    function isValidDate(str){
+        // STRING FORMAT yyyy-mm-dd
+        if(str=="" || str==null)
+            return false;                            
+        
+        // m[1] is year 'YYYY' * m[2] is month 'MM' * m[3] is day 'DD'                  
+        var m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+        
+        // STR IS NOT FIT m IS NOT OBJECT
+        if( m === null || typeof m !== 'object')
+            return false;           
+        
+        // CHECK m TYPE
+        if (typeof m !== 'object' && m !== null && m.size!==3)
+            return false;
+                    
+        var ret = true; //RETURN VALUE                      
+        var thisYear = new Date().getFullYear(); //YEAR NOW
+        var minYear = 1999; //MIN YEAR
+        
+        // YEAR CHECK
+        if( (m[1].length < 4) || m[1] < minYear || m[1] > thisYear){ret = false;}
+        // MONTH CHECK          
+        if( (m[2].length < 2) || m[2] < 1 || m[2] > 12){ret = false;}
+        // DAY CHECK
+        if( (m[3].length < 2) || m[3] < 1 || m[3] > 31){ret = false;}
+        
+        return ret;         
+    }
+
+    function checkCompletion(){
+        console.log('Checking completion ...');
+        $.get('/circulators/checkCompletion/{{ $sheet->id }}', function(data) {
+            if(data.success){
+                console.log(data);
+                if(data.complete){
+                    console.log('COMPLETE!');
+                    $('#finish-sheet').attr('disabled',false);
+                } else {
+                    console.log('NOT COMPLETE');
+                    $('#finish-sheet').attr('disabled',true);
+                }
             }
+        }, 'json');
+    }
+
+    checkCompletion();
 
         
 </script>

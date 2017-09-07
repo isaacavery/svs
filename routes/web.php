@@ -29,6 +29,7 @@ Route::post('circulators/search', 'CirculatorController@search')->middleware('au
 Route::post('circulators/ajaxSelect', 'CirculatorController@ajaxSelect')->middleware('auth');
 Route::post('circulators/ajaxRemoveCirculator', 'CirculatorController@ajaxRemoveCirculator')->middleware('auth');
 Route::post('circulators/add', 'CirculatorController@add')->middleware('auth');
+Route::get('circulators/checkCompletion/{id}', 'CirculatorController@checkCompletion')->middleware('auth');
 Route::resource('signers', 'SignerController');
 Route::post('signers/search', 'SignerController@search')->middleware('auth');
 Route::get('reports/circulators', 'ReportsController@circulators')->middleware('auth');

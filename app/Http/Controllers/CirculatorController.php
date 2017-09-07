@@ -44,7 +44,7 @@ class CirculatorController extends Controller
         $circulators = Circulator::limit(5);
         $v1 = [];
         $no_data = true;
-        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id NOT IN (SELECT voter_id FROM circulators) ";
+        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id NOT IN (SELECT voter_id FROM circulators WHERE voter_id IS NOT NULL) ";
         if($form['first']) {
             $no_data = false;
             $q1 .= "AND first_name LIKE ? ";
@@ -76,15 +76,15 @@ class CirculatorController extends Controller
         }
         if($form['zip']) {
             $no_data = false;
-            $q1 .= "AND (zip_code LIKE ? OR eff_zip_code LIKE ?) ";
-            $val = ($exact_match) ? $form['zip'] : '%' . $form['zip'] . '%';
+            $q1 .= "AND (zip_code = ? OR eff_zip_code = ?) ";
+            $val = $form['zip'];
             $v1[] = $val;
             $v1[] = $val;
         }
         if($form['number']) {
             $no_data = false;
-            $q1 .= "AND house_num like ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['number']) : '%' . strtoupper($form['number']) . '%';
+            $q1 .= "AND house_num = ? ";
+            $v1[] = $form['number'];
         }
         if($form['street_name']) {
             $no_data = false;
@@ -183,6 +183,17 @@ class CirculatorController extends Controller
             return json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function checkCompletion($id)
+    {
+        $sheet = Sheet::find($id);
+        if(!$sheet)
+            return json_encode(['success' => 0, 'error' => 'Unable to find the requested sheet']);
+
+        $complete = ($sheet->circulator_id && $sheet->date_signed && $sheet->signature_count) ? true : false;
+        return json_encode(['success' => true, 'complete' => $complete]);
+    }
+
     private function createCirculatorFromVoter($voter){
         if(Circulator::where('voter_id',$voter->voter_id)->count()){
             $circulator = Circulator::where('voter_id')->first();
