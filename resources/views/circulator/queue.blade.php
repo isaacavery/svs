@@ -396,12 +396,17 @@
             }
         });
 
-        $('input[type="date"]').change(function(e) {
+        $('input[type="date"]').focusout(function(e) {
             console.log("Date Changed");
             e.preventDefault();
             var date = $('input[name="date"]').val();
-            updateSheet('date_signed',date);
-            $('#date_signed').html(date);
+            if(isDate(date)){
+                updateSheet('date_signed',date);
+                $('#date_signed').html(date);
+            }
+            else {
+                alert("Please enter a valid date!")
+            }
         });
         
 
