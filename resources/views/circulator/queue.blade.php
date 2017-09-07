@@ -185,7 +185,7 @@
         {{ Form::close() }}
     </div>
 <script type="text/javascript">
-    var searchResults;
+    var done=0;
 
     $('document').ready(function(){
         $(document)
@@ -298,6 +298,10 @@
                 var val = tgt.html();
                 // Submit val to the AJAX function
                 updateSheet('signature_count',val);
+                done=done+1;
+                if(done==3){
+                    $('#finish-sheet').attr('disabled',false);
+                }
             }
         });
 
@@ -380,22 +384,21 @@
           }
         });
 
-
-
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
             // Check for count
-            if(!$('#signature-count-group .btn.btn-primary').length){
-                alert('Please select the number of signatures before continuing');
-            } else {
+            if (done==3){
                 updateSheet('circulator_completed_by', {{ Auth::user()->id }});
                 // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
                     location.reload(true);
                 }, 500);
             }
+            else {
+                alert("Please complete all fields");
+            }
         });
-
+        //Check for Valid Date
         $('input[type="date"]').focusout(function(e) {
             console.log("Date Changed");
             e.preventDefault();
@@ -403,9 +406,15 @@
             if(isDate(date)){
                 updateSheet('date_signed',date);
                 $('#date_signed').html(date);
+                done=done+1;
+                if(done==3){
+                    $('#finish-sheet').attr('disabled',false);
+                }
             }
             else {
                 alert("Please enter a valid date!")
+                done=done-1;
+                $('#finish-sheet').attr('disabled',true);
             }
         });
         
@@ -415,14 +424,15 @@
             $('#voter-search').hide();
     @if($sheet->date_signed && $sheet->signature_count)
             $('#finish-sheet').attr('disabled',false);
+            done=3;
     @endif
 @endif
-        $('#remove-circulator-btn').click(function(e){
-            $('#voter-match').attr('data-selected','0').html('').hide();
-            $('#remove-circulator-btn').hide();
-            $('#voter-search').show();
-            $('#finish-sheet').attr('disabled',true);
-        });
+ //       $('#remove-circulator-btn').click(function(e){
+ //    //       $('#voter-match').attr('data-selected','0').html('').hide();
+ //           $('#remove-circulator-btn').hide();
+ //           $('#voter-search').show();
+ //           $('#finish-sheet').attr('disabled',true);
+ //       });
 
         $('input[name="first"]').focus();
 
@@ -463,8 +473,10 @@
             $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
             $('#remove-circulator-btn').show().removeClass('hidden');
             $('#voter-search').hide();
-            $('#finish-sheet').attr('disabled',false);
-
+            done=done+1;
+            if(done==3){
+                $('#finish-sheet').attr('disabled',false);
+            }
                 } else {
                     var err = "Error: " + res.error;
                     $('#messages').append('<div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + err + '</div>');
@@ -495,6 +507,9 @@
                     $('#remove-circulator-btn').hide();
                     $('#voter-search').show();
                     $('#finish-sheet').attr('disabled',true);
+                    if(done>1){
+                        done=done-1;
+                    }
 
                 } else {
                     var err = "Error: " + res.error;
