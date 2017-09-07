@@ -32,9 +32,9 @@
                             <tr class="signer done">
                                 @if (is_int($voters[$i+1]))
                                     @if($voters[$i+1] == 0)
-                                        <td><strong class="text-danger signer">NO MATCH</strong></td><td></td>
+                                        <td><strong class="text-danger signer">NO MATCH</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
                                      @elseif ($voters[$i+1] == 1)
-                                        <td><strong class="signer">INVALID LINE</strong></td><td></td>
+                                        <td><strong class="text-default signer">SKIPPED</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
                                     @endif
                                 @else
                                    <td><strong class="text-primary signer">{{ $voters[$i+1]->first_name }} {{$voters[$i+1]->middle_name }} {{$voters[$i+1]->last_name }}</strong></td><td>{{ $voters[$i+1]->res_address_1 }}, {{ $voters[$i+1]->city }}, OR {{ $voters[$i+1]->zip_code}}<a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>
@@ -412,8 +412,7 @@
         });
 
         $('.skip').on('click', function(e){
-            $('.activeSigner').html('<td><strong class="text-primary" style="color:red;">SKIPPED</strong></td><td></td>');
-            setRow();
+            setRow(null);
         })
 
         // Assign selected voter
@@ -428,8 +427,7 @@
 
         $('#not_readable').on('click', function(e){
             if($('tr.signer').hasClass('activeSigner')){
-                $('.activeSigner').html('<td><strong class="text-primary text-danger">No Match Found </strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>');
-                setRow();
+                setRow(0);
             } else {
                 alert("Please select a signer to update");
             }
@@ -462,14 +460,17 @@
                 console.log(voterId);
                 $('ul#comments').append('<li class="text-success">' + res.message + '</li>');
 
-                if(voterId != 0){
+                if(voterId){
                     var voter = searchResults[voterId]; // Set 
                     var html = '<td><strong class="text-primary signer">'
                     + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong></td><td>'
                     + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '<a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
+                } else if(voterId == 0){
+                    var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
+                    var html = '<td colspan="2"><strong class="text-danger signer">NO MATCH FOUND</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
                 } else {
                     var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
-                    var html = '<td colspan="2"><span class="text-danger signer">NO MATCH FOUND</span></td>'
+                    var html = '<td colspan="2"><strong class="text-default signer">SKIPPED</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>'
                 }
                 
                 $('.activeSigner').attr('data-selected',voterId).html(html).show();
