@@ -170,17 +170,20 @@
     
 <script type="text/javascript">
     var searchResults;
+
     $('document').ready(function(){
         $('#finish-sheet').click(function(e){
-            if($(e).hasClass('disabled')){
+            if($(e).attr('disabled')){
                 console.log('Not ready');
-            } else {
+            } else if (!$('tr.signer').not('.done').length) {
                 console.log('Submitting');
                 updateSheet('signatures_completed_by', {{ Auth::user()->id }});
                 // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
                     location.reload(true);
                 }, 500);
+            } else {
+                console.log('Cannot submit yet ... incomplete.');
             }
         });
         $(document)
@@ -221,30 +224,6 @@
         if(!$('tr.signer').not('.done').length){
             $('#finish-sheet').attr('disabled',false);
         }
-
-        // // Listen for update to comment
-        // $('#comment_update_btn').click(function(e){
-        //     console.log('Updating comment ...');
-        //     var comment = $('#comment').val();
-        //     // Submit comment to the AJAX function
-        //     ajaxUpdate('sheets','comments',comment);
-        // });
-        // // Listen for Flag Sheet Button
-        // $('#flagBtn').click(function(e){
-        //     if(!$('#comment').val()) {
-        //         alert("Please put a reason for flagging in the comments.");
-        //     }
-        //     else {
-        //         // Add a comment for flagging
-        //         updateSheet('comments',$('#comment').val());
-        //         // Flag the sheet
-        //         updateSheet('flagged_by',{{ Auth::user()->id }});
-        //         // Reload the page to retreive the next sheet in the queue
-        //         setTimeout(function(){
-        //             location.reload(true);
-        //         }, 1000);
-        //     }
-        // });
 
         // Check for comment before flagging sheet if comment exists move to next sheet else require reason for flagging
         $('#modalComment .modal-footer button').on('click', function(e){
@@ -326,6 +305,8 @@
                 }
             });
         });
+
+        // Listen for the ENTER keypress in the search form
         $('#first,#last,#street_name,#number,#city,#zip').keypress(function (e) {
           if (e.which == 13) {
             $('#search_submit_btn').click();
@@ -364,6 +345,7 @@
                 'method': 'PUT'
             });
         }
+
         $(document).keydown(function (e) {
             if ($(e.target).is('input, textarea, select')) {
                 return;

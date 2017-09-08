@@ -24,6 +24,7 @@ Route::post('users/update', 'UserController@update')->middleware('auth')->name('
 Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
 Route::get('sheets/queue', 'SheetController@queue')->middleware('auth');
 Route::resource('sheets','SheetController');
+Route::get('sheets/checkCompletion/{id}', 'SheetController@checkCompletion')->middleware('auth');
 Route::get('circulators/queue', 'CirculatorController@queue')->middleware('auth');
 Route::post('circulators/search', 'CirculatorController@search')->middleware('auth');
 Route::post('circulators/ajaxSelect', 'CirculatorController@ajaxSelect')->middleware('auth');

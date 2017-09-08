@@ -180,4 +180,15 @@ class SheetController extends Controller
     {
         //
     }
+
+    public function checkCompletion($id)
+    {
+        $sheet = Sheet::find($id);
+        if(!$sheet)
+            return json_encode(['success' => 0, 'error' => 'Unable to find the requested sheet']);
+
+        $complete = ($sheet->signers()->count() == $sheet->signature_count) ? true : false;
+        return json_encode(['success' => true, 'complete' => $complete]);
+    }
+
 }
