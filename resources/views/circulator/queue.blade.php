@@ -189,9 +189,6 @@
     var searchResults;
 
     $('document').ready(function(){
-        $("#addCirculator").draggable({
-            handle: ".modal-header"
-        });
         $(document)
         .ajaxStart(function(){
             $('#blockui, #ajaxSpinnerContainer').fadeIn();
