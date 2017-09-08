@@ -32,11 +32,12 @@
                 {{ Form::label('password_confirmation', 'Confirm Password') }}
                 {{ Form::password('password_confirmation',['class'=>'form-control', 'tabindex' => '3','placeholder' => 'Leave blank unless you want to change the password']) }}
             </div>
-
+@if(Auth::user()->admin)
             <div class="form-group col-xs-12">
                 {{ Form::checkbox('admin','1',$user->admin,['tabindex' => '4']) }} 
                 {{ Form::label('admin', 'ADMIN USER') }}
             </div>
+@endif
             <div class="form-group col-xs-12">
                 {{ Form::checkbox('active','1',$user->active,['tabindex' => '4']) }} 
                 {{ Form::label('active', 'User is currently Active') }}

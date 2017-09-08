@@ -82,6 +82,7 @@ td {
             </div>
         </div>
     </div>
+    @if(Auth::user()->admin)
     <div class="container">
         <h3 style="text-align:center;">Admin Tools & Reports</h3>
         <div class="col-md-3">
@@ -116,5 +117,6 @@ td {
             </ul>
         </div>
     </div>
+    @endif
 </div>
 @endsection

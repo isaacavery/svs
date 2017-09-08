@@ -32,11 +32,12 @@
                 {{ Form::label('password_confirmation', 'Confirm Password') }}
                 {{ Form::password('password_confirmation',['class'=>'form-control', 'tabindex' => '3']) }}
             </div>
-
+@if(Auth::user()->admin)
             <div class="form-group col-xs-12">
                 {{ Form::checkbox('admin','yes',0,['tabindex' => '4']) }} 
                 {{ Form::label('admin', 'Admin') }}
             </div>
+@endif
             {{ Form::submit('Create', ['class' => 'btn btn-primary']) }}
 
             {{ Form::close() }}
