@@ -121,19 +121,13 @@ class CirculatorController extends Controller
     public function add(StoreCirculator $request) {
     	// Store Circulator
         try{
-            $check = Circulator::where('first_name', trim(strtoupper($request->first_name)))->where('last_name',trim(strtoupper($request->last_name)))->first();
-            if($check) {
-                // User already exists. Return the user id
-                return json_encode(['success' => 'true', 'message' => 'Circulator already exists in the database as Circulator #' . $check->id, 'id' => $check->id]);
+            $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip), 'user_id' => Auth::user()->id]);
+            if($circulator){
+                // Circulator was created. Return the id.
+                return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);
             } else {
-                $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip), 'user_id' => Auth::user()->id]);
-                if($circulator){
-                    // Circulator was created. Return the id.
-                    return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);
-                } else {
-                    // Unknown error
-                    throw new Exception('There was an unknown error when adding the following data to the database: ' . json_encode($request->all()),1);
-                }
+                // Unknown error
+                throw new Exception('There was an unknown error when adding the following data to the database: ' . json_encode($request->all()),1);
             }
         } catch(\Exception $e) {
             // Exception handler
