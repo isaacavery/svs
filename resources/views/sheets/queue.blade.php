@@ -11,6 +11,7 @@
     .noMargin h2#numOfSigners {
     margin-top:0px;
     }
+    .modal-backdrop.in { opacity: 0.1 !important; }
 </style>
 <div class="col-md-12" style="padding-bottom: 40px; padding-left:0px; padding-right:0px;">
     <div id="messages">

@@ -293,7 +293,10 @@
                 // Submit val to the AJAX function
                 updateSheet('signature_count',val);
             }
-            checkCompletion();
+
+            setTimeout(function(){
+                checkCompletion();
+            }, 500);
         });
 
 
@@ -383,6 +386,12 @@
           }
         });
 
+        $('input[type="date"]').keypress(function (e) {
+          if (e.which == 13) {
+            $('input[type="date"]').blur();
+          }
+        });
+
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
             if($(e.currentTarget).attr('disabled')){
@@ -403,17 +412,63 @@
 
         });
         //Check for Valid Date
-        $('input[type="date"]').focusout(function(e) {
+        $('input[type="date"]').blur(function(e) {
             e.preventDefault();
-            var date = $('input[name="date"]').val();
-            console.log("Date Changed to " + date);
-            if(isValidDate(date)){
-                updateSheet('date_signed',date);
-                $('#date_signed').html(date);
+            var str = $('input[name="date"]').val();
+            console.log("Date Changed to " + str);
+
+            var valid = true;
+            
+            // STRING FORMAT yyyy-mm-dd
+            if(str=="" || str==null)
+                valid = false;                           
+            
+            // m[1] is year 'YYYY' * m[2] is month 'MM' * m[3] is day 'DD'                  
+            var m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+            
+            // STR IS NOT FIT m IS NOT OBJECT
+            if( m === null || typeof m !== 'object')
+                valid = false;         
+            
+            // CHECK m TYPE
+            if (typeof m !== 'object' && m !== null && m.size!==3)
+                valid = false;
+                        
+            var ret = true; //RETURN VALUE                      
+            var thisYear = new Date().getFullYear(); //YEAR NOW
+            var minYear = 1999; //MIN YEAR
+            
+            // YEAR CHECK
+            if( (m[1].length < 4) || m[1] < minYear || m[1] > thisYear){ 
+                if( m[1] < 19 && m[1] > 00){
+                    m[1] = 2000 + Number(m[1]);
+                    console.log(m);
+                    if( (m[1].length < 4) || m[1] < minYear || m[1] > thisYear){ 
+                        valid = false;
+                    } else {
+                        str = '20' + str.substring(2);
+                    }
+                } else {
+                    valid = false;
+                }
             }
-            else {
+            // MONTH CHECK          
+            if( (m[2].length < 2) || m[2] < 1 || m[2] > 12){valid = false;}
+            // DAY CHECK
+            if( (m[3].length < 2) || m[3] < 1 || m[3] > 31){valid = false;}
+
+            if(valid){
+                updateSheet('date_signed',str);
+                $('input[name="date"]').val(str);
+                $('#date_signed').html(str);
+            } else {
+                $('input[name="date"]').val('');
                 alert("Invalid date format! Please enter a date in 'MM/DD/YYYY' format.");
             }
+
+            setTimeout(function(){
+                checkCompletion();
+            }, 500);
         });
         
 
