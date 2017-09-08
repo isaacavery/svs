@@ -8,6 +8,7 @@
         position: fixed;
         bottom: 0px;
     }
+    .modal-backdrop.in { opacity: 0.1 !important; }
 </style>
 <div class="col-md-12" style="padding-bottom: 70px; padding-left:0px; padding-right:0px;">
     <div id="messages">
@@ -188,6 +189,9 @@
     var searchResults;
 
     $('document').ready(function(){
+        $("#addCirculator").draggable({
+            handle: ".modal-header"
+        });
         $(document)
         .ajaxStart(function(){
             $('#blockui, #ajaxSpinnerContainer').fadeIn();

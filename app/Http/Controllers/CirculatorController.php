@@ -141,6 +141,10 @@ class CirculatorController extends Controller
             if($request->cid){
                 // Circulator ID is provided, so look up and return Circulator record
                 $circulator = Circulator::find($request->cid);
+                if(!$circulator)
+                    throw new Exception('Unable to find Circulator with ID ' . $request->cid);
+                $circulator->updated_at = date('Y-m-d H:i:s');
+                $circulator->save();
             } else if($request->vid){
                 // Circulator ID is NOT provided, so create a new Circulator and return the data
                 $voter = Voter::where('voter_id',$request->vid)->first();
