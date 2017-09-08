@@ -363,15 +363,22 @@
 
         // Listen for finish sheet
         $('#bottom-bar').on('click', '#finish-sheet', function(e){
-            if($(e.currentTarget).attr('disabled'))
+            if($(e.currentTarget).attr('disabled')){
                 console.log('You cannot finish the sheet until all of the required data has been added.');
+            } else {
 
-            updateSheet('circulator_completed_by', {{ Auth::user()->id }});
+                if(complete){
+                    updateSheet('circulator_completed_by', {{ Auth::user()->id }});
+                    // Reload the page to retrieve the next sheet in the queue
+                    setTimeout(function(){
+                        location.reload(true);
+                    }, 500);
+                } else {
+                    alert('DEBUG MESSAGE: This sheet is not completed, however the Finish button was enabled. Please sent the system administrator a bug report including: Sheet ID, Date Signed, Signature Count and Circulator Name (as currently displayed) or a screenshot of the current page. Thank you.');
+                }
+            }
 
-            // Reload the page to retrieve the next sheet in the queue
-            setTimeout(function(){
-                location.reload(true);
-            }, 500);
+
         });
         //Check for Valid Date
         $('input[type="date"]').focusout(function(e) {
@@ -508,18 +515,25 @@
         return ret;         
     }
 
+    // Set up a global variable for use in confirming before submitting the sheet
+    var complete = false;
+
     function checkCompletion(){
-        console.log('Checking completion ...');
         $.get('/circulators/checkCompletion/{{ $sheet->id }}', function(data) {
             if(data.success){
-                console.log(data);
                 if(data.complete){
                     console.log('COMPLETE!');
                     $('#finish-sheet').attr('disabled',false);
+                    complete = true;
                 } else {
                     console.log('NOT COMPLETE');
                     $('#finish-sheet').attr('disabled',true);
+                    complete = false;
                 }
+            } else {
+                console.log('ERROR checking completion. Please check network activity.');
+                $('#finish-sheet').attr('disabled',true);
+                complete = false;
             }
         }, 'json');
     }
