@@ -59,13 +59,25 @@
                     @endforeach
                 </ul>
                     <div class="row">
-                        <div class="form-group col-xs-6">
-                            {{ Form::label('first', 'First Name') }}
-                            {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
+                            {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id']) }}
+                            <span class="help-block hidden"></span>
                         </div>
-                        <div class="form-group col-xs-6">
-                            {{ Form::label('last', 'Last Name') }}
-                            {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
+                            {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first']) }}
+                            <span class="help-block hidden"></span>
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('middle_name', 'Middle Name', ['class' => 'control-label']) }}
+                            {{ Form::text('middle_name','',['class'=>'form-control', 'id' => 'middle']) }}
+                            <span class="help-block hidden"></span>
+                        </div>
+                        <div class="form-group col-xs-3">
+                            {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
+                            {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last']) }}
+                            <span class="help-block hidden"></span>
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('number', 'Street Number') }}
@@ -108,6 +120,7 @@
                    <table class="table table-condensed">
                     <thead>
                         <tr>
+                            <td>ID</td>
                             <td>NAME</td>
                             <td>ADDRESS</td>
                             <td>ALT ADDRESS</td>
@@ -292,7 +305,9 @@
             $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
             var data = {
                 exact_match: 1,
+                vid: $('#voter_id').val(),
                 first: $('#first').val(),
+                middle: $('#middle').val(),
                 last: $('#last').val(),
                 street_name: $('#street_name').val(),
                 number: $('#number').val(),
@@ -311,7 +326,7 @@
                     if(!res.count) {
                         // Clear the search results
                         searchResults = {};
-                        $('#search-results').html('<tr><td colspan="3" class="text-danger">No matches found!</td></tr>');
+                        $('#search-results').html('<tr><td colspan="4" class="text-danger">No matches found!</td></tr>');
                         $('#searchFinished').show();
                     } else {
                         // Update the global search results
@@ -322,6 +337,12 @@
                         var html = '';
                         $.each(res.matches, function(i,v){
                             html += '<tr class="match" data-voter-id="' + v.voter_id + '" data-circulator-id="' + v.circulator_id + '" onclick="javascript:selectCirculator(\'' + v.voter_id + '\',\'' + v.circulator_id + '\')"><td>';
+
+                            if(v.voter_id){
+                                html += '<span class="text-muted">' + v.voter_id + '</span></td><td>';
+                            } else {
+                                '</td><td>';
+                            }
                             if(v.circulator_id){
                                 html += '<span class="glyphicon glyphicon-user"></span> ';
                             }
@@ -338,7 +359,7 @@
                         console.log(res);
                     }
                 } else {
-                    $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
+                    $('#search-results').html('<tr><td colspan="4" class="text-danger">Error: ' + res.error + '</td></tr>');
                     $('#searchFinished').show();
                 }
             }, 'json').fail(function(xhr){
@@ -356,7 +377,7 @@
                 }
             });
         });
-        $('#first,#last,#street_name,#number,#city,#zip').keypress(function (e) {
+        $('#first,#middle,#last,#street_name,#number,#city,#zip').keypress(function (e) {
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }
@@ -378,7 +399,7 @@
                     alert('DEBUG MESSAGE: This sheet is not completed, however the Finish button was enabled. Please sent the system administrator a bug report including: Sheet ID, Date Signed, Signature Count and Circulator Name (as currently displayed) or a screenshot of the current page. Thank you.');
                 }
             }
-
+            checkCompletion();
 
         });
         //Check for Valid Date
@@ -393,9 +414,6 @@
             else {
                 alert("Invalid date format! Please enter a date in 'MM/DD/YYYY' format.");
             }
-            setTimeout(function(){
-                checkCompletion();
-            }, 500);
         });
         
 

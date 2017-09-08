@@ -48,29 +48,41 @@
                     </tbody>
                 </table>
                 <div class="row">
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('first', 'First Name') }}
-                        {{ Form::text('first','',['class'=>'form-control', 'tabindex' => '1', 'autofocus' => 'true']) }}
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
+                        {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 8]) }}
+                        <span class="help-block hidden"></span>
                     </div>
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('last', 'Last Name') }}
-                        {{ Form::text('last','',['class'=>'form-control', 'tabindex' => '2']) }}
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
+                        {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first', 'tabindex' => 1]) }}
+                        <span class="help-block hidden"></span>
+                    </div>
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('middle_name', 'Middle Name', ['class' => 'control-label']) }}
+                        {{ Form::text('middle_name','',['class'=>'form-control', 'id' => 'middle', 'tabindex' => 2]) }}
+                        <span class="help-block hidden"></span>
+                    </div>
+                    <div class="form-group col-xs-3">
+                        {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
+                        {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last', 'tabindex' => 3]) }}
+                        <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('number', 'Street Number') }}
-                        {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '3']) }}
+                        {{ Form::text('number','',['class'=>'form-control', 'id' => 'street_number', 'tabindex' => 4]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('street_name', 'Street Name') }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '4']) }}
+                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name', 'tabindex' => 5]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('city', 'City') }}
-                        {{ Form::text('city','',['class'=>'form-control', 'tabindex' => '5']) }}
+                        {{ Form::text('city','',['class'=>'form-control', 'id' => 'city', 'tabindex' => 6]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('zip', 'Zip') }}
-                        {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
+                        {{ Form::text('zip','',['class'=>'form-control', 'id' => 'zip', 'tabindex' => 7]) }}
                     </div>
                     <div class = "col-xs-12">
                         <div class="radio-inline">  
@@ -96,6 +108,7 @@
                         <table class="table table-condensed">
                             <thead>
                                 <tr>
+                                    <td>ID</td>
                                     <td>NAME</td>
                                     <td>ADDRESS</td>
                                     <td>ALT ADDRESS</td>
@@ -118,55 +131,6 @@
         <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
 </div>
-<div class="modal fade" id="addCirculator" tabindex="-1" role="dialog" aria-labelledby="addCirculatorLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Add Circulator</h4>
-            </div>
-            {{ Form::open(['url' => 'circulator/add', 'method' => 'post', 'id' => 'addCirculatorForm']) }}
-            <div class="modal-body">
-                <div class="row">
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
-                        {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-6">
-                        {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
-                        {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
-                        {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('street_name', 'Street Name', ['class' => 'control-label']) }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('city', 'City', ['class' => 'control-label']) }}
-                        {{ Form::text('city','',['class'=>'form-control', 'id' => 'city']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('zip', 'Zip', ['class' => 'control-label']) }}
-                        {{ Form::text('zip','',['class'=>'form-control', 'id' => 'zip']) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </div>
-        {{ Form::close() }}
-    </div>
     
 <script type="text/javascript">
     var searchResults;
@@ -249,10 +213,12 @@
             $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
             var data = {
                 exact_match: 1,
+                vid: $('#voter_id').val(),
                 first: $('#first').val(),
+                middle: $('#middle').val(),
                 last: $('#last').val(),
                 street_name: $('#street_name').val(),
-                number: $('#number').val(),
+                number: $('#street_number').val(),
                 city: $('#city').val(),
                 zip: $('#zip').val(),
                 _token: $('input[name="_token"').val()
@@ -277,8 +243,15 @@
                         }
                         var html = '';
                         $.each(res.matches, function(i,v){
-                            html += '<tr class="match" data-voter-id="' + v.voter_id + '"><td>'
-                                + v.first_name + ' ';
+                            html += '<tr class="match" data-voter-id="' + v.voter_id + '"><td>';
+
+                            if(v.voter_id){
+                                html += '<span class="text-muted">' + v.voter_id + '</span></td><td>';
+                            } else {
+                                '</td><td>';
+                            }
+                            
+                            html += v.first_name + ' ';
                             if(v.middle_name)
                                 html += v.middle_name + ' ';
                             html += v.last_name + '</td><td>'
@@ -307,7 +280,7 @@
         });
 
         // Listen for the ENTER keypress in the search form
-        $('#first,#last,#street_name,#number,#city,#zip').keypress(function (e) {
+        $('#first,#middle,#last,#street_name,#number,#city,#zip').keypress(function (e) {
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }

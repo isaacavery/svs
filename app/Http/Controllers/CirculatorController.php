@@ -45,54 +45,71 @@ class CirculatorController extends Controller
         $v1 = [];
         $no_data = true;
         $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id NOT IN (SELECT voter_id FROM circulators WHERE voter_id IS NOT NULL) ";
-        if($form['first']) {
-            $no_data = false;
-            $q1 .= "AND first_name LIKE ? ";
-            if($exact_match){
-                $v1[] = strtoupper($form['first']);
-                $circulators->where('first_name',strtoupper($form['first']));
-            } else {
-                $v1[] = '%' . strtoupper($form['first']) . '%';
-                $circulators->where('first_name','%' . strtoupper($form['first']) . '%');
+        if($form['vid']){
+            $q1 .= 'AND voter_id = ' . $form['vid'] . ' ';
+            $circulators->where('voter_id',$form['vid']);
+        } else {
+            if($form['first']) {
+                $no_data = false;
+                $q1 .= "AND first_name LIKE ? ";
+                if($exact_match){
+                    $v1[] = strtoupper($form['first']);
+                    $circulators->where('first_name',strtoupper($form['first']));
+                } else {
+                    $v1[] = '%' . strtoupper($form['first']) . '%';
+                    $circulators->where('first_name','%' . strtoupper($form['first']) . '%');
 
+                }
             }
-        }
-        if($form['last']) {
-            $no_data = false;
-            $q1 .= "AND last_name LIKE ? ";
-            if($exact_match){
-                $v1[] = strtoupper($form['last']);
-                $circulators->where('last_name',strtoupper($form['last']));
-            } else {
-                $v1[] = '%' . strtoupper($form['last']) . '%';
-                $circulators->where('last_name','%' . strtoupper($form['last']) . '%');
+            if($form['middle']) {
+                $no_data = false;
+                $q1 .= "AND middle_name LIKE ? ";
+                if($exact_match){
+                    $v1[] = strtoupper($form['middle']);
+                    $circulators->where('middle_name',strtoupper($form['middle']));
+                } else {
+                    $v1[] = '%' . strtoupper($form['middle']) . '%';
+                    $circulators->where('middle_name','%' . strtoupper($form['middle']) . '%');
 
+                }
             }
-        }
-        if($form['city']) {
-            $no_data = false;
-            $q1 .= "AND city LIKE ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['city']) : '%' . strtoupper($form['city']) . '%';
-        }
-        if($form['zip']) {
-            $no_data = false;
-            $q1 .= "AND (zip_code = ? OR eff_zip_code = ?) ";
-            $val = $form['zip'];
-            $v1[] = $val;
-            $v1[] = $val;
-        }
-        if($form['number']) {
-            $no_data = false;
-            $q1 .= "AND house_num = ? ";
-            $v1[] = $form['number'];
-        }
-        if($form['street_name']) {
-            $no_data = false;
-            $q1 .= "AND street_name like ? ";
-            $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
-        }
-        if($no_data){
-            return json_encode(['success' => false, 'error' => 'No search parameters provided']);
+            if($form['last']) {
+                $no_data = false;
+                $q1 .= "AND last_name LIKE ? ";
+                if($exact_match){
+                    $v1[] = strtoupper($form['last']);
+                    $circulators->where('last_name',strtoupper($form['last']));
+                } else {
+                    $v1[] = '%' . strtoupper($form['last']) . '%';
+                    $circulators->where('last_name','%' . strtoupper($form['last']) . '%');
+
+                }
+            }
+            if($form['city']) {
+                $no_data = false;
+                $q1 .= "AND city LIKE ? ";
+                $v1[] = ($exact_match) ? strtoupper($form['city']) : '%' . strtoupper($form['city']) . '%';
+            }
+            if($form['zip']) {
+                $no_data = false;
+                $q1 .= "AND (zip_code = ? OR eff_zip_code = ?) ";
+                $val = $form['zip'];
+                $v1[] = $val;
+                $v1[] = $val;
+            }
+            if($form['number']) {
+                $no_data = false;
+                $q1 .= "AND house_num = ? ";
+                $v1[] = $form['number'];
+            }
+            if($form['street_name']) {
+                $no_data = false;
+                $q1 .= "AND street_name like ? ";
+                $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
+            }
+            if($no_data){
+                return json_encode(['success' => false, 'error' => 'No search parameters provided']);
+            }
         }
         $q1 .= 'LIMIT 10';
         //$q1 .= 'LIMIT 10';
@@ -100,7 +117,7 @@ class CirculatorController extends Controller
         foreach($circulators->get() as $res){
             $res2[] = [
                 'circulator_id' => $res->id,
-                'voter_id' => '',
+                'voter_id' => $res->voter_id,
                 'first_name' => $res->first_name,
                 'middle_name' => $res->middle_name,
                 'last_name' => $res->last_name,
