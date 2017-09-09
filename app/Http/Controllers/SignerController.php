@@ -149,15 +149,6 @@ class SignerController extends Controller
 
                 }
             }
-            if($form['middle']) {
-                $no_data = false;
-                $q1 .= "AND middle_name LIKE ? ";
-                if($exact_match){
-                    $v1[] = strtoupper($form['middle']);
-                } else {
-                    $v1[] = '%' . strtoupper($form['middle']) . '%';
-                }
-            }
             if($form['last']) {
                 $no_data = false;
                 $q1 .= "AND last_name LIKE ? ";

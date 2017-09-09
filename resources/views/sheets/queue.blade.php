@@ -49,41 +49,36 @@
                     </tbody>
                 </table>
                 <div class="row">
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
-                        {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 8]) }}
-                        <span class="help-block hidden"></span>
-                    </div>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-xs-5">
                         {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
                         {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first', 'tabindex' => 1]) }}
                         <span class="help-block hidden"></span>
                     </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('middle_name', 'Middle Name', ['class' => 'control-label']) }}
-                        {{ Form::text('middle_name','',['class'=>'form-control', 'id' => 'middle', 'tabindex' => 2]) }}
+                    <div class="form-group col-xs-5">
+                        {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
+                        {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last', 'tabindex' => 2]) }}
                         <span class="help-block hidden"></span>
                     </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
-                        {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last', 'tabindex' => 3]) }}
+                    <div class="form-group col-xs-2">
+                        {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
+                        {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 7]) }}
                         <span class="help-block hidden"></span>
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('number', 'Street Number') }}
-                        {{ Form::text('number','',['class'=>'form-control', 'id' => 'street_number', 'tabindex' => 4]) }}
+                        {{ Form::text('number','',['class'=>'form-control', 'id' => 'street_number', 'tabindex' => 3]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('street_name', 'Street Name') }}
-                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name', 'tabindex' => 5]) }}
+                        {{ Form::text('street_name','',['class'=>'form-control', 'id' => 'street_name', 'tabindex' => 4]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('city', 'City') }}
-                        {{ Form::text('city','',['class'=>'form-control', 'id' => 'city', 'tabindex' => 6]) }}
+                        {{ Form::text('city','',['class'=>'form-control', 'id' => 'city', 'tabindex' => 5]) }}
                     </div>
                     <div class="form-group col-xs-3">
                         {{ Form::label('zip', 'Zip') }}
-                        {{ Form::text('zip','',['class'=>'form-control', 'id' => 'zip', 'tabindex' => 7]) }}
+                        {{ Form::text('zip','',['class'=>'form-control', 'id' => 'zip', 'tabindex' => 6]) }}
                     </div>
                     <div class = "col-xs-12">
                         <div class="radio-inline">  
@@ -109,10 +104,10 @@
                         <table class="table table-condensed">
                             <thead>
                                 <tr>
-                                    <td>ID</td>
                                     <td>NAME</td>
                                     <td>ADDRESS</td>
                                     <td>ALT ADDRESS</td>
+                                    <td>ID</td>
                                 </tr>
                             </thead>
                             <tbody id="search-results">
@@ -216,7 +211,6 @@
                 exact_match: 1,
                 vid: $('#voter_id').val(),
                 first: $('#first').val(),
-                middle: $('#middle').val(),
                 last: $('#last').val(),
                 street_name: $('#street_name').val(),
                 number: $('#street_number').val(),
@@ -245,23 +239,23 @@
                         var html = '';
                         $.each(res.matches, function(i,v){
                             html += '<tr class="match" data-voter-id="' + v.voter_id + '"><td>';
-
-                            if(v.voter_id){
-                                html += '<span class="text-muted">' + v.voter_id + '</span></td><td>';
-                            } else {
-                                '</td><td>';
-                            }
                             
                             html += v.first_name + ' ';
                             if(v.middle_name)
                                 html += v.middle_name + ' ';
                             html += v.last_name + '</td><td>'
                                 + v.res_address_1 + ' ' + v.city + ' ' + v.zip_code + '</td><td>';
-                            html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '<td>';
+                            html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '</td>';
+
+                            if(v.voter_id){
+                                html += '<td><span class="text-muted">' + v.voter_id + '</span></td>';
+                            } else {
+                                '<td></td>';
+                            }
                         });
                         $('#search-results').html(html);
                         $('#searchFinished').show();
-												$('#results-container').removeClass('hidden');
+						$('#results-container').removeClass('hidden');
                     }
                 } else {
                     $('#search-results').html('<tr><td colspan="3" class="text-danger">Error: ' + res.error + '</td></tr>');
@@ -281,7 +275,7 @@
         });
 
         // Listen for the ENTER keypress in the search form
-        $('#first,#middle,#last,#street_name,#number,#city,#zip').keypress(function (e) {
+        $('#first,#last,#street_name,#street_number,#city,#zip,#voter_id').keypress(function (e) {
           if (e.which == 13) {
             $('#search_submit_btn').click();
           }

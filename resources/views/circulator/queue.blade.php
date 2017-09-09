@@ -59,41 +59,36 @@
                     @endforeach
                 </ul>
                     <div class="row">
-                        <div class="form-group col-xs-3">
-                            {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
-                            {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id']) }}
-                            <span class="help-block hidden"></span>
-                        </div>
-                        <div class="form-group col-xs-3">
+                        <div class="form-group col-xs-5">
                             {{ Form::label('first_name', 'First Name', ['class' => 'control-label']) }}
-                            {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first']) }}
+                            {{ Form::text('first_name','',['class'=>'form-control', 'id' => 'first', 'tabindex' => 1]) }}
                             <span class="help-block hidden"></span>
                         </div>
-                        <div class="form-group col-xs-3">
-                            {{ Form::label('middle_name', 'Middle Name', ['class' => 'control-label']) }}
-                            {{ Form::text('middle_name','',['class'=>'form-control', 'id' => 'middle']) }}
-                            <span class="help-block hidden"></span>
-                        </div>
-                        <div class="form-group col-xs-3">
+                        <div class="form-group col-xs-5">
                             {{ Form::label('last_name', 'Last Name', ['class' => 'control-label']) }}
-                            {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last']) }}
+                            {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last', 'tabindex' => 2]) }}
+                            <span class="help-block hidden"></span>
+                        </div>
+                        <div class="form-group col-xs-2">
+                            {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
+                            {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 7]) }}
                             <span class="help-block hidden"></span>
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('number', 'Street Number') }}
-                            {{ Form::text('number','',['class'=>'form-control', 'tabindex' => '3']) }}
+                            {{ Form::text('number','',['class'=>'form-control', 'tabindex' => 3]) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('street_name', 'Street Name') }}
-                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => '4']) }}
+                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => 4]) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('city', 'City') }}
-                            {{ Form::text('city','',['class'=>'form-control', 'tabindex' => '5']) }}
+                            {{ Form::text('city','',['class'=>'form-control', 'tabindex' => 5]) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('zip', 'Zip') }}
-                            {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => '6']) }}
+                            {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => 6]) }}
                         </div>
                     </div>
                     <div class="col-xs-12">
@@ -120,10 +115,10 @@
                    <table class="table table-condensed">
                     <thead>
                         <tr>
-                            <td>ID</td>
                             <td>NAME</td>
                             <td>ADDRESS</td>
                             <td>ALT ADDRESS</td>
+                            <td>ID</td>
                         </tr>
                     </thead>
                     <tbody id="search-results">
@@ -269,6 +264,7 @@
                 $('.recent-circulators').addClass('hidden');
                 updateSheet('signature_count',1);
                 $('#signature-count-group button').removeClass('btn-primary').addClass('btn-default').first().removeClass('btn-default').addClass('btn-primary');
+                // @TODO: Check if circulator has been added and is a voter. If yes, add as Signer.
             } else {
                 $('.numOfSignatures').removeClass('hidden').show();
                 $('.recent-circulators').removeClass('hidden').show();
@@ -310,7 +306,6 @@
                 exact_match: 1,
                 vid: $('#voter_id').val(),
                 first: $('#first').val(),
-                middle: $('#middle').val(),
                 last: $('#last').val(),
                 street_name: $('#street_name').val(),
                 number: $('#number').val(),
@@ -341,11 +336,6 @@
                         $.each(res.matches, function(i,v){
                             html += '<tr class="match" data-voter-id="' + v.voter_id + '" data-circulator-id="' + v.circulator_id + '" onclick="javascript:selectCirculator(\'' + v.voter_id + '\',\'' + v.circulator_id + '\')"><td>';
 
-                            if(v.voter_id){
-                                html += '<span class="text-muted">' + v.voter_id + '</span></td><td>';
-                            } else {
-                                '</td><td>';
-                            }
                             if(v.circulator_id){
                                 html += '<span class="glyphicon glyphicon-user"></span> ';
                             }
@@ -354,7 +344,13 @@
                                 html += v.middle_name + ' ';
                             html += v.last_name + '</td><td>'
                                 + v.res_address_1 + ' ' + v.city + ' ' + v.zip_code + '</td><td>';
-                            html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '<td>';
+                            html += (v.res_address_1 == v.eff_address_1) ? '</td>' : v.eff_address_1 + '</td>';
+
+                            if(v.voter_id){
+                                html += '<td><span class="text-muted">' + v.voter_id + '</span></td>';
+                            } else {
+                                '<td></td>';
+                            }
                         });
                         $('#search-results').html(html);
                         $('#searchFinished').show();
