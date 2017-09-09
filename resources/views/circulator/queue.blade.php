@@ -505,7 +505,11 @@
                     // Update the UI
                     var voter = res.circulator;
                     var html = '<p class="text-muted"><strong class="text-primary">'
-                        + voter.first_name + ' ' + voter.middle_name + ' ' + voter.last_name + '</strong><br />'
+                        + voter.first_name + ' ';
+                        
+                    if(voter.middle_name) html += voter.middle_name + ' ';
+
+                    html += voter.last_name + '</strong><br />'
                         + voter.address + ', ' + voter.city + ', OR ' + voter.zip_code;
                     $('#voter-match').attr('data-selected',voter.voter_id).html(html).show();
                     $('#remove-circulator-btn').show().removeClass('hidden');
