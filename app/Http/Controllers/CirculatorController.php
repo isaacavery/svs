@@ -75,11 +75,13 @@ class CirculatorController extends Controller
             }
             if($form['city']) {
                 $no_data = false;
+                $circulators->whereRaw('UPPER(city) LIKE "' . strtoupper($form['city']) . '"');
                 $q1 .= "AND city LIKE ? ";
                 $v1[] = ($exact_match) ? strtoupper($form['city']) : '%' . strtoupper($form['city']) . '%';
             }
             if($form['zip']) {
                 $no_data = false;
+                $circulators->where('zip_code',$form['zip']);
                 $q1 .= "AND (zip_code = ? OR eff_zip_code = ?) ";
                 $val = $form['zip'];
                 $v1[] = $val;
@@ -87,11 +89,13 @@ class CirculatorController extends Controller
             }
             if($form['number']) {
                 $no_data = false;
+                $circulators->where('street_number',$form['number']);
                 $q1 .= "AND house_num = ? ";
                 $v1[] = $form['number'];
             }
             if($form['street_name']) {
                 $no_data = false;
+                $circulators->whereRaw('UPPER(street_name) LIKE "' . strtoupper($form['street_name']) . '"');
                 $q1 .= "AND street_name like ? ";
                 $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
             }
