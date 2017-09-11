@@ -1,7 +1,12 @@
 /node_modules
 /public/hot
+/public/uploads
 /public/storage
+/public/uploads/circulators.csv
+/public/uploads/signers.csv
 /storage/*.key
+/storage/voter_data
+composer.lock
 /vendor
 /.idea
 /.vagrant
@@ -9,3 +14,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 .env
+.DS_Store
+ubuntu-xenial-16.04-cloudimg-console.log

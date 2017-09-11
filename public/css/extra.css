@@ -1,0 +1,97 @@
+	/*Custom CSS*/
+
+    .noMargin {
+        margin-top:0px;
+    }
+    div.panel-body {
+        padding:5px;
+    }
+    
+    .modal-header,h4, .close {
+        background-color: #286091;
+        color:white !important;
+        text-align: center;
+    }
+    .modal-footer {
+        background-color: #f9f9f9;
+    }
+    
+    table {
+        counter-reset: rowNumber;
+    }
+    
+    tr:hover {
+        cursor: pointer;
+        background-color:lightyellow;
+    }
+    
+    table tr.signer {
+        counter-increment: rowNumber;
+    } 
+    
+    table tr.signer td:first-child::before {
+        content: counter(rowNumber);
+        min-width: 1em;
+        margin-right: 0.5em;
+    }
+    
+    tr #search-results:hover {
+        background-color:lightyellow;
+    }
+    
+    .panel-body{
+        padding: 0px;
+    }
+    
+    input.form-control {
+        padding:0px;
+    }
+    #formDiv {
+        padding:0px;
+    }
+    
+    #searchHeader {
+        text-align: center;
+        background-color: #838687;
+        color:white !important;
+        margin-top: 5px; 
+        border-radius: 5px;
+        font-size: 20px;	
+        padding: 2px;
+    }
+    
+    #numOfSignatures:hover {
+        cursor: pointer;
+    }
+    
+    #ajaxSpinnerContainer {
+        height:11px;
+        display:none;
+        position:absolute;
+        top:50%;
+        left:50%;
+    }
+    
+    .blockUI {
+        width:100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0,.5);
+        z-index: 1000;
+    
+    }
+    
+    input {
+        padding: 0 5px !important;
+    }
+
+    .btn-xs {
+        padding: 0px 5px 0px 5px;
+        border: 0px;
+        margin: 0;
+    }
+
+    .signer-info {
+        background-color: #d9edf7 !important;
+    }
+    
