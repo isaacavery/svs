@@ -90,7 +90,7 @@ class SheetController extends Controller
  public function queue() {
     	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('signatures_completed_by')->whereNotNull('circulator_completed_by')
             ->where(function ($query) {
-                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 5 * 60))
+                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 30 * 60))
                 ->orWhereNull('checked_out');
             })->with('signers')->first();
     	if(!$data['sheet'])

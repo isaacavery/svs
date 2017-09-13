@@ -18,7 +18,7 @@ class CirculatorController extends Controller
         $data['recent_circulators'] = Circulator::limit(3)->orderBy('updated_at','desc')->get();
     	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
             ->where(function ($query) {
-                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 5 * 60))
+                $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 30 * 60))
                 ->orWhereNull('checked_out');
             })->with('circulator')->first();
     	if(!$data['sheet'])
