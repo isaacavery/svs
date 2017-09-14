@@ -71,24 +71,26 @@
                         </div>
                         <div class="form-group col-xs-2">
                             {{ Form::label('voter_id', 'Voter ID', ['class' => 'control-label']) }}
-                            {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 7]) }}
+                            {{ Form::text('voter_id','',['class'=>'form-control', 'id' => 'voter_id', 'tabindex' => 8]) }}
                             <span class="help-block hidden"></span>
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('number', 'Street Number') }}
                             {{ Form::text('number','',['class'=>'form-control', 'tabindex' => 3]) }}
+                            {{ Form::checkbox('po_box','yes',0,['tabindex' => '4', 'id' => 'po_box']) }} 
+                            {{ Form::label('po_box', 'This is a PO Box') }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('street_name', 'Street Name') }}
-                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => 4]) }}
+                            {{ Form::text('street_name','',['class'=>'form-control', 'tabindex' => 5]) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('city', 'City') }}
-                            {{ Form::text('city','',['class'=>'form-control', 'tabindex' => 5]) }}
+                            {{ Form::text('city','',['class'=>'form-control', 'tabindex' => 6]) }}
                         </div>
                         <div class="form-group col-xs-3">
                             {{ Form::label('zip', 'Zip') }}
-                            {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => 6]) }}
+                            {{ Form::text('zip','',['class'=>'form-control', 'tabindex' => 7]) }}
                         </div>
                     </div>
                     <div class="col-xs-12">
@@ -311,6 +313,7 @@
                 number: $('#number').val(),
                 city: $('#city').val(),
                 zip: $('#zip').val(),
+                po_box: $('#po_box').first().is(':checked'),
                 _token: $('input[name="_token"').val()
             };
             
