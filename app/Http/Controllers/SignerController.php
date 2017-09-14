@@ -135,7 +135,7 @@ class SignerController extends Controller
         $exact_match = $form['exact_match'];
         $v1 = [];
         $no_data = true;
-        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, eff_address_1, city, county, zip_code FROM voters WHERE voter_id IS NOT NULL ";
+        $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, COALESCE(eff_address_1,eff_address_2) eff_address_1, city, county, zip_code FROM voters WHERE voter_id IS NOT NULL ";
         if($form['vid']){
             $q1 .= 'AND voter_id = ' . $form['vid'] . ' ';
         } else {
@@ -171,15 +171,24 @@ class SignerController extends Controller
                 $v1[] = $val;
                 $v1[] = $val;
             }
-            if($form['number']) {
+            if(isset($form['po_box']) && $form['po_box'] == 'true'){
+                // Perform PO Box Search
+                if(!$form['number'])
+                    die('Please enter a PO Box number in the "Street Number" field.');
+
+                $q1 .= " AND (eff_address_1 LIKE 'PO BOX " . $form['number'] . "' OR eff_address_2 LIKE 'PO BOX " . $form['number'] . "') ";
                 $no_data = false;
-                $q1 .= "AND house_num like ? ";
-                $v1[] = strtoupper($form['number']);
-            }
-            if($form['street_name']) {
-                $no_data = false;
-                $q1 .= "AND street_name like ? ";
-                $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
+            } else {
+                if($form['number']) {
+                    $no_data = false;
+                    $q1 .= "AND house_num like ? ";
+                    $v1[] = strtoupper($form['number']);
+                }
+                if($form['street_name']) {
+                    $no_data = false;
+                    $q1 .= "AND street_name like ? ";
+                    $v1[] = ($exact_match) ? strtoupper($form['street_name']) : '%' . strtoupper($form['street_name']) . '%';
+                }
             }
             if($no_data){
                 return json_encode(['success' => false, 'error' => 'No search parameters provided']);
