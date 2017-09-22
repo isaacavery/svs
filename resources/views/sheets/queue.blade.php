@@ -124,7 +124,7 @@
     </div>
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12 btn-toolbar">
-        <a href="#" class="btn btn-primary">Exit</a>
+        <a href="/" class="btn btn-primary">Exit</a>
         <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
         <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
@@ -148,13 +148,13 @@
                 console.log('Cannot submit yet ... incomplete.');
             }
         });
-        $(document)
-        .ajaxStart(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeIn();
-        })
-        .ajaxStop(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeOut();
-        });
+  //      $(document)
+  //     .ajaxStart(function(){
+  //        $('#blockui, #ajaxSpinnerContainer').fadeIn();
+  //      })
+  //      .ajaxStop(function(){
+  //          $('#blockui, #ajaxSpinnerContainer').fadeOut();
+  //      });
        var signerCnt  = {{ count($voters) }};
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();

@@ -20,7 +20,6 @@
             <div class="col-xs-12 col-md-6">
                 <img src="/uploads/{{ $sheet->filename }}" width="100%">
                 <p><strong>Sheet ID:</strong> <span id="sheet_id">{{ $sheet->id }}</span> <strong>File name:</strong> <span id="filename">{{ $sheet->original_filename }}</span></p>
-               
             </div>
             <div class="col-xs-12 col-md-6">
                 <h3>Sheet Type</h3>
@@ -127,7 +126,7 @@
                     </tbody>
                     </table>
                     <div class="pull-right">
-                       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
+                       <button type="button" class="btn btn-primary" id="new-circulator" data-toggle="modal" data-target="#addCirculator">No Match - Create New Record</button>
                     </div>
                 </div>
               
@@ -140,7 +139,7 @@
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12">
          <div class="btn-toolbar">
-            <a href="#" class="btn btn-primary">Exit</a>
+            <a href="/" class="btn btn-primary">Exit</a>
             <a href="#" class="btn btn-primary pull-right" id="finish-sheet" disabled ='true'>Finish &amp; Get Next Sheet ></a>
             <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal" style="margin-right: 20px;">Flag Sheet &amp; Skip</a>
         </div>
@@ -199,14 +198,11 @@
     var searchResults;
 
     $('document').ready(function(){
-        $(document)
-        .ajaxStart(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeIn();
+        $('#new-circulator').on('click', function(e) {
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
         })
-        .ajaxStop(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeOut();
-        });
-        $('#addCirculatorForm').on('submit',function(e){
+        $('#addCirculatorForm').on('submit', function(e){
+            console.log("New Circulator");
             e.preventDefault();
             var form = $(e.currentTarget);
             var data = form.serialize();
@@ -216,7 +212,7 @@
                 console.log(res);
                 var resData = $.parseJSON(res);
                 if(resData.success){
-                    $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
+ //                   $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
                     $('#addCirculator').modal('hide');
                     $('body').removeClass('modal-open');
                     $('.modal-backdrop').remove();
@@ -302,6 +298,7 @@
         // Search for signer
         $('#search_submit_btn').click(function(e){
             e.preventDefault();
+            
             // Submit Circulator search
             $('#search-results').html('<tr><td colspan="3" class="text-primary">Searching, please wait ...</td></tr>');
             var data = {
@@ -504,8 +501,8 @@
                 // Deal with response
                 if(res.success){
                     var msg = "Success: " + res.message;
-                    $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
-                    // Update the UI
+ //                   $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                   // Update the UI
                     var voter = res.circulator;
                     var html = '<p class="text-muted"><strong class="text-primary">'
                         + voter.first_name + ' ';

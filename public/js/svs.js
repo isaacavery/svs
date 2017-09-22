@@ -21,7 +21,7 @@ function updateSheet(type,val){
             if(res.success){
                 console.log(callbackData);
                 var msg = "Success: " + res.message;
-                $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>');
+                <!-- $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + msg + '</div>'); -->
                 if(callbackData.type == 'comments'){
                     // Add new comment to the display
                     $('ul#comments').append('<li class="text-success">' + callbackData.val + '</li>');
