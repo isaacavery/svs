@@ -139,7 +139,7 @@ class CirculatorController extends Controller
     public function add(StoreCirculator $request) {
     	// Store Circulator
         try{
-            $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip), 'user_id' => Auth::user()->id]);
+            $circulator = Circulator::create(['first_name' => trim(strtoupper($request->first_name)), 'last_name' => trim(strtoupper($request->last_name)), 'street_name' => trim(strtoupper($request->street_name)), 'street_number' => trim(strtoupper($request->street_number)), 'address' => trim(strtoupper($request->street_number)) . ' ' . trim(strtoupper($request->street_name)),'city' => trim(strtoupper($request->city)), 'zip_code' => trim($request->zip), 'user_id' => Auth::user()->id,'state' => $request->state]);
             if($circulator){
                 // Circulator was created. Return the id.
                 return json_encode(['success' => 'true', 'message' => 'Circulator added as Circulator #' . $circulator->id, 'id' => $circulator->id]);

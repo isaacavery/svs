@@ -26,6 +26,7 @@ class CreateCirculatorsTable extends Migration
             $table->integer('street_number')->nullable()->default(null);
             $table->char('address',255);
             $table->char('city',255);
+            $table->char('state',2)->default('OR');
             $table->integer('zip_code');
             $table->timestamps();
             $table->index('first_name');
