@@ -46,7 +46,7 @@
                 <h3>Circulator Date</h3>
                 {{ Form::date('date', $sheet->date_signed) }}
                 <div style="padding-top:20px" id="voter-match">
-                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
+                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, {{ $sheet->circulator->state }} {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
                 <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default {{ ($sheet->circulator) ? '' : 'hidden' }}">Remove Circulator</a>
