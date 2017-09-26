@@ -91,8 +91,9 @@ class CirculatorController extends Controller
                 // Perform PO Box Search
                 if(!$form['number'])
                     die('Please enter a PO Box number in the "Street Number" field.');
-
-                $q1 .= " AND (eff_address_1 LIKE 'PO BOX " . $form['number'] . "' OR eff_address_2 LIKE 'PO BOX " . $form['number'] . "') ";
+                $num = $form['number'];
+                $pobox_list = "('PO BOX $num', 'P O BOX $num', 'POBOX $num', 'POB $num')"; 
+                $q1 .= " AND (eff_address_1 IN $pobox_list OR eff_address_2 IN $pobox_list) ";
                 $no_data = false;
             } else {
                 if($form['number']) {
@@ -113,7 +114,6 @@ class CirculatorController extends Controller
             }
         }
         $q1 .= 'LIMIT 10';
-        //$q1 .= 'LIMIT 10';
         $res1 = DB::select($q1,$v1);
         foreach($circulators->get() as $res){
             $res2[] = [
