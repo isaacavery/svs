@@ -225,6 +225,10 @@
                 data['exact_match'] = 0;
             }
 
+            // Reset the PO Box and Loose Search options
+            $('input[name="exact_match"]').prop('checked',false).filter('[value="1"]').prop('checked',true);
+            $('#po_box').attr('checked',false);
+
             $.post('/signers/search',data, function(res, status, jqXHR){
                 // Deal with response
                 if(res.success){

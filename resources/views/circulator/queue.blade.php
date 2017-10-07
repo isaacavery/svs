@@ -377,6 +377,10 @@
             if ($('input#exact_match[value="0"]').is(':checked')) {
                 data['exact_match'] = 0;
             }
+            
+            // Reset the PO Box and Loose Search options
+            $('input[name="exact_match"]').prop('checked',false).filter('[value="1"]').prop('checked',true);
+            $('#po_box').attr('checked',false);
 
             $.post('/circulators/search',data, function(res, status, jqXHR){
                 // Deal with response
