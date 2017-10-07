@@ -15,8 +15,8 @@ use Exception;
 class CirculatorController extends Controller
 {
     public function queue() {
-        $data['recent_circulators'] = Circulator::limit(5)->orderBy('updated_at','desc')->get();
-    	$data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
+        $data['recent_circulators'] = Circulator::with('voter')->limit(5)->orderBy('updated_at','desc')->get();
+        $data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
             ->where(function ($query) {
                 $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 30 * 60))
                 ->orWhereNull('checked_out');
@@ -41,7 +41,7 @@ class CirculatorController extends Controller
         $form = $request->all();
         $exact_match = $form['exact_match'];
         // Step 1: search for existing Circulators
-        $circulators = Circulator::limit(5);
+        $circulators = Circulator::with('voter')->limit(5);
         $v1 = [];
         $no_data = true;
         $q1 = "SELECT '' as circulator_id, voter_id, first_name, middle_name, last_name, res_address_1, COALESCE(eff_address_1,eff_address_2) eff_address_1, city, county, zip_code FROM voters WHERE voter_id NOT IN (SELECT voter_id FROM circulators WHERE voter_id IS NOT NULL) ";
@@ -123,7 +123,7 @@ class CirculatorController extends Controller
                 'middle_name' => $res->middle_name,
                 'last_name' => $res->last_name,
                 'res_address_1' => $res->street_number . ' ' . $res->street_name,
-                'eff_address_1' => '',
+                'eff_address_1' => ($res->voter) ? $res->voter->eff_address_1 : '',
                 'city' => $res->city,
                 'county' => '',
                 'zip_code' => $res->zip_code
@@ -221,7 +221,7 @@ class CirculatorController extends Controller
                 'street_number' => $voter->house_num,
                 'street_name' => $voter->street_name,
                 'city' => $voter->city,
-                'zip_code' => $voter->eff_szip_code,
+                'zip_code' => $voter->eff_zip_code,
                 'address' => $voter->res_address_1,
                 'voter_id' => $voter->voter_id,
                 'zip_code' => $voter->zip_code,

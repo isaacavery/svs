@@ -54,7 +54,11 @@
                  <h3>Circulator</h3>
                 <ul class="recent-circulators">
                     @foreach($recent_circulators as $circ)
-                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a>
+                        @if($circ->voter && $circ->address != $circ->voter->eff_address_1)
+                            ({{ $circ->voter->eff_address_1 }}, {{ $circ->voter->eff_city }}, {{ $circ->voter->eff_state }} {{ $circ->voter->eff_zip_code }})
+                        @endif
+                        </li>
                     @endforeach
                 </ul>
                     <div class="row">
