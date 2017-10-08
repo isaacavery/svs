@@ -45,6 +45,9 @@
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('date', $sheet->date_signed) }}
+                @if(!$sheet->date_signed && $last_date->date_signed)
+                    <a href="#" onclick="updateDate('{{ $last_date->date_signed }}')">{{ date('m/d/Y', strtotime($last_date->date_signed)) }}</a>
+                @endif
                 <div style="padding-top:20px" id="voter-match">
                 @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, {{ $sheet->circulator->state }} {{ $sheet->circulator->zip_code }}</p>
                 @endif
@@ -269,7 +272,6 @@
             form.find('input').closest('.form-group').removeClass('has-error').find('.help-block').html('').addClass('hidden');
             $.post('/circulators/add',form.serialize(), function(res, status, jqXHR){
                 // Deal with response
-                console.log(res);
                 var resData = $.parseJSON(res);
                 if(resData.success){
  //                   $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
@@ -678,6 +680,11 @@
 
     checkCompletion();
 
+    function updateDate(date) {
+        // Set the value of the 
+        $('input[name="date"]').val(date);
+        updateSheet('date_signed', date);
+    }
         
 </script>
 </div>

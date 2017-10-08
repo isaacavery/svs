@@ -16,6 +16,7 @@ class CirculatorController extends Controller
 {
     public function queue() {
         $data['recent_circulators'] = Circulator::with('voter')->limit(5)->orderBy('updated_at','desc')->get();
+        $data['last_date'] = Sheet::select('date_signed')->where('circulator_completed_by', Auth::user()->id)->orderBy('updated_at','desc')->first();
         $data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
             ->where(function ($query) {
                 $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 30 * 60))
