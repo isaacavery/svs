@@ -227,7 +227,7 @@
 
             // Reset the PO Box and Loose Search options
             $('input[name="exact_match"]').prop('checked',false).filter('[value="1"]').prop('checked',true);
-            $('#po_box').attr('checked',false);
+            $('#po_box').prop('checked',false);
 
             $.post('/signers/search',data, function(res, status, jqXHR){
                 // Deal with response
