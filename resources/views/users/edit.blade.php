@@ -15,7 +15,9 @@
         <div class="panel-heading">Edit User</div>
 
         <div class="panel-body">
-            {{ Form::model($user, ['route' => ['users.update', $user->id]]) }}
+            {{ Form::model($user, ['url' => ['users/' . $user->id]]) }}
+            {{ method_field('PUT') }}
+            {{ Form::hidden('user_id', $user->id )}}
             <div class="form-group col-xs-12">
                 {{ Form::label('name', 'Name') }}
                 {{ Form::text('name',$user->name,['class'=>'form-control', 'tabindex' => '1']) }}

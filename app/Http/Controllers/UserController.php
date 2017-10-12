@@ -47,24 +47,39 @@ class UserController extends Controller
     	return view('users.edit',$data);
     }
 
-    public function update(Request $request)
+    public function update(UpdateUser $request, $id)
     {
-        dd($request);
+        if(!Auth::user()->admin && $id != Auth::user()->id)
+            return redirect('/')->withErrors(['Uh, oh. Sorry, you do not have permission to manage users.']);
+
+        $user = User::find($id);
+
+        if(!$user)
+            return redirect('/')->withErrors(['Uh, oh. We were unable to find the specified user.']);
+
         $this->validate($request, [
             'email' => [
                 'required',
                 Rule::unique('users')->ignore($user->id),
             ],
         ]);
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'admin' => $request->admin,
-            'active' => $request->active
-        ];
-        if($request->password)
-            $data['password'] = $request->password;
 
-        dd($data);
+        $user->name = $request->name;
+        $user->admin = (Auth::user()->admin) ? $request->admin : false;
+        $user->active = $request->active;
+
+        if($request->password){
+            $user->password = bcrypt($request->password);
+        }
+
+        if($user->save()) {
+            if(Auth::user()->admin){
+                return redirect('/users');
+            } else {
+                return redirect('/');
+            }
+        } else {
+            return redirect('/')->withErrors(['Sorry, there was an error updating this user account.']);
+        }
     }
 }
