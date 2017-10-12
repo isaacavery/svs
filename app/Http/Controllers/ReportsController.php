@@ -35,7 +35,7 @@ class ReportsController extends Controller
     		zip_plus_four,eff_address_1,eff_address_2,eff_address_3,eff_address_4,eff_city,eff_state,eff_zip_code,eff_zip_plus_four,absentee_type,precinct_name,precinct,split, est as estimated_signatures, act as actual_signatures from circulators c 
             LEFT JOIN voters v USING (voter_id)
             LEFT JOIN (select sum(signature_count) est, circulator_id FROM sheets GROUP BY circulator_id) e ON (c.id = e.circulator_id)
-            LEFT JOIN (SELECT COUNT(sheets.id) act, circulator_id FROM signers JOIN sheets ON (sheets.id = signers.sheet_id) GROUP BY circulator_id) a ON (c.id = a.circulator_id)
+            LEFT JOIN (SELECT COUNT(sheets.id) act, circulator_id FROM signers JOIN sheets ON (sheets.id = signers.sheet_id) WHERE signers.voter_id IS NOT NULL AND signers.voter_id != 0 GROUP BY circulator_id) a ON (c.id = a.circulator_id)
              ORDER BY 1 ');
     	if(!$circulators)
     		return 'There are no circulators to generate a report on.';
