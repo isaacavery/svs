@@ -124,7 +124,7 @@
     </div>
 <div id="bottom-bar" style="background: #eee; position: fixed; bottom: 0; width: 100%; padding: 12px 0;">
     <div class="col-xs-12 btn-toolbar">
-        <a href="#" class="btn btn-primary">Exit</a>
+        <a href="/" class="btn btn-primary">Exit</a>
         <a href="#" id="finish-sheet" class="btn btn-default pull-right" disabled="disabled">Finish &amp; Get Next Sheet ></a>
         <a href="#modalComment" class="btn btn-default pull-right" data-toggle="modal">Flag Sheet &amp; Skip</a>
     </div>
@@ -148,13 +148,13 @@
                 console.log('Cannot submit yet ... incomplete.');
             }
         });
-        $(document)
-        .ajaxStart(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeIn();
-        })
-        .ajaxStop(function(){
-            $('#blockui, #ajaxSpinnerContainer').fadeOut();
-        });
+  //      $(document)
+  //     .ajaxStart(function(){
+  //        $('#blockui, #ajaxSpinnerContainer').fadeIn();
+  //      })
+  //      .ajaxStop(function(){
+  //          $('#blockui, #ajaxSpinnerContainer').fadeOut();
+  //      });
        var signerCnt  = {{ count($voters) }};
         $('#addCirculatorForm').on('submit',function(e){
             e.preventDefault();
@@ -224,6 +224,10 @@
             if ($('input#exact_match[value="0"]').is(':checked')) {
                 data['exact_match'] = 0;
             }
+
+            // Reset the PO Box and Loose Search options
+            $('input[name="exact_match"]').prop('checked',false).filter('[value="1"]').prop('checked',true);
+            $('#po_box').prop('checked',false);
 
             $.post('/signers/search',data, function(res, status, jqXHR){
                 // Deal with response
@@ -408,7 +412,6 @@
 
         $.post('/signers', data, function(res, status, jqXHR){
             // Deal with response
-            console.log(res);
             if(res.success){
                 console.log(voterId);
                 $('ul#comments').append('<li class="text-success">' + res.message + '</li>');
@@ -420,18 +423,18 @@
                     + voter.res_address_1 + ', ' + voter.city + ', OR ' + voter.zip_code + '<a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
                 } else if(voterId == 0){
                     var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
-                    var html = '<td colspan="2"><strong class="text-danger signer">NO MATCH FOUND</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
+                    var html = '<td><strong class="text-danger signer">NO MATCH FOUND</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
                 } else {
                     var voter = {first_name: 'No', middle_name: 'Match', last_name: 'Found', res_address_1: '--', city: '--', zip_code: '--'};
-                    var html = '<td colspan="2"><strong class="text-default signer">SKIPPED</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>'
+                    var html = '<td><strong class="text-default signer">SKIPPED</strong></td><td><a href="#" type="button" class = "skip btn-primary btn-xs pull-right hidden">SKIP</a></td>';
+                    // Blur the enput to enable the TAB listener
+                    $('input').blur();
                 }
                 
                 $('.activeSigner').attr('data-selected',voterId).html(html).show();
-                
-                
                 $('.activeSigner').removeClass('bg-info activeSigner').addClass('done');
                 $('#numOfSigners').html('<h2 style="margin:0px; padding:0px;">' + ({{$sheet->signature_count}}-$('tr.signer').not('.done').length) + ' of ' + {{$sheet->signature_count}} +' signers added</h2>');
-                 if(!$('tr.signer').not('.done').length){  
+                if(!$('tr.signer').not('.done').length){  
                       $('#finish-sheet').attr('disabled',false).removeClass('btn-default').addClass('btn-primary');
                 }
             } else {

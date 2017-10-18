@@ -33,7 +33,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data['circulator_ready'] = Sheet::whereNull('circulator_id')->count();
+        $data['circulator_ready'] = Sheet::whereNull('circulator_id')->whereNull('flagged_by')->count();
         $data['circulator_count'] = Sheet::whereNotNull('circulator_id')->count();
         $data['circulator_unique'] = Circulator::count();
         $data['signature_count'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->first();
