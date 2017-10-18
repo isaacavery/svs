@@ -176,7 +176,9 @@ class SignerController extends Controller
                 if(!$form['number'])
                     die('Please enter a PO Box number in the "Street Number" field.');
 
-                $q1 .= " AND (eff_address_1 LIKE 'PO BOX " . $form['number'] . "' OR eff_address_2 LIKE 'PO BOX " . $form['number'] . "') ";
+                $num = $form['number'];
+                $pobox_list = "('PO BOX $num', 'P O BOX $num', 'POBOX $num', 'POB $num')"; 
+                $q1 .= " AND (eff_address_1 IN $pobox_list OR eff_address_2 IN $pobox_list) ";
                 $no_data = false;
             } else {
                 if($form['number']) {

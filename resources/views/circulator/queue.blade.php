@@ -45,8 +45,11 @@
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('date', $sheet->date_signed) }}
+                @if(!$sheet->date_signed && $last_date->date_signed)
+                    <a href="#" onclick="updateDate('{{ $last_date->date_signed }}')">{{ date('m/d/Y', strtotime($last_date->date_signed)) }}</a>
+                @endif
                 <div style="padding-top:20px" id="voter-match">
-                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, OR {{ $sheet->circulator->zip_code }}</p>
+                @if($sheet->circulator)<p class="text-muted"><strong class="text-primary">{{ $sheet->circulator->first_name }} {{{ $sheet->circulator->middle_name }}} {{ $sheet->circulator->last_name }}</strong><br />{{ $sheet->circulator->address }} {{ $sheet->circulator->city }}, {{ $sheet->circulator->state }} {{ $sheet->circulator->zip_code }}</p>
                 @endif
                 </div>
                 <a id="remove-circulator-btn" href="javascript:removeCirculator();" class="btn btn-default {{ ($sheet->circulator) ? '' : 'hidden' }}">Remove Circulator</a>
@@ -54,7 +57,11 @@
                  <h3>Circulator</h3>
                 <ul class="recent-circulators">
                     @foreach($recent_circulators as $circ)
-                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a></li>
+                        <li class="select-circulator" data-circulator-id="{{ $circ->id }}" data-voter-id="{{ $circ->voter_id }}"><a href="javascript:selectCirculator({{ ($circ->voter_id) ? $circ->voter_id : 'null' }}, {{ ($circ->id) ? $circ->id : 'null' }})"><span class="glyphicon glyphicon-user"></span> {{ $circ->first_name }} {{ $circ->middle_name }} {{ $circ->last_name }}: {{ $circ->address }}, {{ $circ->city }}, {{ $circ->zip_code }}</a>
+                        @if($circ->voter && $circ->address != $circ->voter->eff_address_1)
+                            ({{ $circ->voter->eff_address_1 }}, {{ $circ->voter->eff_city }}, {{ $circ->voter->eff_state }} {{ $circ->voter->eff_zip_code }})
+                        @endif
+                        </li>
                     @endforeach
                 </ul>
                     <div class="row">
@@ -165,8 +172,8 @@
                         {{ Form::text('last_name','',['class'=>'form-control', 'id' => 'last']) }}
                         <span class="help-block hidden"></span>
                     </div>
-                    <div class="form-group col-xs-3">
-                        {{ Form::label('street_number', 'Street Number', ['class' => 'control-label']) }}
+                    <div class="form-group col-xs-2">
+                        {{ Form::label('street_number', 'Num', ['class' => 'control-label']) }}
                         {{ Form::text('street_number','',['class'=>'form-control', 'id' => 'number']) }}
                         <span class="help-block hidden"></span>
                     </div>
@@ -180,7 +187,63 @@
                         {{ Form::text('city','',['class'=>'form-control', 'id' => 'city']) }}
                         <span class="help-block hidden"></span>
                     </div>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-xs-2">
+                        {{ Form::label('state', 'State', ['class' => 'control-label']) }}
+                    <select name="state" class="form-control">
+                        <option value="AL">AL</option>
+                        <option value="AK">AK</option>
+                        <option value="AZ">AZ</option>
+                        <option value="AR">AR</option>
+                        <option value="CA">CA</option>
+                        <option value="CO">CO</option>
+                        <option value="CT">CT</option>
+                        <option value="DE">DE</option>
+                        <option value="DC">DC</option>
+                        <option value="FL">FL</option>
+                        <option value="GA">GA</option>
+                        <option value="HI">HI</option>
+                        <option value="ID">ID</option>
+                        <option value="IL">IL</option>
+                        <option value="IN">IN</option>
+                        <option value="IA">IA</option>
+                        <option value="KS">KS</option>
+                        <option value="KY">KY</option>
+                        <option value="LA">LA</option>
+                        <option value="ME">ME</option>
+                        <option value="MD">MD</option>
+                        <option value="MA">MA</option>
+                        <option value="MI">MI</option>
+                        <option value="MN">MN</option>
+                        <option value="MS">MS</option>
+                        <option value="MO">MO</option>
+                        <option value="MT">MT</option>
+                        <option value="NE">NE</option>
+                        <option value="NV">NV</option>
+                        <option value="NH">NH</option>
+                        <option value="NJ">NJ</option>
+                        <option value="NM">NM</option>
+                        <option value="NY">NY</option>
+                        <option value="NC">NC</option>
+                        <option value="ND">ND</option>
+                        <option value="OH">OH</option>
+                        <option value="OK">OK</option>
+                        <option value="OR" selected>OR</option>
+                        <option value="PA">PA</option>
+                        <option value="RI">RI</option>
+                        <option value="SC">SC</option>
+                        <option value="SD">SD</option>
+                        <option value="TN">TN</option>
+                        <option value="TX">TX</option>
+                        <option value="UT">UT</option>
+                        <option value="VT">VT</option>
+                        <option value="VA">VA</option>
+                        <option value="WA">WA</option>
+                        <option value="WV">WV</option>
+                        <option value="WI">WI</option>
+                        <option value="WY">WY</option>
+                    </select>
+                    </div>       
+                    <div class="form-group col-xs-2">
                         {{ Form::label('zip', 'Zip', ['class' => 'control-label']) }}
                         {{ Form::text('zip','',['class'=>'form-control', 'id' => 'zip']) }}
                         <span class="help-block hidden"></span>
@@ -209,7 +272,6 @@
             form.find('input').closest('.form-group').removeClass('has-error').find('.help-block').html('').addClass('hidden');
             $.post('/circulators/add',form.serialize(), function(res, status, jqXHR){
                 // Deal with response
-                console.log(res);
                 var resData = $.parseJSON(res);
                 if(resData.success){
  //                   $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
@@ -317,6 +379,10 @@
             if ($('input#exact_match[value="0"]').is(':checked')) {
                 data['exact_match'] = 0;
             }
+            
+            // Reset the PO Box and Loose Search options
+            $('input[name="exact_match"]').prop('checked',false).filter('[value="1"]').prop('checked',true);
+            $('#po_box').attr('checked',false);
 
             $.post('/circulators/search',data, function(res, status, jqXHR){
                 // Deal with response
@@ -614,6 +680,11 @@
 
     checkCompletion();
 
+    function updateDate(date) {
+        // Set the value of the 
+        $('input[name="date"]').val(date);
+        updateSheet('date_signed', date);
+    }
         
 </script>
 </div>

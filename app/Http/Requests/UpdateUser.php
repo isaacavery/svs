@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Auth;
 
@@ -22,13 +23,18 @@ class UpdateUser extends FormRequest
      *
      * @return array
      */
-    public function rules($id)
+    public function rules()
     {
-        return [
+        $user = User::find($this->user_id);
+        $rules = [
             'name' => 'required|max:255|unique:users,name,'.$user->id,
-            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
-            'password' => 'confirmed|min:6|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id
         ];
+
+        if($this->password)
+            $rules['password'] = 'confirmed|min:6|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/';
+
+        return $rules;
     }
 
     public function messages()
