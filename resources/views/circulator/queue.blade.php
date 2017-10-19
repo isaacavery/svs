@@ -45,7 +45,7 @@
                 </div>
                 <h3>Circulator Date</h3>
                 {{ Form::date('date', $sheet->date_signed) }}
-                @if(!$sheet->date_signed && $last_date->date_signed)
+                @if(!$sheet->date_signed && $last_date && $last_date->date_signed)
                     <a href="#" onclick="updateDate('{{ $last_date->date_signed }}')">{{ date('m/d/Y', strtotime($last_date->date_signed)) }}</a>
                 @endif
                 <div style="padding-top:20px" id="voter-match">
