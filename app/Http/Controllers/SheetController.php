@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCirculator;
 use App\Sheet;
 use App\Circulator;
 use App\Voter;
+use App\Signer;
 use Auth;
 use App\Batch;
 use Exception;
@@ -159,6 +160,30 @@ class SheetController extends Controller
         if(isset($values['_token']))
             unset($values['_token']);
         foreach ($values as $key => $val) {
+            if ($key == 'self_signed') {
+                if ($val == '1' && !$sheet->self_signed) {
+                    // Remove all Signers and add a new Signer as the Circulator, if they are set
+                    if ($sheet->signers()->count()) {
+                        $sheet->signers()->delete();
+                    }
+                    if ($sheet->circulator_id) {
+                        $circulator = $sheet->circulator;
+                        $data = [
+                            'sheet_id' => $sheet->id,
+                            'voter_id' => ($circulator->voter_id) ? $circulator->voter_id : 0,
+                            'row' => 1,
+                            'user_id' => Auth::user()->id
+                        ];
+                        $signer = Signer::create($data);
+                        // And mark the sheet as Signer Complete
+                        $sheet->signatures_completed_by = Auth::user()->id;
+                    }
+                } else if ($val == '0' && $sheet->self_signed && $sheet->signatures_completed_by) {
+                    // Remove all Signers that are the same as the Circulator
+                    $sheet->signers()->delete();
+                    $sheet->signatures_completed_by = null;
+                }
+            } 
             $sheet->{$key} = ($key == 'comments') ? $sheet->{$key} . '|[' . Auth::user()->name . ' on ' . date('m/d/Y h:i:s') . '] ' . $val : $val;
         }
         if($sheet->save()){

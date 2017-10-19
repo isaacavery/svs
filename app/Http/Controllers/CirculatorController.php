@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCirculator;
 use App\Sheet;
 use App\Circulator;
 use App\Voter;
+use App\Signer;
 use Auth;
 use Exception;
 /**
@@ -210,10 +211,27 @@ class CirculatorController extends Controller
             if ($request->sid) {
                 $sheet = Sheet::find($request->sid);
                 $sheet->circulator_id = $circulator->id;
+                if ($sheet->self_signed) {
+                    // Delete any existing Signers
+                    if ($sheet->signers()->count()) {
+                        $sheet->signers()->delete();
+                    }
+                    // Add Circulator as Signer
+                    $data = [
+                        'sheet_id' => $sheet->id,
+                        'voter_id' => ($circulator->voter_id) ? $circulator->voter_id : 0,
+                        'row' => 1,
+                        'user_id' => Auth::user()->id
+                    ];
+                    $signer = Signer::create($data);
+                    // And mark the sheet as Signer Complete
+                    $sheet->signatures_completed_by = Auth::user()->id;
+                }
                 $sheet->save();
             } else {
                 throw new Exception('No Sheet ID specified');
             }
+
 
             return json_encode(['success' => true, 'message' => 'Assigned ' . $circulator->first_name . ' ' . $circulator->last_name . ' as the circulator for this sheet', 'circulator' => $circulator->toArray()]);
         } catch(\Exception $e) {
@@ -235,6 +253,11 @@ class CirculatorController extends Controller
 
             $sheet = Sheet::find($request->sid);
             $sheet->circulator_id = null;
+            // Remove the Signer if it is a self-signed
+            if ($sheet->self_signed) {
+                $sheet->signers()->delete();
+                $sheet->signatures_completed_by = null;
+            }
             $sheet->save();
 
             return json_encode(['success' => true, 'message' => 'Removed circulator from sheet ' . $request->sid]);
