@@ -274,7 +274,6 @@
                 // Deal with response
                 var resData = $.parseJSON(res);
                 if(resData.success){
- //                   $('#messages').append('<div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + resData.message + '</div>');
                     $('#addCirculator').modal('hide');
                     $('body').removeClass('modal-open');
                     $('.modal-backdrop').remove();
@@ -310,7 +309,14 @@
                 updateSheet('flagged_by',{{ Auth::user()->id }});
                 // Reload the page to retrieve the next sheet in the queue
                 setTimeout(function(){
-                    location.reload(true);
+                    var singleSigner = $('input[name="type"][value="1"]').is(':checked');
+                    var url = window.location.href;    
+                    if (url.indexOf('?') > -1){
+                        url += '&single_signer=' + singleSigner;
+                    }else{
+                    url += '?single_signer=' + singleSigner;
+                    }
+                    window.location.href = url;
                 }, 1000);
             }
         });
@@ -464,8 +470,16 @@
                     updateSheet('circulator_completed_by', {{ Auth::user()->id }});
                     // Reload the page to retrieve the next sheet in the queue
                     setTimeout(function(){
-                        location.reload(true);
-                    }, 500);
+                    var singleSigner = $('input[name="type"][value="1"]').is(':checked');
+                    var url = '/circulators/queue';    
+                    if (url.indexOf('?') > -1){
+                        url += '&single_signer=' + singleSigner;
+                    }else{
+                    url += '?single_signer=' + singleSigner;
+                    }
+                    window.location.href = url;
+                    console.log('Reloading to ' + url);
+                }, 500);
                 } else {
                     alert('DEBUG MESSAGE: This sheet is not completed, however the Finish button was enabled. Please sent the system administrator a bug report including: Sheet ID, Date Signed, Signature Count and Circulator Name (as currently displayed) or a screenshot of the current page. Thank you.');
                 }
@@ -543,6 +557,10 @@
         $('input[name="first"]').focus();
 @endif   
 
+@if($single_signer)
+        // Switch to single signer since the parameter was passed
+        $('input[name="type"][value="1"').trigger('click');
+@endif
     });
     // Remove AJAX feedback notices
     setInterval(function(){

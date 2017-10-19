@@ -25,18 +25,20 @@ class CirculatorController extends Controller
      */
     public function queue()
     {
-        $data['recent_circulators'] = Circulator::with('voter')->limit(5)->orderBy('updated_at','desc')->get();
+        $data['recent_circulators'] = Circulator::with('voter')->limit(5)->orderBy('updated_at', 'desc')->get();
         $data['last_date'] = Sheet::select('date_signed')->where('circulator_completed_by', Auth::user()->id)->orderBy('updated_at','desc')->first();
         $data['sheet'] = Sheet::whereNull('flagged_by')->whereNull('circulator_completed_by')
             ->where(
                 function ($query) {
-                    $query->where('checked_out', '<', date("Y-m-d H:i:s",time() - 30 * 60))
+                    $query->where('checked_out', '<', date("Y-m-d H:i:s", time() - 30 * 60))
                         ->orWhereNull('checked_out');
                 }
             )->with('circulator')->first();
         if (!$data['sheet']) {
             return redirect('/')->withErrors(['empty' => 'Hmmmm ... it appears that there are no sheets in the Circulator Queue for review.']);
         }
+        // Allow an optional parameter to be passed to automatically select the Single Signer option.
+        $data['single_signer'] = (isset($_GET['single_signer']) && $_GET['single_signer'] == 'true') ? true : false;
 
         // Check out sheet
         $data['sheet']->checked_out = date("Y-m-d H:i:s");
