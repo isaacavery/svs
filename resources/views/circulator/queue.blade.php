@@ -700,8 +700,8 @@
 
     function updateDate(date) {
         // Set the value of the 
-        $('input[name="date"]').val(date);
-        updateSheet('date_signed', date);
+        $('input[name="date"]').val(date).trigger('blur');
+        //updateSheet('date_signed', date);
     }
         
 </script>
