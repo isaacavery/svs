@@ -38,7 +38,7 @@ class HomeController extends Controller
         $data['circulator_unique'] = Circulator::count();
         $data['signature_count'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->first();
         $data['signers_added'] = Signer::count();
-        $data['signers_ready'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->whereNull('signatures_completed_by')->first();
+        $data['signers_ready'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->whereNull('signatures_completed_by')->whereNull('flagged_by')->where('self_signed',false)->first();
         $data['user_data'] = array();
         foreach (User::all() as $user) {
             $data['user_data'][] = array(

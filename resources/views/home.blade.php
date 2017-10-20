@@ -60,7 +60,7 @@ td {
 ?>
                     <div class="col-xs-12 col-md-6" style="text-align:center">
                     <h2>Add Signers</h2>
-                        <p><strong>{{ $signers_ready->count }} Signers</strong> ready to be added</p>
+                        <p><strong>{{ ($signers_ready->count) ? $signers_ready->count : 0 }} Signers</strong> ready to be added</p>
                         <a href="/sheets/queue" class="btn btn-primary">Start ></a>
                         <h3>Signer stats</h3>
                         <p><strong>{{ $signers_added }} Signers added.</strong></p></p>
