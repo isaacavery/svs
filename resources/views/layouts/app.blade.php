@@ -102,7 +102,7 @@
                             <li><a href="{{ route('login') }}">Login</a></li>
                         @else
                             <li style="color:#ccc;">Circulators added: {{ Auth::user()->circulators()->count() }}<br>
-                            Signers added: {{ Auth::user()->signers()->count() }}</li>
+                            Signers added: {{ DB::table('signers')->join('sheets','sheets.id','=','signers.sheet_id')->whereNull('sheets.self_signed')->where('signers.user_id',Auth::user()->id)->count() }}</li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
