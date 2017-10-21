@@ -261,6 +261,9 @@
     var searchResults;
 
     $('document').ready(function(){
+        @if($sheet->self_signed)
+        $('.recent-circulators').addClass('hidden');
+        @endif
         $('#new-circulator').on('click', function(e) {
             $('html, body').animate({ scrollTop: 0 }, 'fast');
         })
