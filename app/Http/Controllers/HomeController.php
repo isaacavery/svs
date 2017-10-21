@@ -43,7 +43,13 @@ class HomeController extends Controller
         foreach (User::all() as $user) {
             $data['user_data'][] = array(
                 'name' => $user->name,
-                'signers' => $user->signers()->count(),
+                'signers' => DB::table('signers')
+                    ->join('sheets','sheets.id','=','signers.sheet_id')
+                    ->whereNotNull('signers.voter_id')->where('signers.voter_id','>',0)
+                    ->where('sheets.self_signed',0)
+                    ->select('signers.id')
+                    ->where('signers.user_id', $user->id)
+                    ->count(),
                 'circulators' => $user->circulators()->count()
             );
         }
