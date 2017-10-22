@@ -14,7 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('searchSigned','HomeController@searchSigned');
+Route::get('api/searchSigned','HomeController@searchSigned');
 
 Auth::routes();
 
@@ -23,6 +23,7 @@ Route::resource('users', 'UserController');
 Route::get('users/{id}', 'UserController@view')->middleware('auth');
 Route::post('users/update', 'UserController@update')->middleware('auth')->name('users.update');
 Route::get('/', 'HomeController@index')->name('home')->middleware('auth');
+Route::get('api/test/searchSigned', 'HomeController@searchSignedTest')->name('searchSignedTest')->middleware('auth');
 Route::get('sheets/queue', 'SheetController@queue')->middleware('auth');
 Route::resource('sheets','SheetController');
 Route::get('sheets/checkCompletion/{id}', 'SheetController@checkCompletion')->middleware('auth');

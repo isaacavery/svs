@@ -108,4 +108,10 @@ class HomeController extends Controller
             ->header('Content-Type', 'text/json');
 
     }
+
+    public function searchSignedTest()
+    {
+        return view('api.test.searchSigned');
+        
+    }
 }
