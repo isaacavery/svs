@@ -14,7 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('api/searchSigned','HomeController@searchSigned');
+Route::get('api/searchSigned','APIController@searchSigned');
 
 Auth::routes();
 
