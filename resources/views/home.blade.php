@@ -92,7 +92,7 @@ td {
             @if(Auth::user()->admin)
                 <li><a href="/sheets/create">Upload sheets</a></li>
             @endif
-                <li><a href="#">View flagged sheets</a></li>
+                <li><a href="/sheets">View flagged sheets</a></li>
             </ul>
         </div>
         <div class="col-md-3">
@@ -105,7 +105,7 @@ td {
             <h3 id="searchHeader">Signers</h3>
             <ul>
                 <li><a href="#">View list of duplicates</a></li>
-                <li><a href="#">View list of no matches</a></li>
+                <li><a href="/sheets?sort=no_match">View list of no matches</a></li>
                 <li><a href="/reports/signers">Download all Signers (CSV)</a></li>
             </ul>
         </div>
