@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCirculator;
 use App\Sheet;
 use App\Circulator;
 use App\Voter;
+use App\Signer;
 use Auth;
 use App\Batch;
 use Exception;
@@ -28,9 +29,40 @@ class SheetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data['sheets'] = Sheet::all();
+        // Check Sorting
+        $order_by = ' ORDER BY id';
+        $order = ($request->order == 'desc') ? 'DESC' : 'ASC';
+        $data['order'] = strtolower($order);
+        $data['sort'] = $request->sort;
+        if ($request->sort) {
+            switch ($request->sort) {
+            case 'id' :
+                $order_by = " ORDER BY id $order";
+                break;
+            case 'type' :
+                $order_by = " ORDER BY self_signed $order, id ASC";
+                break;
+            case 'signers' :
+                $order_by = " ORDER BY signature_count $order, id ASC";
+                break;
+            case 'no_match' :
+                $order_by = " ORDER BY no_match $order, id ASC";
+                break;
+            case 'cir' :
+                $order_by = " ORDER BY circulator_completed_by $order, flagged_by $order, id ASC";
+                break;
+            case 'sig' :
+                $order_by = " ORDER BY signatures_completed_by $order, flagged_by $order, id ASC";
+                break;
+            case 'rev' :
+                $order_by = " ORDER BY reviewed_by $order, id ASC";
+                break;
+            }
+        }
+        $data['sheets'] = DB::select('SELECT s.id, s.circulator_id, s.filename, s.original_filename, flagged_by, signatures_completed_by, circulator_completed_by, reviewed_by, date_signed, signature_count, self_signed, s.user_id, s.comments, s.created_at, s.updated_at, nm.no_match  FROM sheets s LEFT JOIN (SELECT count(id) no_match, sheet_id FROM signers WHERE voter_id = 0 GROUP BY sheet_id) nm ON (s.id = nm.sheet_id)' . $order_by);
+        //dd($data);
         return view('sheets.list', $data);
     }
 
@@ -43,7 +75,7 @@ class SheetController extends Controller
     {
         $data = ['batches' => ['0' => 'New Batch']];
         $batches = Batch::all();
-        foreach($batches as $batch) {
+        foreach ($batches as $batch) {
             $data['batches'][$batch->id] = '[ ' . $batch->id . ' ] - ' . $batch->created_at; 
         }
         return view('sheets.create', $data);
@@ -159,6 +191,30 @@ class SheetController extends Controller
         if(isset($values['_token']))
             unset($values['_token']);
         foreach ($values as $key => $val) {
+            if ($key == 'self_signed') {
+                if ($val == '1' && !$sheet->self_signed) {
+                    // Remove all Signers and add a new Signer as the Circulator, if they are set
+                    if ($sheet->signers()->count()) {
+                        $sheet->signers()->delete();
+                    }
+                    if ($sheet->circulator_id) {
+                        $circulator = $sheet->circulator;
+                        $data = [
+                            'sheet_id' => $sheet->id,
+                            'voter_id' => ($circulator->voter_id) ? $circulator->voter_id : 0,
+                            'row' => 1,
+                            'user_id' => Auth::user()->id
+                        ];
+                        $signer = Signer::create($data);
+                        // And mark the sheet as Signer Complete
+                        $sheet->signatures_completed_by = Auth::user()->id;
+                    }
+                } else if ($val == '0' && $sheet->self_signed && $sheet->signatures_completed_by) {
+                    // Remove all Signers that are the same as the Circulator
+                    $sheet->signers()->delete();
+                    $sheet->signatures_completed_by = null;
+                }
+            } 
             $sheet->{$key} = ($key == 'comments') ? $sheet->{$key} . '|[' . Auth::user()->name . ' on ' . date('m/d/Y h:i:s') . '] ' . $val : $val;
         }
         if($sheet->save()){
