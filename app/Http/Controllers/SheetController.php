@@ -162,7 +162,33 @@ class SheetController extends Controller
      */
     public function show($id)
     {
-        //
+        $data['sheet'] = Sheet::find($id);
+        if(!$data['sheet'])
+        return redirect('/')->withErrors(['empty' => 'Unable to locate sheet ' . $id . '.']);
+
+        $data['voters'] = array();
+        // Get associated voters:
+        foreach ($data['sheet']->signers as $signer) {
+            if ($signer->voter_id) {
+                $data['voters'][$signer->row] = Voter::select(['first_name','middle_name','last_name','voter_id','res_address_1','city','zip_code'])->where('voter_id',$signer->voter_id)->first();
+            } else {
+                $data['voters'][$signer->row] = is_null($signer->voter_id) ? 1 : 0;
+            }
+        }
+
+        // Parse comments
+        $data['comments'] = explode('|',$data['sheet']->comments);
+        foreach($data['comments'] as $k => $v){
+            // Remove empty comments
+            if(!$v)
+                unset($data['comments'][$k]);
+        }
+
+        // Check out sheet
+        $data['sheet']->checked_out = date("Y-m-d H:i:s");
+        $data['sheet']->save();
+        
+        return view('sheets.edit',$data);
     }
 
     /**
