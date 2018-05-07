@@ -98,3 +98,6 @@
         background-color: #d9edf7 !important;
     }
     
+
+    tr.deleted { color: #FF0000; background: #fff3d4; text-decoration: line-through; }
+    tr.deleted td { background: none; }

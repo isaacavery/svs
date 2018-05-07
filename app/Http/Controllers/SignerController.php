@@ -201,4 +201,35 @@ class SignerController extends Controller
 
         return json_encode(['success' => true, 'count' => count($res1), 'matches' => $res1]);
     }
+
+    public function delete($id)
+    {
+        try {
+            $signer = Signer::find($id);
+            if(!$signer) {
+                return json_encode(['success' => false, 'error' => 'Unable to find signature# ' . $id]);
+            } else {
+                $signer->delete();
+                return json_encode(['success' => true]);
+            }
+        } catch( Exception $e ) {
+            dd($e);
+        }
+    }
+
+    public function restore($id)
+    {
+
+        try {
+            $signer = Signer::withTrashed()->find($id);
+            if(!$signer) {
+                return json_encode(['success' => false, 'error' => 'Unable to find signature# ' . $id]);
+            } else {
+                $signer->restore();
+                return json_encode(['success' => true]);
+            }
+        } catch( Exception $e ) {
+            dd($e);
+        }
+    }
 }

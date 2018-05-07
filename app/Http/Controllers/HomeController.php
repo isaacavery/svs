@@ -37,7 +37,7 @@ class HomeController extends Controller
         $data['circulator_count'] = Sheet::whereNotNull('circulator_id')->count();
         $data['circulator_unique'] = Circulator::count();
         $data['signature_count'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->first();
-        $data['signers_added'] = Signer::count();
+        $data['signers_added'] = Signer::withTrashed()->count();
         $data['signers_ready'] = DB::table('sheets')->select(DB::raw('sum(signature_count) as count'))->whereNull('signatures_completed_by')->whereNull('flagged_by')->where('self_signed',false)->first();
         $data['user_data'] = array();
         foreach (User::all() as $user) {
@@ -56,6 +56,24 @@ class HomeController extends Controller
         usort($data['user_data'], function($a, $b) {
             return $b['circulators'] - $a['circulators'];
         });
+
+        $duplicates = array();
+        // Get the number of unique voters who have signed multiple times, and the number of signatures
+		$sql =  "SELECT count(id) AS unique_voters, SUM(count) as duplicate_count FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers WHERE voter_id != 0 GROUP BY voter_id HAVING count > 1) t";
+        $query = DB::select($sql, []);
+        $duplicates['voters'] = $query[0]->unique_voters;
+        $duplicates['count'] = $query[0]->duplicate_count;
+        $duplicates['offset'] = $duplicates['count'] - $duplicates['voters'];
+        // Get the number of duplicate signatures that have been removed.
+		$sql =  "SELECT COALESCE(SUM(count), 0) as deleted_duplicates FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers WHERE deleted_at IS NOT NULL AND voter_id != 0 GROUP BY voter_id) t";
+        $query = DB::select($sql, []);
+        $duplicates['deleted'] = $query[0]->deleted_duplicates;
+        $duplicates['remaining'] = $duplicates['offset'] - $duplicates['deleted'];
+        $duplicates['summary'] = "{$duplicates['voters']} Registered Voters have signed multiple times, leaving {$duplicates['offset']} duplicate signatures that need to be removed. {$duplicates['deleted']} of these has been removed, and {$duplicates['remaining']} still need to be removed.";
+        
+        $data['duplicates'] = $duplicates;
+        $data['no_match'] = Signer::where('voter_id',0)->count();
+        
         return view('home', $data);
     }
 
