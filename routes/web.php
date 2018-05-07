@@ -37,3 +37,7 @@ Route::resource('signers', 'SignerController');
 Route::post('signers/search', 'SignerController@search')->middleware('auth');
 Route::get('reports/circulators', 'ReportsController@circulators')->middleware('auth');
 Route::get('reports/signers', 'ReportsController@signers')->middleware('auth');
+Route::get('reports/duplicates/download', 'ReportsController@duplicatesDownload')->middleware('auth');
+Route::get('reports/duplicates', 'ReportsController@duplicates')->middleware('auth');
+Route::get('signers/delete/{id}', 'SignerController@delete')->middleware('auth');
+Route::get('signers/restore/{id}', 'SignerController@restore')->middleware('auth');

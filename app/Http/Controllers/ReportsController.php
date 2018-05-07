@@ -76,5 +76,153 @@ class ReportsController extends Controller
 	        'Content-Type' => 'text/csv',
 	    );
     	return response()->download($filename, 'signers_' . date('Y-m-d') . '.csv', $headers);
-    }
+	}
+	
+    public function duplicates(Request $request)
+    {
+
+		$current_letter = $request->query('letter');
+		// Create master list
+		$sql =  "select signers.id as signer_id, voter_ids.voter_id, count, circulators.first_name cfname, circulators.last_name clname, circulators.middle_name cmname, CONCAT(circulators.last_name, ', ', circulators.first_name) as circulator_name, CONCAT(circulators.address, ', ', circulators.city, ', ', circulators.state, ' ', circulators.zip_code) as circulator_address, sheets.date_signed, sheet_id, filename, row, self_signed, voters.first_name vfname, voters.last_name vlname, voters.middle_name vmname, CONCAT(voters.last_name, ', ', voters.first_name) as signer_name, CONCAT(voters.res_address_1, ', ', voters.city, ', ', voters.state, ' ', voters.zip_code) as signer_address, signers.deleted_at from (SELECT voter_id, count(voter_id) as count from signers WHERE voter_id != 0 GROUP BY voter_id HAVING count(voter_id) > 1) as voter_ids JOIN signers ON (signers.voter_id = voter_ids.voter_id) JOIN sheets ON (sheets.id = signers.sheet_id) JOIN circulators ON (circulators.id = sheets.circulator_id) LEFT JOIN voters ON (voters.voter_id = signers.voter_id) ORDER BY 2, 9";
+		$master_list = DB::select($sql, []);
+		$active_id = 0;
+		$position = 0;
+		foreach($master_list as $k => $v) {
+			if($active_id !== $master_list[$k]->voter_id) {
+				$active_id = $master_list[$k]->voter_id;
+				$position = 1;
+			} else {
+				$position++;
+			}
+			$master_list[$k]->position = $position;
+		}
+
+		if(!$master_list)
+			return 'There are no circulators to generate a report on.';
+			
+		/* Used for downloading spreadsheet of full report
+    	$filename = "uploads/duplicates.csv";
+	    $handle = fopen($filename, 'w+');
+		fputcsv($handle, array_keys((array) $master_list[0]));
+	    foreach($master_list as $row) {
+	        fputcsv($handle, (array) $row);
+	    }
+	    fclose($handle);
+	    $headers = array(
+	        'Content-Type' => 'text/csv',
+	    );
+    	return response()->download($filename, 'duplicates_' . date('Y-m-d') . '.csv', $headers);
+		*/
+
+		// Loop throught the results. Mark the first row as 'do-not-remove', unless there is a SS sheet.
+		$ar = false;
+		$rows = array();
+		$keep = false;
+		foreach($master_list as $k => $v) {
+			if($ar != $v->voter_id) {
+				// New match
+				foreach($rows as $key) {
+					$master_list[$key]->do_not_remove = ($key != $keep) ? false : true;
+				}
+				$ar = $v->voter_id;
+				$rows = array();
+				$keep = false;
+			}
+			if(!count($rows) || $v->self_signed == 1) {
+				$keep = $k; // This is the first row, so we will keep it for now.
+			} else if ($v->self_signed == 1) {
+				$keep = $k;
+			}
+			$rows[] = $k;
+		}
+		// Don't forget the last duplicate!
+		foreach($rows as $key) {
+			$master_list[$key]->do_not_remove = ($key != $keep) ? false : true;
+		}
+
+		if($request->query('sort') == 'signer') {
+			usort($master_list, function($a, $b){
+				return strcmp($a->signer_name, $b->signer_name);
+			});
+		} else {
+			usort($master_list, function($a, $b){
+				return strcmp($a->circulator_name, $b->circulator_name);
+			});
+		}
+
+		// Run filter (if any)
+		if($current_letter) {
+			$current_letter = strtoupper(substr($current_letter,0,1));
+			// Loop through and drop non matches
+			foreach($master_list as $k => $v) {
+				if(substr($v->circulator_name, 0, 1) !== $current_letter)
+					unset($master_list[$k]);
+			}
+			$sql .= " WHERE circulators.last_name LIKE '$current_letter%'";
+		}
+
+		$data = array('duplicates' => $master_list, 'current_letter' => $current_letter);
+        return view('reports.duplicates', $data);
+	}
+	
+	public function duplicatesDownload()
+	{
+		
+		// Create master list
+		$sql =  "select signers.id as signer_id, voter_ids.voter_id, count, circulators.first_name cfname, circulators.last_name clname, circulators.middle_name cmname, CONCAT(circulators.last_name, ', ', circulators.first_name) as circulator_name, CONCAT(circulators.address, ', ', circulators.city, ', ', circulators.state, ' ', circulators.zip_code) as circulator_address, sheets.date_signed, sheet_id, filename, row, self_signed, voters.first_name vfname, voters.last_name vlname, voters.middle_name vmname, CONCAT(voters.last_name, ', ', voters.first_name) as signer_name, CONCAT(voters.res_address_1, ', ', voters.city, ', ', voters.state, ' ', voters.zip_code) as signer_address, signers.deleted_at from (SELECT voter_id, count(voter_id) as count from signers WHERE voter_id != 0 GROUP BY voter_id HAVING count(voter_id) > 1) as voter_ids JOIN signers ON (signers.voter_id = voter_ids.voter_id) JOIN sheets ON (sheets.id = signers.sheet_id) JOIN circulators ON (circulators.id = sheets.circulator_id) LEFT JOIN voters ON (voters.voter_id = signers.voter_id) ORDER BY 2, 9";
+		$master_list = DB::select($sql, []);
+		$active_id = 0;
+		$position = 0;
+		foreach($master_list as $k => $v) {
+			if($active_id !== $master_list[$k]->voter_id) {
+				$active_id = $master_list[$k]->voter_id;
+				$position = 1;
+			} else {
+				$position++;
+			}
+			$master_list[$k]->position = $position;
+		}
+
+		// Loop throught the results. Mark the first row as 'do-not-remove', unless there is a SS sheet.
+		$ar = false;
+		$rows = array();
+		$keep = false;
+		foreach($master_list as $k => $v) {
+			if($ar != $v->voter_id) {
+				// New match
+				foreach($rows as $key) {
+					$master_list[$key]->do_not_remove = ($key != $keep) ? false : true;
+				}
+				$ar = $v->voter_id;
+				$rows = array();
+				$keep = false;
+			}
+			if(!count($rows) || $v->self_signed == 1) {
+				$keep = $k; // This is the first row, so we will keep it for now.
+			} else if ($v->self_signed == 1) {
+				$keep = $k;
+			}
+			$rows[] = $k;
+		}
+		// Don't forget the last duplicate!
+		foreach($rows as $key) {
+			$master_list[$key]->do_not_remove = ($key != $keep) ? false : true;
+		}
+
+		if(!$master_list)
+			return 'There are no circulators to generate a report on.';
+			
+		/* Used for downloading spreadsheet of full report */
+    	$filename = "uploads/duplicates.csv";
+	    $handle = fopen($filename, 'w+');
+		fputcsv($handle, array_keys((array) $master_list[0]));
+	    foreach($master_list as $row) {
+	        fputcsv($handle, (array) $row);
+	    }
+	    fclose($handle);
+	    $headers = array(
+	        'Content-Type' => 'text/csv',
+	    );
+    	return response()->download($filename, 'duplicates_' . date('Y-m-d') . '.csv', $headers);
+	}
 }
