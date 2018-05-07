@@ -129,7 +129,11 @@
                         } else {
                             // Signature has been deleted. Replace link
                             var html = '<span class="toggle-signature enabled" data-action="restore" data-id="' + this.activeLink.data('id') + '"><span class="glyphicon glyphicon-open"></span>Restore</a>';
+                            @if($current_letter)                            
                             this.activeLink.closest('tr').addClass('deleted');
+                            @else
+                            this.activeLink.closest('tr').removeClass('danger').addClass('deleted');
+                            @endif
                             this.activeLink.replaceWith(html);
                         }
                     },
