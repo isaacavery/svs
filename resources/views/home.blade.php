@@ -66,7 +66,6 @@ td {
                         <h3>Signer stats</h3>
                         <p><strong>{{ $signers_added }} Signers added.</strong></p>
                         <p><strong>{{ $signers_added - $duplicates['offset'] }}</strong> after duplicates are removed</p>
-                        <p><strong>{{ $signers_added - $duplicates['offset'] - $no_match }}</strong> after duplicates and "no match" are removed</p>
                         <table class="table-striped">
                         <p>&nbsp;</p>
                             <tfoot><strong>Signers added per user:</strong></tfoot>
