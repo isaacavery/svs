@@ -3,6 +3,8 @@
 @section('content')
 
 <div class="container">
+    <p class="text-danger">{{ $duplicate_info['summary'] }}</p>
+    <p><strong>Duplicates:</strong> {{ $duplicate_info['voters'] }} Voters, {{ $duplicate_info['count'] }} Total Signatures ({{ $duplicate_info['remaining'] }} need removal)<br><strong>NOTE:</strong> the accurate corrected signature count is currently <strong>{{ $signers_added - $duplicate_info['offset'] }}</strong> after removing duplicates!</p>
     <div class="row">
         <div class="col-md-12">
             <nav aria-label="Page navigation">

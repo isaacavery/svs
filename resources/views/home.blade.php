@@ -34,7 +34,6 @@ td {
             <div class="panel panel-default container" style="text-align:center;">
 
                 <div class="panel-body">
-                    <p class="text-danger">{{ $duplicates['summary'] }}</p>
                     <div class="col-xs-12 col-md-6">
                         <h2>Add Circulators</h2>
                         <p><strong>{{ $circulator_ready }} Circulators</strong> ready to be added</p>
@@ -66,7 +65,7 @@ td {
                         <a href="/sheets/queue" class="btn btn-primary">Start ></a>
                         <h3>Signer stats</h3>
                         <p><strong>{{ $signers_added }} Signers added.</strong></p>
-                        <p><strong>Duplicates:</strong> {{ $duplicates['voters'] }} Voters, {{ $duplicates['count'] }} Total Signatures ({{ $duplicates['remaining'] }} need removal)<br><strong>NOTE:</strong> the accurate corrected signature count is currently <strong>{{ $signers_added - $duplicates['offset'] }}</strong> after removing duplicates!</p>
+                        <p><strong>{{ $signers_added - $duplicates['offset'] }}</strong> after duplicates are removed</p>
                         <table class="table-striped">
                         <p>&nbsp;</p>
                             <tfoot><strong>Signers added per user:</strong></tfoot>
