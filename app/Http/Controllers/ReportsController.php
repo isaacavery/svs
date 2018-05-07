@@ -163,13 +163,13 @@ class ReportsController extends Controller
 
         $duplicates = array();
         // Get the number of unique voters who have signed multiple times, and the number of signatures
-		$sql =  "SELECT count(id) AS unique_voters, SUM(count) as duplicate_count FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers GROUP BY voter_id HAVING count > 1) t";
+		$sql =  "SELECT count(id) AS unique_voters, SUM(count) as duplicate_count FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers where voter_id != 0 GROUP BY voter_id HAVING count > 1) t";
         $query = DB::select($sql, []);
         $duplicates['voters'] = $query[0]->unique_voters;
         $duplicates['count'] = $query[0]->duplicate_count;
         $duplicates['offset'] = $duplicates['count'] - $duplicates['voters'];
         // Get the number of duplicate signatures that have been removed.
-		$sql =  "SELECT COALESCE(SUM(count), 0) as deleted_duplicates FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers WHERE deleted_at IS NOT NULL GROUP BY voter_id) t";
+		$sql =  "SELECT COALESCE(SUM(count), 0) as deleted_duplicates FROM (SELECT DISTINCT(voter_id) as id, count(voter_id) AS count FROM signers WHERE deleted_at IS NOT NULL AND voter_id != 0 GROUP BY voter_id) t";
         $query = DB::select($sql, []);
         $duplicates['deleted'] = $query[0]->deleted_duplicates;
         $duplicates['remaining'] = $duplicates['offset'] - $duplicates['deleted'];
