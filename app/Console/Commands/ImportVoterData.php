@@ -85,7 +85,7 @@ class ImportVoterData extends Command
 
                     // Handle all the empty spaces and character encoding issues
                     foreach($line as $k => $v){
-                        $line[$k] = iconv('Windows-1252', 'UTF-8', $v);
+                        $line[$k] = iconv('Windows-1252', 'UTF-8//IGNORE', $v);
                         if($v == '')
                             $line[$k] = null;
                         switch($k){
@@ -108,7 +108,7 @@ class ImportVoterData extends Command
                     }
 
                     $row++;
-
+                    
                     $data = array_combine($headers,$line);
 
                     $insert_data[] = $data;
