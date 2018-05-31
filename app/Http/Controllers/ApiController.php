@@ -33,6 +33,10 @@ class ApiController extends Controller
                     if ($request->zipCode) {
                         $results->where('zip_code', $request->zipCode);
                     }
+
+                    // Custom exclusions:
+                    $results->whereNotIn('voter_id',[17348977,18550976,100654958,100672316,100996473]);
+
                     $results = $results->limit(10)
                         ->get();
                     $response['success'] = true;
