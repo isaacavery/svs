@@ -173,7 +173,13 @@ class ReportsController extends Controller
         $query = DB::select($sql, []);
         $duplicates['deleted'] = $query[0]->deleted_duplicates;
         $duplicates['remaining'] = $duplicates['offset'] - $duplicates['deleted'];
-        $duplicates['summary'] = "{$duplicates['voters']} Registered Voters have signed multiple times, leaving {$duplicates['offset']} duplicate signatures that need to be removed. {$duplicates['deleted']} of these has been removed, and {$duplicates['remaining']} still need to be removed.";
+		$duplicates['summary'] = "{$duplicates['voters']} Registered Voters have signed multiple times, leaving {$duplicates['offset']} duplicate signatures that need to be removed. {$duplicates['deleted']} of these has been removed, and {$duplicates['remaining']} still need to be removed.";
+		
+		array_multisort(array_map(function($element) {
+			return $element->circulator_name . $element->date_signed . $element->sheet_id . $element->row;
+		}, $master_list), SORT_ASC, $master_list);
+		
+		//dd($master_list);
 
         $signers_added = Signer::withTrashed()->count();		
 
@@ -203,6 +209,7 @@ class ReportsController extends Controller
 		$ar = false;
 		$rows = array();
 		$keep = false;
+		//$cutoff = strtotime('2017-1-1');
 		foreach($master_list as $k => $v) {
 			if($ar != $v->voter_id) {
 				// New match
@@ -215,6 +222,9 @@ class ReportsController extends Controller
 			}
 			if(!count($rows) || $v->self_signed == 1) {
 				$keep = $k; // This is the first row, so we will keep it for now.
+				/*if($v->date_signed < $cutoff) {
+					dd('Hard stop: ' . $v->date_signed . ' is before ' . date('Y-m-d', $cutoff));
+				}*/
 			} else if ($v->self_signed == 1) {
 				$keep = $k;
 			}
@@ -227,6 +237,10 @@ class ReportsController extends Controller
 
 		if(!$master_list)
 			return 'There are no circulators to generate a report on.';
+		
+		array_multisort(array_map(function($element) {
+			return $element->circulator_name . $element->date_signed . $element->sheet_id . $element->row;
+		}, $master_list), SORT_ASC, $master_list);
 			
 		/* Used for downloading spreadsheet of full report */
     	$filename = "uploads/duplicates.csv";
