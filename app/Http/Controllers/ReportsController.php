@@ -131,7 +131,7 @@ class ReportsController extends Controller
 				$keep = false; // Reset the MASTER record placeholder
 				$hard_stop = false; // Reset the 'emergency brake'
 			}
-			if($v->date_signed == '2017-06-28') {
+			if($v->date_signed == '2016-06-28') {
 				// This sheet has already been submitted, so it has to be the primary.
 				$keep = $k;
 				$hard_stop = true;
