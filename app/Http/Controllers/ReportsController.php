@@ -212,26 +212,29 @@ class ReportsController extends Controller
 		}
 
 		// Loop throught the results. Mark the first row as 'do-not-remove', unless there is a SS sheet.
-		$ar = false;
-		$rows = array();
-		$keep = false;
-		//$cutoff = strtotime('2017-1-1');
+		$ar = false; // Active record placeholder
+		$rows = array(); // Keys to set as Signer rows
+		$keep = false; // MASTER record placeholder for Active record
+		$hard_stop = false; // Marker to force stop if signature has been submitted already
 		foreach($master_list as $k => $v) {
-			if($ar != $v->voter_id) {
+			if($ar != $v->voter_id) { // If we are starting a new record
 				// New match
 				foreach($rows as $key) {
+					// Loop through the last rows, only set the MASTER record as do_not_remove
 					$master_list[$key]->do_not_remove = ($key != $keep) ? false : true;
 				}
-				$ar = $v->voter_id;
-				$rows = array();
-				$keep = false;
+				$ar = $v->voter_id; // Update the Active record as we are starting a new Signer
+				$rows = array(); // Reset the Signer's rows
+				$keep = false; // Reset the MASTER record placeholder
+				$hard_stop = false; // Reset the 'emergency brake'
 			}
-			if(!count($rows) || $v->self_signed == 1) {
+			if($v->date_signed == '2016-06-28') {
+				// This sheet has already been submitted, so it has to be the primary.
+				$keep = $k;
+				$hard_stop = true;
+			} else if(!$hard_stop && (!count($rows) || $v->self_signed == 1)) {
 				$keep = $k; // This is the first row, so we will keep it for now.
-				/*if($v->date_signed < $cutoff) {
-					dd('Hard stop: ' . $v->date_signed . ' is before ' . date('Y-m-d', $cutoff));
-				}*/
-			} else if ($v->self_signed == 1) {
+			} else if (!$hard_stop && $v->self_signed == 1) {
 				$keep = $k;
 			}
 			$rows[] = $k;
