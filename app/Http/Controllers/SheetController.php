@@ -32,6 +32,7 @@ class SheetController extends Controller
     public function index(Request $request)
     {
         // Check Sorting
+        $where = '';
         $order_by = ' ORDER BY id';
         $order = ($request->order == 'desc') ? 'DESC' : 'ASC';
         $data['order'] = strtolower($order);
@@ -42,7 +43,12 @@ class SheetController extends Controller
                 $order_by = " ORDER BY id $order";
                 break;
             case 'type' :
-                $order_by = " ORDER BY self_signed $order, id ASC";
+                $order_by = " ORDER BY ratio DESC, id ASC";
+                if($order == 'ASC') {
+                    $where = "WHERE self_signed = 1";
+                } else {
+                    $where = "WHERE self_signed = 0";
+                }
                 break;
             case 'signers' :
                 $order_by = " ORDER BY signature_count $order, id ASC";
@@ -56,12 +62,36 @@ class SheetController extends Controller
             case 'sig' :
                 $order_by = " ORDER BY signatures_completed_by $order, flagged_by $order, id ASC";
                 break;
+            case 'flag' :
+                if($order == 'ASC') {
+                    $where = 'WHERE flagged_by IS NOT NULL';
+                    $order_by = " ORDER BY self_signed $order, signatures_completed_by DESC, circulator_completed_by DESC, id ASC";
+                } else {
+                    $where = 'WHERE flagged_by IS NULL';
+                    $order_by = " ORDER BY self_signed $order, id ASC";
+                }
+                break;
+            case 'ratio' :
+                if($request->type == 'ss') {
+                    $order_by = " ORDER BY self_signed, ratio $order, id ASC";
+                    $where = "WHERE no_match > 0 AND self_signed = 1";
+                } else {
+                    $order_by = " ORDER BY ratio $order, id ASC";                    
+                    $where = "WHERE no_match > 0 AND self_signed = 0";
+                }
+                break;
             case 'rev' :
-                $order_by = " ORDER BY reviewed_by $order, id ASC";
+                if($order == 'ASC') {
+                    $where = 'WHERE reviewed_by IS NOT NULL';
+                    $order_by = " ORDER BY self_signed $order, id ASC";
+                } else {
+                    $where = 'WHERE reviewed_by IS NULL';
+                    $order_by = " ORDER BY self_signed $order, id ASC";
+                }
                 break;
             }
         }
-        $data['sheets'] = DB::select('SELECT s.id, s.circulator_id, s.filename, s.original_filename, flagged_by, signatures_completed_by, circulator_completed_by, reviewed_by, date_signed, signature_count, self_signed, s.user_id, s.comments, s.created_at, s.updated_at, nm.no_match  FROM sheets s LEFT JOIN (SELECT count(id) no_match, sheet_id FROM signers WHERE voter_id = 0 GROUP BY sheet_id) nm ON (s.id = nm.sheet_id)' . $order_by);
+        $data['sheets'] = DB::select('SELECT s.id, s.circulator_id, s.filename, s.original_filename, flagged_by, signatures_completed_by, circulator_completed_by, reviewed_by, date_signed, signature_count, self_signed, s.user_id, s.comments, s.created_at, s.updated_at, nm.no_match, CASE nm.no_match WHEN 0 THEN 0 ELSE ROUND( nm.no_match / signature_count * 100) END as ratio FROM sheets s LEFT JOIN (SELECT count(id) no_match, sheet_id FROM signers WHERE voter_id = 0 GROUP BY sheet_id) nm ON (s.id = nm.sheet_id) ' . $where . $order_by);
         //dd($data);
         return view('sheets.list', $data);
     }
@@ -261,6 +291,7 @@ class SheetController extends Controller
     public function destroy($id)
     {
         //
+        return 'Deleting sheet ' . $id;
     }
 
     public function checkCompletion($id)
@@ -271,6 +302,42 @@ class SheetController extends Controller
 
         $complete = ($sheet->signers()->count() == $sheet->signature_count) ? true : false;
         return json_encode(['success' => true, 'complete' => $complete]);
+    }
+
+    public function toggleFlagged( $id )
+    {
+        $sheet = Sheet::find($id);
+
+        if( ! $sheet )
+            return json_encode(['success' => false, 'error' => 'Unable to find sheet ' . $id]);
+
+        if( ! $sheet->flagged_by ) {
+            $sheet->flagged_by = Auth::user()->id;
+            $sheet->save();
+            return json_encode(['id' => $id, 'flagged' => true, 'success' => true]);
+        } else {
+            $sheet->flagged_by = null;
+            $sheet->save();
+            return json_encode(['id' => $id, 'flagged' => false, 'success' => true]);
+        }
+    }
+
+    public function toggleReviewed( $id )
+    {
+        $sheet = Sheet::find($id);
+
+        if( ! $sheet )
+            return json_encode(['success' => false, 'error' => 'Unable to find sheet ' . $id]);
+
+        if( ! $sheet->reviewed_by ) {
+            $sheet->reviewed_by = Auth::user()->id;
+            $sheet->save();
+            return json_encode(['id' => $id, 'reviewed' => true, 'success' => true]);
+        } else {
+            $sheet->reviewed_by = null;
+            $sheet->save();
+            return json_encode(['id' => $id, 'reviewed' => false, 'success' => true]);
+        } 
     }
 
 }

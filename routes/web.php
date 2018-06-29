@@ -27,6 +27,8 @@ Route::get('api/test/searchSigned', 'HomeController@searchSignedTest')->name('se
 Route::get('sheets/queue', 'SheetController@queue')->middleware('auth');
 Route::resource('sheets','SheetController');
 Route::get('sheets/checkCompletion/{id}', 'SheetController@checkCompletion')->middleware('auth');
+Route::get('sheets/toggleFlagged/{id}', 'SheetController@toggleFlagged')->middleware('auth');
+Route::get('sheets/toggleReviewed/{id}', 'SheetController@toggleReviewed')->middleware('auth');
 Route::get('circulators/queue', 'CirculatorController@queue')->middleware('auth');
 Route::post('circulators/search', 'CirculatorController@search')->middleware('auth');
 Route::post('circulators/ajaxSelect', 'CirculatorController@ajaxSelect')->middleware('auth');
