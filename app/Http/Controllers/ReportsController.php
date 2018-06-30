@@ -119,6 +119,7 @@ class ReportsController extends Controller
 		$rows = array(); // Keys to set as Signer rows
 		$keep = false; // MASTER record placeholder for Active record
 		$hard_stop = false; // Marker to force stop if signature has been submitted already
+		$soft_stop = false;
 		foreach($master_list as $k => $v) {
 			if($ar != $v->voter_id) { // If we are starting a new record
 				// New match
@@ -130,15 +131,19 @@ class ReportsController extends Controller
 				$rows = array(); // Reset the Signer's rows
 				$keep = false; // Reset the MASTER record placeholder
 				$hard_stop = false; // Reset the 'emergency brake'
+				$soft_stop = false;
 			}
 			if($v->date_signed == '2016-06-28') {
 				// This sheet has already been submitted, so it has to be the primary.
 				$keep = $k;
 				$hard_stop = true;
-			} else if(!$hard_stop && (!count($rows) || $v->self_signed == 1)) {
+			} else if(!$hard_stop && !count($rows)) {
 				$keep = $k; // This is the first row, so we will keep it for now.
-			} else if (!$hard_stop && $v->self_signed == 1) {
+				if($v->self_signed == 1)
+					$soft_stop = true;
+			} else if (!$hard_stop && !$soft_stop && $v->self_signed == 1) {
 				$keep = $k;
+				$soft_stop = true;
 			}
 			$rows[] = $k;
 		}
@@ -197,7 +202,7 @@ class ReportsController extends Controller
 	{
 		
 		// Create master list
-		$sql =  "select signers.id as signer_id, voter_ids.voter_id, count, circulators.first_name cfname, circulators.last_name clname, circulators.middle_name cmname, CONCAT(circulators.last_name, ', ', circulators.first_name) as circulator_name, CONCAT(circulators.address, ', ', circulators.city, ', ', circulators.state, ' ', circulators.zip_code) as circulator_address, sheets.date_signed, sheet_id, filename, row, self_signed, voters.first_name vfname, voters.last_name vlname, voters.middle_name vmname, CONCAT(voters.last_name, ', ', voters.first_name) as signer_name, CONCAT(voters.res_address_1, ', ', voters.city, ', ', voters.state, ' ', voters.zip_code) as signer_address, signers.deleted_at from (SELECT voter_id, count(voter_id) as count from signers WHERE voter_id != 0 GROUP BY voter_id HAVING count(voter_id) > 1) as voter_ids JOIN signers ON (signers.voter_id = voter_ids.voter_id) JOIN sheets ON (sheets.id = signers.sheet_id) JOIN circulators ON (circulators.id = sheets.circulator_id) LEFT JOIN voters ON (voters.voter_id = signers.voter_id) ORDER BY 2, 9";
+		$sql =  "select signers.id as signer_id, voter_ids.voter_id, count, circulators.first_name cfname, circulators.last_name clname, circulators.middle_name cmname, CONCAT(circulators.last_name, ', ', circulators.first_name) as circulator_name, CONCAT(circulators.address, ', ', circulators.city, ', ', circulators.state, ' ', circulators.zip_code) as circulator_address, sheets.date_signed, sheet_id, filename, row, self_signed, voters.first_name vfname, voters.last_name vlname, voters.middle_name vmname, CONCAT(voters.last_name, ', ', voters.first_name) as signer_name, CONCAT(voters.res_address_1, ', ', voters.city, ', ', voters.state, ' ', voters.zip_code) as signer_address, signers.deleted_at from (SELECT voter_id, count(voter_id) as count from signers WHERE voter_id != 0 GROUP BY voter_id HAVING count(voter_id) > 1) as voter_ids JOIN signers ON (signers.voter_id = voter_ids.voter_id) JOIN sheets ON (sheets.id = signers.sheet_id) JOIN circulators ON (circulators.id = sheets.circulator_id) LEFT JOIN voters ON (voters.voter_id = signers.voter_id) WHERE circulator_id = 14804 ORDER BY 2, 9";
 		$master_list = DB::select($sql, []);
 		$active_id = 0;
 		$position = 0;
@@ -233,10 +238,11 @@ class ReportsController extends Controller
 				// This sheet has already been submitted, so it has to be the primary.
 				$keep = $k;
 				$hard_stop = true;
-			} else if(!$hard_stop && (!count($rows) || ( ! $soft_stop && $v->self_signed == 1))) {
+			} else if(!$hard_stop && !count($rows)) {
 				$keep = $k; // This is the first row, so we will keep it for now.
-				$soft_stop = true;
-			} else if (!$hard_stop && $soft_stop && $v->self_signed == 1) {
+				if($v->self_signed == 1)
+					$soft_stop = true;
+			} else if ( ! $hard_stop && ! $soft_stop && $v->self_signed == 1) {
 				$keep = $k;
 				$soft_stop = true;
 			}
