@@ -233,6 +233,7 @@ class ReportsController extends Controller
 				$rows = array(); // Reset the Signer's rows
 				$keep = false; // Reset the MASTER record placeholder
 				$hard_stop = false; // Reset the 'emergency brake'
+				$soft_stop = false; // Marker to stop on first SS sheet
 			}
 			if($v->date_signed == '2016-06-28') {
 				// This sheet has already been submitted, so it has to be the primary.
