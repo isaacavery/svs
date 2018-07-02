@@ -119,7 +119,7 @@ class ReportsController extends Controller
 		$rows = array(); // Keys to set as Signer rows
 		$keep = false; // MASTER record placeholder for Active record
 		$hard_stop = false; // Marker to force stop if signature has been submitted already
-		$soft_stop = false;
+		// $soft_stop = false;
 		foreach($master_list as $k => $v) {
 			if($ar != $v->voter_id) { // If we are starting a new record
 				// New match
@@ -131,19 +131,19 @@ class ReportsController extends Controller
 				$rows = array(); // Reset the Signer's rows
 				$keep = false; // Reset the MASTER record placeholder
 				$hard_stop = false; // Reset the 'emergency brake'
-				$soft_stop = false;
+				// $soft_stop = false;
 			}
 			if($v->date_signed == '2016-06-28') {
 				// This sheet has already been submitted, so it has to be the primary.
 				$keep = $k;
 				$hard_stop = true;
-			} else if(!$hard_stop && !count($rows)) {
+			} else if( !$hard_stop && ! $keep && ! $v->deleted_at ) {
 				$keep = $k; // This is the first row, so we will keep it for now.
-				if($v->self_signed == 1)
-					$soft_stop = true;
-			} else if (!$hard_stop && !$soft_stop && $v->self_signed == 1) {
-				$keep = $k;
-				$soft_stop = true;
+			// 	if($v->self_signed == 1)
+			// 		$soft_stop = true;
+			// } else if (!$hard_stop && !$soft_stop && $v->self_signed == 1) {
+			// 	$keep = $k;
+			// 	$soft_stop = true;
 			}
 			$rows[] = $k;
 		}
